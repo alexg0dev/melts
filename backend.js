@@ -186,7 +186,7 @@ app.get("/api/user", authenticate, (req, res) => {
 
 // Create order
 app.post("/api/orders", authenticate, (req, res) => {
-  const { items, total, shipping, discount } = req.body
+  const { items, total, shipping, discount, paymentMethod, customerEmail } = req.body
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: "Items are required" })
@@ -215,6 +215,8 @@ app.post("/api/orders", authenticate, (req, res) => {
     discount,
     status: "pending",
     createdAt: new Date().toISOString(),
+    paymentMethod,
+    customerEmail: customerEmail || req.user.email,
   }
 
   orders.push(order)
@@ -227,7 +229,7 @@ app.post("/api/orders", authenticate, (req, res) => {
   writeData(USERS_FILE, users)
 
   // Send email notification
-  sendOrderEmail(req.user.email, order)
+  sendOrderEmail(order.customerEmail, order)
 
   res.json({
     success: true,
@@ -346,22 +348,48 @@ function sendOrderEmail(email, order) {
       Date: ${new Date(order.createdAt).toLocaleString()}
       
       Items:
-      ${order.items.map((item) => `- ${item.name} (${item.quantity}) - $${item.price.toFixed(2)}`).join("\n")}
+      ${order.items.map((item) => `- ${item.name} (${item.quantity}) - £${item.price.toFixed(2)}`).join("\n")}
       
-      Subtotal: $${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
-      Shipping: $${order.shipping.toFixed(2)}
-      ${order.discount ? `Discount: -$${order.discount.toFixed(2)}` : ""}
-      Total: $${order.total.toFixed(2)}
+      Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+      Shipping: £${order.shipping.toFixed(2)}
+      ${order.discount ? `Discount: -£${order.discount.toFixed(2)}` : ""}
+      Total: £${order.total.toFixed(2)}
       
       Your order is being processed and will be shipped soon.
+      
+      If there are any issues with your order, please contact: Melissa's Melts on Facebook.
       
       Thank you for shopping with Melissa's Melts!
   `
 
   console.log("Email content:", emailContent)
 
+  // Send email to customer
+  console.log(`Sending order confirmation email to customer: ${email}`)
+
   // Send email to alexandroghanem@gmail.com as requested
   console.log("Sending order notification to alexandroghanem@gmail.com")
+  const ownerEmailContent = `
+      New Order Received!
+      
+      Order ID: ${order.orderId}
+      Customer: ${order.customerEmail || "Unknown"}
+      Date: ${new Date(order.createdAt).toLocaleString()}
+      
+      Items:
+      ${order.items.map((item) => `- ${item.name} (${item.quantity}) - £${item.price.toFixed(2)}`).join("\n")}
+      
+      Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+      Shipping: £${order.shipping.toFixed(2)}
+      ${order.discount ? `Discount: -£${order.discount.toFixed(2)}` : ""}
+      Total: £${order.total.toFixed(2)}
+      
+      Payment Method: ${order.paymentMethod ? `${order.paymentMethod.type.toUpperCase()} (ending in ${order.paymentMethod.lastFour})` : "Unknown"}
+      
+      Please process this order as soon as possible.
+  `
+
+  console.log("Owner email content:", ownerEmailContent)
 }
 
 // Serve shop.html when products.html is requested

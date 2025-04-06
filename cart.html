@@ -176,7 +176,7 @@
 <body class="font-sans bg-pink-50 text-gray-800">
     <!-- Announcement Bar -->
     <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
-        <p>Use code <span class="font-bold">MELT10</span> for 10% off your first order</p>
+        <p>Free shipping on orders over £50!</p>
     </div>
 
     <!-- Header/Navigation -->
@@ -207,7 +207,7 @@
                     
                     <div id="user-container">
                         <div class="relative">
-                            <a href="login.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+                            <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
                                 <i class="fas fa-user text-lg"></i>
                             </a>
                             <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
@@ -344,8 +344,49 @@
                                     <p id="coupon-message" class="mt-2 text-sm hidden"></p>
                                 </div>
                                 
-                                <!-- Checkout Button -->
-                                <button id="checkout-button" class="btn-primary text-white font-medium py-3 px-6 rounded-full w-full shadow-glow mb-4">Proceed to Checkout</button>
+                                <!-- Payment Form -->
+                                <div id="payment-form" class="mb-6 border-t border-gray-100 pt-6 mt-4">
+                                    <h3 class="text-lg font-medium mb-4">Payment Details</h3>
+                                    
+                                    <!-- Card Information -->
+                                    <div class="mb-4">
+                                        <label for="card-number" class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
+                                        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" maxlength="19">
+                                    </div>
+                                    
+                                    <div class="flex gap-4 mb-4">
+                                        <div class="flex-1">
+                                            <label for="card-expiry" class="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                                            <input type="text" id="card-expiry" placeholder="MM/YY" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" maxlength="5">
+                                        </div>
+                                        <div class="flex-1">
+                                            <label for="card-cvc" class="block text-sm font-medium text-gray-700 mb-2">CVC</label>
+                                            <input type="text" id="card-cvc" placeholder="123" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" maxlength="4">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <label for="card-name" class="block text-sm font-medium text-gray-700 mb-2">Name on Card</label>
+                                        <input type="text" id="card-name" placeholder="John Smith" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                                    </div>
+                                    
+                                    <div class="flex items-center mb-4">
+                                        <div class="flex items-center">
+                                            <input type="radio" id="card-type-visa" name="card-type" value="visa" class="mr-2" checked>
+                                            <label for="card-type-visa" class="text-sm text-gray-700 mr-4">Visa</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input type="radio" id="card-type-mastercard" name="card-type" value="mastercard" class="mr-2">
+                                            <label for="card-type-mastercard" class="text-sm text-gray-700">Mastercard</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Checkout Button -->
+                                    <button id="checkout-button" class="btn-primary text-white font-medium py-3 px-6 rounded-full w-full shadow-glow mb-4">Complete Purchase</button>
+                                    
+                                    <p class="text-xs text-gray-500 text-center">Your payment information is processed securely. We do not store your credit card details.</p>
+                                    <p class="text-xs text-gray-500 text-center mt-2">If there are any issues with your order, please contact: <a href="https://www.facebook.com/melissasmelts" class="text-pink-500 hover:underline">Melissa's Melts on Facebook</a></p>
+                                </div>
                                 
                                 <!-- Continue Shopping -->
                                 <a href="shop.html" class="text-center block text-pink-600 hover:text-pink-700 transition-colors">Continue Shopping</a>
@@ -571,22 +612,26 @@
                 
                 if (userIcon && user.picture) {
                     userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
-                    userIcon.href = 'javascript:void(0)';
+                    userIcon.href = 'account.html';
                     
                     // Add click event to toggle dropdown
                     userIcon.addEventListener('click', function(e) {
-                        e.preventDefault();
+                        if (window.location.pathname.includes('account.html')) {
+                            e.preventDefault();
+                        }
                         userDropdown.classList.toggle('hidden');
                     });
                 } else if (userIcon && user.name) {
                     // If no picture, use first letter of name
                     const initials = user.name.charAt(0).toUpperCase();
                     userIcon.innerHTML = `<div class="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold">${initials}</div>`;
-                    userIcon.href = 'javascript:void(0)';
+                    userIcon.href = 'account.html';
                     
                     // Add click event to toggle dropdown
                     userIcon.addEventListener('click', function(e) {
-                        e.preventDefault();
+                        if (window.location.pathname.includes('account.html')) {
+                            e.preventDefault();
+                        }
                         userDropdown.classList.toggle('hidden');
                     });
                 }
@@ -806,9 +851,9 @@
         const applyCouponButton = document.getElementById('apply-coupon');
         const couponCodeInput = document.getElementById('coupon-code');
         const couponMessage = document.getElementById('coupon-message');
-        
+
         applyCouponButton.addEventListener('click', function() {
-            const couponCode = couponCodeInput.value.trim();
+            const couponCode = couponCodeInput.value.trim().toUpperCase();
             
             if (!couponCode) {
                 showCouponMessage('Please enter a coupon code', 'error');
@@ -870,7 +915,7 @@
         
         // Checkout button
         const checkoutButton = document.getElementById('checkout-button');
-        
+
         checkoutButton.addEventListener('click', function() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             
@@ -886,45 +931,123 @@
                 return;
             }
             
+            // Validate payment form
+            const cardNumber = document.getElementById('card-number').value.trim().replace(/\s/g, '');
+            const cardExpiry = document.getElementById('card-expiry').value.trim();
+            const cardCVC = document.getElementById('card-cvc').value.trim();
+            const cardName = document.getElementById('card-name').value.trim();
+            const cardType = document.querySelector('input[name="card-type"]:checked').value;
+            
+            if (!cardNumber || cardNumber.length < 16) {
+                alert('Please enter a valid card number');
+                return;
+            }
+            
+            if (!cardExpiry || !cardExpiry.match(/^\d{2}\/\d{2}$/)) {
+                alert('Please enter a valid expiry date (MM/YY)');
+                return;
+            }
+            
+            if (!cardCVC || cardCVC.length < 3) {
+                alert('Please enter a valid CVC');
+                return;
+            }
+            
+            if (!cardName) {
+                alert('Please enter the name on your card');
+                return;
+            }
+            
             // Calculate order details
             const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('£', ''));
             const discount = parseFloat(document.getElementById('discount').textContent.replace('-£', ''));
             const shipping = document.getElementById('shipping').textContent === 'Free' ? 0 : parseFloat(document.getElementById('shipping').textContent.replace('£', ''));
             const total = subtotal - discount + shipping;
             
-            // Send order to backend
-            fetch('/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    items: cart,
-                    total: total,
-                    shipping: shipping,
-                    discount: discount
+            // Show loading state
+            checkoutButton.disabled = true;
+            checkoutButton.textContent = 'Processing...';
+            
+            // In a real application, you would use a payment processor like Stripe
+            // For this demo, we'll simulate a payment process
+            setTimeout(() => {
+                // Send order to backend
+                fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        items: cart,
+                        total: total,
+                        shipping: shipping,
+                        discount: discount,
+                        paymentMethod: {
+                            type: cardType,
+                            lastFour: cardNumber.slice(-4)
+                        },
+                        customerEmail: JSON.parse(localStorage.getItem('user')).email
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Clear cart
-                    localStorage.removeItem('cart');
-                    
-                    // Show success message
-                    alert(`Order placed successfully! Order ID: ${data.order.orderId}`);
-                    
-                    // Redirect to order confirmation page
-                    window.location.href = `order-confirmation.html?orderId=${data.order.orderId}`;
-                } else {
-                    alert(data.error || 'Error placing order');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error placing order');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear cart
+                        localStorage.removeItem('cart');
+                        
+                        // Show success message
+                        alert(`Order placed successfully! Order ID: ${data.order.orderId}`);
+                        
+                        // Redirect to order confirmation page
+                        window.location.href = `order-confirmation.html?orderId=${data.order.orderId}`;
+                    } else {
+                        alert(data.error || 'Error placing order');
+                        checkoutButton.disabled = false;
+                        checkoutButton.textContent = 'Complete Purchase';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error placing order');
+                    checkoutButton.disabled = false;
+                    checkoutButton.textContent = 'Complete Purchase';
+                });
+            }, 1500); // Simulate payment processing
+        });
+
+        // Format card number with spaces
+        document.getElementById('card-number').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 16) value = value.slice(0, 16);
+            
+            // Add spaces every 4 digits
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) formattedValue += ' ';
+                formattedValue += value[i];
+            }
+            
+            e.target.value = formattedValue;
+        });
+
+        // Format expiry date with slash
+        document.getElementById('card-expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.slice(0, 4);
+            
+            if (value.length > 2) {
+                e.target.value = value.slice(0, 2) + '/' + value.slice(2);
+            } else {
+                e.target.value = value;
+            }
+        });
+
+        // Limit CVC to numbers only
+        document.getElementById('card-cvc').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.slice(0, 4);
+            e.target.value = value;
         });
 
         // Add logout functionality
