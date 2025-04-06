@@ -328,6 +328,14 @@ app.post("/api/cart/add", (req, res) => {
   })
 })
 
+// Add a route handler for redirecting to the GitHub Pages site
+// Add this near your other route handlers
+
+// Add this new route handler:
+app.get("/redirect-to-github", (req, res) => {
+  res.redirect("https://alexg0dev.github.io/melts/index.html")
+})
+
 // Helper function to send order email
 function sendOrderEmail(email, order) {
   // In a real application, you would use a service like SendGrid, Mailgun, etc.
