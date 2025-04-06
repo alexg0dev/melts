@@ -1,7 +1,7 @@
 {
     "name": "melissas-melts",
     "version": "1.0.0",
-    "description": "Handcrafted soaps and wax melts",
+    "description": "Website for Melissa's Melts soap company",
     "main": "backend.js",
     "scripts": {
       "start": "node backend.js",
@@ -10,10 +10,10 @@
     "dependencies": {
       "body-parser": "^1.20.2",
       "cors": "^2.8.5",
-      "dotenv": "^16.3.1",
       "express": "^4.18.2",
-      "nodemailer": "^6.9.7",
-      "stripe": "^14.5.0"
+      "fs": "^0.0.1-security",
+      "google-auth-library": "^9.4.1",
+      "path": "^0.12.7"
     },
     "devDependencies": {
       "nodemon": "^3.0.1"
@@ -22,3 +22,5 @@
       "node": ">=14.0.0"
     }
   }
+  
+  
