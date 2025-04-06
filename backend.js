@@ -297,8 +297,7 @@ app.post("/api/apply-coupon", (req, res) => {
   // Simple coupon validation
   // In a real app, you would have a database of valid coupons
   const validCoupons = {
-    MELT10: { discount: 0.1, type: "percentage" },
-    WELCOME: { discount: 5, type: "fixed" },
+    MELTS5: { discount: 0.05, type: "percentage" }, // Hidden coupon code - 5% off
   }
 
   if (!code || !validCoupons[code]) {
@@ -329,9 +328,6 @@ app.post("/api/cart/add", (req, res) => {
 })
 
 // Add a route handler for redirecting to the GitHub Pages site
-// Add this near your other route handlers
-
-// Add this new route handler:
 app.get("/redirect-to-github", (req, res) => {
   res.redirect("https://alexg0dev.github.io/melts/index.html")
 })

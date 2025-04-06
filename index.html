@@ -978,7 +978,7 @@
 <body class="font-sans bg-pink-50 text-gray-800">
     <!-- Announcement Bar -->
     <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
-        <p>Use code <span class="font-bold">MELT10</span> for 10% off your first order</p>
+        <p>Free shipping on orders over £50</p>
     </div>
 
     <!-- Header/Navigation -->
@@ -1009,10 +1009,13 @@
                     
                     <div id="user-container">
     <div class="relative">
-        <a href="login.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+        <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
             <i class="fas fa-user text-lg"></i>
         </a>
         <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+            <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                My Account
+            </a>
             <button id="logout-button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
                 Logout
             </button>
@@ -1676,31 +1679,6 @@
         </div>
     </footer>
 
-    <!-- Discount Popup -->
-    <div id="discount-popup" class="discount-popup show">
-        <div class="bg-white rounded-lg overflow-hidden">
-            <div class="bg-gradient-to-r from-pink-600 to-pink-400 text-white p-4">
-                <h3 class="text-xl font-bold">Special Offer!</h3>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-700 mb-4">Buy any 3 products and get 15% off your entire order!</p>
-                <div class="flex space-x-3 mb-4">
-                    <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-gift text-pink-500"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-medium">Limited Time Offer</h4>
-                        <p class="text-sm text-gray-500">Use code: <span class="font-bold">SAVE15</span></p>
-                    </div>
-                </div>
-                <div class="flex space-x-3">
-                    <button id="accept-discount" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-lg transition-colors">Accept</button>
-                    <button id="decline-discount" class="flex-1 border border-gray-300 hover:bg-gray-100 py-2 px-4 rounded-lg transition-colors">No Thanks</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1782,86 +1760,84 @@
             });
             
             // Google Sign-In
-window.handleCredentialResponse = function(response) {
-    // Send the token to your server for verification
-    const token = response.credential;
-    
-    // For demo purposes, decode the JWT to get user info
-    // In production, this should be verified on the server
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    
-    const payload = JSON.parse(jsonPayload);
-    
-    // Create user object
-    const user = {
-        userId: payload.sub,
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
-        points: 0
-    };
-    
-    // Store user info in localStorage
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('token', token);
-    
-    // Update UI
-    updateUserUI(user);
-};
+            window.handleCredentialResponse = function(response) {
+                // Send the token to your server for verification
+                const token = response.credential;
+                
+                // For demo purposes, decode the JWT to get user info
+                // In production, this should be verified on the server
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                const payload = JSON.parse(jsonPayload);
+                
+                // Create user object
+                const user = {
+                    userId: payload.sub,
+                    name: payload.name,
+                    email: payload.email,
+                    picture: payload.picture,
+                    points: 0
+                };
+                
+                // Store user info in localStorage
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('token', token);
+                
+                // Update UI
+                updateUserUI(user);
+            };
 
-// Check if user is logged in
-const user = JSON.parse(localStorage.getItem('user'));
-if (user) {
-    updateUserUI(user);
-} else {
-    // Initialize Google Sign-In
-    google.accounts.id.initialize({
-        client_id: '741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com',
-        callback: handleCredentialResponse
-    });
-}
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                updateUserUI(user);
+            } else {
+                // Initialize Google Sign-In
+                google.accounts.id.initialize({
+                    client_id: '741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com',
+                    callback: handleCredentialResponse
+                });
+            }
 
-// Fix the user icon click behavior to not redirect to account.html
-// Update the updateUserUI function to ensure it doesn't link to account.html
-
-function updateUserUI(user) {
-    // Update user icon
-    const userIcon = document.getElementById('user-icon');
-    const userDropdown = document.getElementById('user-dropdown');
-    
-    if (userIcon && user.picture) {
-        userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
-        userIcon.href = 'javascript:void(0)';
-        
-        // Add click event to toggle dropdown
-        userIcon.addEventListener('click', function(e) {
-            e.preventDefault();
-            userDropdown.classList.toggle('hidden');
-        });
-    } else if (userIcon && user.name) {
-        // If no picture, use first letter of name
-        const initials = user.name.charAt(0).toUpperCase();
-        userIcon.innerHTML = `<div class="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold">${initials}</div>`;
-        userIcon.href = 'javascript:void(0)';
-        
-        // Add click event to toggle dropdown
-        userIcon.addEventListener('click', function(e) {
-            e.preventDefault();
-            userDropdown.classList.toggle('hidden');
-        });
-    }
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!userIcon.contains(e.target) && !userDropdown.contains(e.target)) {
-            userDropdown.classList.add('hidden');
-        }
-    });
-}
+            // Update the user icon to navigate to account.html
+            function updateUserUI(user) {
+                // Update user icon
+                const userIcon = document.getElementById('user-icon');
+                const userDropdown = document.getElementById('user-dropdown');
+                
+                if (userIcon && user.picture) {
+                    userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
+                    userIcon.href = 'account.html';
+                    
+                    // Add click event to toggle dropdown
+                    userIcon.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        userDropdown.classList.toggle('hidden');
+                    });
+                } else if (userIcon && user.name) {
+                    // If no picture, use first letter of name
+                    const initials = user.name.charAt(0).toUpperCase();
+                    userIcon.innerHTML = `<div class="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold">${initials}</div>`;
+                    userIcon.href = 'account.html';
+                    
+                    // Add click event to toggle dropdown
+                    userIcon.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        userDropdown.classList.toggle('hidden');
+                    });
+                }
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userIcon.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userDropdown.classList.add('hidden');
+                    }
+                });
+            }
             
             // Update cart count
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -1921,27 +1897,6 @@ function updateUserUI(user) {
                 });
             }
             
-            // Discount Popup
-            const discountPopup = document.getElementById('discount-popup');
-            const acceptDiscount = document.getElementById('accept-discount');
-            const declineDiscount = document.getElementById('decline-discount');
-            
-            if (discountPopup && acceptDiscount && declineDiscount) {
-                // Popup is already shown by default with the 'show' class
-                
-                acceptDiscount.addEventListener('click', function() {
-                    localStorage.setItem('discountShown', 'true');
-                    localStorage.setItem('discountAccepted', 'true');
-                    discountPopup.classList.remove('show');
-                    alert('Discount code SAVE15 has been applied to your account!');
-                });
-                
-                declineDiscount.addEventListener('click', function() {
-                    localStorage.setItem('discountShown', 'true');
-                    discountPopup.classList.remove('show');
-                });
-            }
-            
             // Animate elements on scroll
             const animateElements = document.querySelectorAll('.animate-fade-up');
             
@@ -1958,33 +1913,30 @@ function updateUserUI(user) {
                 observer.observe(element);
             });
 
-// Add logout functionality
-const logoutButton = document.getElementById('logout-button');
-if (logoutButton) {
-    logoutButton.addEventListener('click', function() {
-        // Clear user data from localStorage
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        
-        // Reset user icon
-        const userIcon = document.getElementById('user-icon');
-        if (userIcon) {
-            userIcon.innerHTML = `<i class="fas fa-user text-lg"></i>`;
-            userIcon.href = 'login.html';
-        }
-        
-        // Hide dropdown
-        document.getElementById('user-dropdown').classList.add('hidden');
-        
-        // Reload page to reset state
-        window.location.reload();
-    });
-}
+            // Add logout functionality
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    // Clear user data from localStorage
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    
+                    // Reset user icon
+                    const userIcon = document.getElementById('user-icon');
+                    if (userIcon) {
+                        userIcon.innerHTML = `<i class="fas fa-user text-lg"></i>`;
+                        userIcon.href = 'login.html';
+                    }
+                    
+                    // Hide dropdown
+                    document.getElementById('user-dropdown').classList.add('hidden');
+                    
+                    // Reload page to reset state
+                    window.location.reload();
+                });
+            }
         });
     </script>
-    
-
-</script>
 </body>
 </html>
 
