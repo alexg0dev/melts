@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Melissa's Melts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: '#FFF5F7',
+                            100: '#FFEAEF',
+                            200: '#FFCBD8',
+                            300: '#FFABC1',
+                            400: '#FF8CAA',
+                            500: '#FF6D93',
+                            600: '#FF4E7D',
+                            700: '#FF2F67',
+                            800: '#FF1051',
+                            900: '#E0003B',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
+                        'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "url('https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+        
+        .delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
+        }
+        
+        /* Product Card Effects */
+        .product-card {
+            transition: all 0.4s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .product-card .product-image {
+            transition: transform 0.6s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.08);
+        }
+        
+        .product-card .quick-add {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover .quick-add {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Custom Button Styles */
+        .btn-primary {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, #FF2F67, #FF6D93);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-primary:hover::before {
+            width: 100%;
+        }
+        
+        /* Fancy Underline */
+        .fancy-underline {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .fancy-underline::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 3px;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            border-radius: 3px;
+        }
+        
+        .fancy-underline.left-align::after {
+            left: 0;
+            transform: none;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #FFF5F7;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #FF6D93;
+            border-radius: 5px;
+        }
+        
+        /* Navbar Animation */
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #FF6D93;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Search Results */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 0.5rem 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-container:focus-within .search-results {
+            display: block;
+        }
+        
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .search-result-item:hover {
+            background-color: #FFF5F7;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Shop Page Specific Styles */
+        .category-filter {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .category-filter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 109, 147, 0.1);
+        }
+
+        .category-filter.active {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            color: white;
+        }
+
+        .price-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #f0f0f0;
+            outline: none;
+        }
+
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FF6D93;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .price-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .price-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FF6D93;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .price-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .sort-dropdown {
+            position: relative;
+        }
+
+        .sort-dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .sort-dropdown:hover .sort-dropdown-content {
+            display: block;
+        }
+
+        .sort-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sort-option:hover {
+            background-color: #FFF5F7;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-new {
+            background-color: #FF6D93;
+            color: white;
+        }
+
+        .badge-sale {
+            background-color: #FF4E7D;
+            color: white;
+        }
+
+        .badge-bestseller {
+            background-color: #FFD700;
+            color: #333;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+        }
+
+        .star-filled {
+            color: #FFD700;
+        }
+
+        .star-empty {
+            color: #e0e0e0;
+        }
+
+        .pagination-button {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-button:hover {
+            background-color: #FFF5F7;
+        }
+
+        .pagination-button.active {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            color: white;
+        }
+
+        /* Quick View Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+
+        .close-modal:hover {
+            background: #FFF5F7;
+            transform: rotate(90deg);
+        }
+
+        /* Color Selector */
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .color-option:hover {
+            transform: scale(1.2);
+        }
+
+        .color-option.selected::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 2px solid #FF6D93;
+            border-radius: 50%;
+        }
+
+        /* Quantity Selector */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            width: fit-content;
+        }
+
+        .quantity-button {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-button:hover {
+            background: #e0e0e0;
+        }
+
+        .quantity-input {
+            width: 50px;
+            height: 36px;
+            text-align: center;
+            border: none;
+            outline: none;
+            font-weight: 500;
+        }
+
+        /* Filter Sidebar */
+        .filter-sidebar {
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                position: fixed;
+                top: 0;
+                left: -300px;
+                width: 280px;
+                height: 100%;
+                background: white;
+                z-index: 100;
+                padding: 1.5rem;
+                box-shadow: 0 0 15px rgba(0,0,0,0.1);
+                overflow-y: auto;
+            }
+
+            .filter-sidebar.open {
+                left: 0;
+            }
+
+            .filter-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 99;
+            }
+
+            .filter-overlay.open {
+                display: block;
+            }
+        }
+
+        /* Wishlist Button */
+        .wishlist-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .wishlist-button:hover {
+            background: #FFF5F7;
+            transform: scale(1.1);
+        }
+
+        .wishlist-button.active {
+            color: #FF4E7D;
+        }
+
+        /* Discount Popup */
+        .discount-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            max-width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 50;
+            overflow: hidden;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .discount-popup.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Scent Modal */
+        .scent-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .scent-modal-content {
+            background-color: white;
+            margin: 5% auto;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+            padding: 20px;
+        }
+
+        .scent-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        @media (min-width: 640px) {
+            .scent-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="font-sans bg-pink-50 text-gray-800">
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
+        <p>Use code <span class="font-bold">MELT10</span> for 10% off your first order</p>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-soft sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-3xl font-serif font-bold gradient-text">Melissa's Melts</a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
+                    <a href="shop.html" class="nav-link font-medium text-pink-600">Shop</a>
+                    <a href="about.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">About</a>
+                    <a href="contact.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <div class="relative search-container">
+                        <input type="text" id="search-input" placeholder="Search products..." class="py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent w-40 md:w-60">
+                        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div class="search-results">
+                            <!-- Search results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div id="user-container">
+                        <a href="login.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+                            <i class="fas fa-user text-lg"></i>
+                        </a>
+                        <!-- Google Sign-In functionality is kept but hidden -->
+                        <div id="g_id_onload"
+                            data-client_id="741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com"
+                            data-context="signin"
+                            data-callback="handleCredentialResponse"
+                            data-auto_prompt="false"
+                            style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+                <div class="flex flex-col space-y-3">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
+                    <a href="shop.html" class="font-medium text-pink-600 py-2">Shop</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Shop Hero Banner -->
+    <section class="bg-gradient-to-r from-pink-100 to-pink-50 py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto">
+                <h1 class="text-4xl md:text-5xl font-serif font-bold mb-4">Our Collection</h1>
+                <p class="text-gray-600 text-lg mb-8">Discover our handcrafted soaps and wax melts, made with natural ingredients and love. Find your perfect match for a luxurious bathing experience.</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="#soaps" class="category-link bg-white hover:bg-pink-50 text-pink-600 font-medium py-2 px-6 rounded-full transition-colors shadow-soft" data-category="soaps">Soaps</a>
+                    <a href="#wax-melts" class="category-link bg-white hover:bg-pink-50 text-pink-600 font-medium py-2 px-6 rounded-full transition-colors shadow-soft" data-category="wax-melts">Wax Melts</a>
+                    <a href="#gift-sets" class="category-link bg-white hover:bg-pink-50 text-pink-600 font-medium py-2 px-6 rounded-full transition-colors shadow-soft" data-category="gift-sets">Gift Sets</a>
+                    <a href="#bestsellers" class="category-link bg-white hover:bg-pink-50 text-pink-600 font-medium py-2 px-6 rounded-full transition-colors shadow-soft" data-category="bestsellers">Bestsellers</a>
+                    <a href="#new-arrivals" class="category-link bg-white hover:bg-pink-50 text-pink-600 font-medium py-2 px-6 rounded-full transition-colors shadow-soft" data-category="new-arrivals">New Arrivals</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop Content -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Mobile Filter Toggle -->
+                <div class="md:hidden mb-4">
+                    <button id="filter-toggle" class="w-full bg-white py-3 px-4 rounded-lg shadow-soft flex items-center justify-between">
+                        <span class="font-medium">Filters</span>
+                        <i class="fas fa-sliders-h"></i>
+                    </button>
+                </div>
+
+                <!-- Filter Overlay (Mobile) -->
+                <div class="filter-overlay" id="filter-overlay"></div>
+
+                <!-- Filter Sidebar -->
+                <div class="filter-sidebar md:w-1/4 lg:w-1/5 bg-white rounded-xl shadow-soft p-6" id="filter-sidebar">
+                    <div class="md:hidden flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-medium">Filters</h3>
+                        <button id="close-filter" class="text-gray-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <!-- Liked Items -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium mb-4">Liked Items</h3>
+                        <div id="liked-items-container" class="space-y-3">
+                            <p class="text-gray-500 text-sm italic">No liked items yet</p>
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium mb-4">Categories</h3>
+                        <div class="space-y-2">
+                            <div class="category-filter active p-3 cursor-pointer" data-category="all">
+                                <div class="flex items-center">
+                                    <i class="fas fa-soap mr-3"></i>
+                                    <span>All Products</span>
+                                    <span class="ml-auto text-sm">1</span>
+                                </div>
+                            </div>
+                            <div class="category-filter p-3 cursor-pointer" data-category="soaps">
+                                <div class="flex items-center">
+                                    <i class="fas fa-soap mr-3"></i>
+                                    <span>Soaps</span>
+                                    <span class="ml-auto text-sm">1</span>
+                                </div>
+                            </div>
+                            <div class="category-filter p-3 cursor-pointer" data-category="wax-melts">
+                                <div class="flex items-center">
+                                    <i class="fas fa-fire-alt mr-3"></i>
+                                    <span>Wax Melts</span>
+                                    <span class="ml-auto text-sm">0</span>
+                                </div>
+                            </div>
+                            <div class="category-filter p-3 cursor-pointer" data-category="gift-sets">
+                                <div class="flex items-center">
+                                    <i class="fas fa-gift mr-3"></i>
+                                    <span>Gift Sets</span>
+                                    <span class="ml-auto text-sm">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium mb-4">Price Range</h3>
+                        <div class="px-2">
+                            <input type="range" min="0" max="10" value="2.75" step="0.25" class="price-slider mb-4" id="price-slider">
+                            <div class="flex justify-between">
+                                <span>£0</span>
+                                <span id="price-value">£2.75</span>
+                                <span>£10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Condition -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium mb-4">Condition</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded" checked>
+                                <span class="ml-3">NewNew</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Scents -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium mb-4">Scents</h3>
+                        <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Baby Powder">
+                                <span class="ml-3">Baby Powder</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Coconut">
+                                <span class="ml-3">Coconut</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Twilight Opium">
+                                <span class="ml-3">Twilight Opium (Black Opium)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Spirit">
+                                <span class="ml-3">Spirit (Ghost)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Olympia">
+                                <span class="ml-3">Olympia (Paco Rabane)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Diva">
+                                <span class="ml-3">Diva (Ari by Ariana Grande)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Belle">
+                                <span class="ml-3">Belle (La Vie Est Belle)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Feirce">
+                                <span class="ml-3">Feirce (Sauvage)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Glorious">
+                                <span class="ml-3">Glorious (Soap & Glory)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded scent-checkbox" data-scent="Billionairess">
+                                <span class="ml-3">Billionairess (Creed Aventus Women)</span>
+                            </label>
+                        </div>
+                        <button id="show-more-scents" class="text-pink-600 text-sm mt-2">+ Show all scents</button>
+                    </div>
+
+                    <!-- Benefits -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium mb-4">Benefits</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded">
+                                <span class="ml-3">Moisturizing</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded">
+                                <span class="ml-3">Exfoliating</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded">
+                                <span class="ml-3">Relaxing</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="form-checkbox h-5 w-5 text-pink-500 rounded">
+                                <span class="ml-3">Energizing</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Reset Filters -->
+                    <button id="reset-filters" class="w-full border border-pink-500 text-pink-600 hover:bg-pink-50 font-medium py-2 px-4 rounded-lg transition-colors">Reset Filters</button>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="md:w-3/4 lg:w-4/5">
+                    <!-- Sort and Filter Controls -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 bg-white rounded-xl shadow-soft p-4">
+                        <p class="text-gray-600"><span id="product-count">1</span> product found</p>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-600">View:</span>
+                                <button class="w-8 h-8 flex items-center justify-center rounded-md bg-pink-100 text-pink-600">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-pink-100 text-gray-600 hover:text-pink-600 transition-colors">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                            <div class="sort-dropdown">
+                                <button class="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg py-2 px-4 hover:border-pink-500 transition-colors">
+                                    <span>Sort by</span>
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </button>
+                                <div class="sort-dropdown-content">
+                                    <div class="sort-option" data-sort="featured">Featured</div>
+                                    <div class="sort-option" data-sort="price-low">Price: Low to High</div>
+                                    <div class="sort-option" data-sort="price-high">Price: High to Low</div>
+                                    <div class="sort-option" data-sort="newest">Newest</div>
+                                    <div class="sort-option" data-sort="bestselling">Best Selling</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="products-grid">
+                        <!-- Product 1 -->
+                        <div class="product-card bg-white rounded-xl shadow-soft overflow-hidden" data-category="soaps" data-price="2.75">
+                            <div class="relative">
+                                <div class="product-badge badge-new">NewNew</div>
+                                <button class="wishlist-button">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                                <div class="overflow-hidden">
+                                    <img src="https://i.ebayimg.com/images/g/IkoAAOSwQTthiS78/s-l1600.webp" alt="Massage Soap" class="w-full h-64 object-cover product-image">
+                                </div>
+                                <div class="quick-add absolute bottom-0 left-0 right-0 bg-white bg-opacity-90 py-3 px-4">
+                                    <button class="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 rounded-lg transition-colors">Quick Add</button>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="product-rating mb-1">
+                                    <div class="flex">
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <span class="text-gray-500 text-sm ml-1">(42)</span>
+                                    </div>
+                                </div>
+                                <h3 class="font-medium mb-1">
+                                    <a href="massage-soap.html" class="hover:text-pink-600 transition-colors product-details-link">Massage Soap</a>
+                                </h3>
+                                <p class="text-gray-500 text-sm mb-2">Choose from many scents</p>
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <span class="font-bold text-pink-600">£2.75</span>
+                                    </div>
+                                    <button class="text-pink-600 hover:text-pink-700 transition-colors" data-product-id="1" data-product-name="Massage Soap" data-product-price="2.75" data-product-image="https://i.ebayimg.com/images/g/IkoAAOSwQTthiS78/s-l1600.webp">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="flex justify-center mt-12">
+                        <div class="flex space-x-2">
+                            <button class="pagination-button">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="pagination-button active">1</button>
+                            <button class="pagination-button">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick View Modal -->
+    <div class="modal" id="quick-view-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="flex flex-col md:flex-row">
+                <div class="md:w-1/2 p-6">
+                    <img id="modal-product-image" src="/placeholder.svg" alt="Product" class="w-full h-auto rounded-xl">
+                </div>
+                <div class="md:w-1/2 p-6">
+                    <span class="bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full">NewNew</span>
+                    <h2 id="modal-product-name" class="text-2xl font-serif font-bold mt-4 mb-2">Massage Soap</h2>
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="text-gray-500 text-sm ml-2">42 reviews</span>
+                    </div>
+                    <div class="mb-4">
+                        <span id="modal-product-price" class="text-2xl font-bold text-pink-600 mr-3">£2.75</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">Our luxurious massage soap is handcrafted with natural ingredients to provide a soothing and relaxing experience. Perfect for unwinding after a long day.</p>
+                    
+                    <!-- Scent Selection -->
+                    <div class="mb-6">
+                        <label class="block font-medium text-gray-800 mb-2">Select Scent:</label>
+                        <select id="scent-select" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="">-- Select a Scent --</option>
+                            <option value="Baby Powder">Baby Powder</option>
+                            <option value="Coconut">Coconut</option>
+                            <option value="Twilight Opium">Twilight Opium (Black Opium)</option>
+                            <option value="Spirit">Spirit (Ghost)</option>
+                            <option value="Olympia">Olympia (Paco Rabane Olympia)</option>
+                            <option value="Diva">Diva (Ari by Ariana Grande)</option>
+                            <option value="Belle">Belle (La Vie Est Belle)</option>
+                            <option value="Feirce">Feirce (Sauvage)</option>
+                            <option value="Glorious">Glorious (Soap & Glory)</option>
+                            <option value="Billionairess">Billionairess (Creed Aventus Women)</option>
+                        </select>
+                        <button id="view-all-scents" class="text-pink-600 text-sm mt-2 hover:underline">View all scents</button>
+                    </div>
+                    
+                    <!-- Quantity -->
+                    <div class="mb-6">
+                        <label class="block font-medium text-gray-800 mb-2">Quantity:</label>
+                        <div class="quantity-selector">
+                            <button class="quantity-button decrease-quantity">-</button>
+                            <input type="number" class="quantity-input" value="1" min="1" max="10">
+                            <button class="quantity-button increase-quantity">+</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="modal-add-to-cart" class="btn-primary text-white font-medium py-3 px-8 rounded-full flex-1 shadow-glow">Add to Cart</button>
+                        <a href="massage-soap.html" class="bg-transparent border-2 border-pink-400 text-pink-600 hover:bg-pink-100 font-medium py-3 px-8 rounded-full transition-colors flex-1 text-center">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scent Modal -->
+    <div class="scent-modal" id="scent-modal">
+        <div class="scent-modal-content">
+            <button class="close-modal" id="close-scent-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-2xl font-serif font-bold mb-4">All Available Scents</h2>
+            <div class="scent-grid" id="scent-grid">
+                <!-- Scents will be populated here via JavaScript -->
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="apply-scent" class="btn-primary text-white font-medium py-2 px-6 rounded-full shadow-glow">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-20 pb-10 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6 gradient-text">Melissa's Melts</h3>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Handcrafted soaps and wax melts made with love and natural ingredients for your home and body.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-pinterest-p text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-tiktok text-pink-400"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Shop Links -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Shop</h3>
+                    <ul class="space-y-3">
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">All Products</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Soaps</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Wax Melts</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Gift Sets</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">New Arrivals</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Best Sellers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Information -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Information</h3>
+                    <ul class="space-y-3">
+                        <li><a href="about.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">123 Soap Street, Meltville, ML 12345</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">hello@melissasmelts.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">(123) 456-7890</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">Mon-Fri: 9am - 5pm EST</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                <div class="flex items-center space-x-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // All available scents
+            const allScents = [
+                "Baby Powder", "Coconut", "Twilight Opium (Black Opium)", "Spirit (Ghost)", 
+                "Olympia (Paco Rabane Olympia)", "Diva (Ari by Ariana Grande)", "Belle (La Vie Est Belle)", 
+                "Feirce (Sauvage)", "Glorious (Soap & Glory)", "Billionairess (Creed Aventus Women)",
+                "Seakay (CK Shock)", "Billionaire (Creed Aventus Men)", "Million (Lady Millions)",
+                "Conscience (Gucci Guilty)", "Petal (Marc Jacobs Daisy)", "Love (Flower Bomb)",
+                "Ice Queen (Lush Snow Fairy)", "Mediterranean (Jo Malone Lime,Basil & Mand)",
+                "Midnight Orchid (Tom Ford Black Orchid)", "Sparkle (Daimonds)", "Sweetie (Viktor Rolf Bon Bon)",
+                "Bergamot", "Eucalyptus", "Jasmine", "Lavender", "Lemon", "Lemongrass", "Orange",
+                "Peppermint", "Vanilla", "J Adore", "Pink Peppercorn", "Wild Fig & Cassis", "Comforter",
+                "Love Potion", "Monkey Farts", "Tea Tree", "Manadarin", "Sandalwood", "Rhubarb & Rose",
+                "Dark Amber & Ginger Lily", "Coco & Sandalwood", "Peony & Blush Suede", "Avobath",
+                "Foamy Call Soap & Glory", "Virtuous Butter Soap & Glory", "Pop Friction Soap & Glory",
+                "Go Lotion Soap & Glory", "White Dove Dove Soap", "Coconut Lime", "Boss Bottled",
+                "Invictus", "Armani Code", "Spice Bomb Viktor Rolf", "Pomegranate Noir Jo Malone",
+                "Pixie Dust", "Alien", "Honey Suckle", "Sherbet Lemon", "Helpful Sleep", "Love Spell",
+                "Relax", "Rose Petal", "Rush Gucci", "Angel", "Joop", "One Thousand Wishes",
+                "Cucumber & Aloe Vera", "One Thousand Nights Elie Saab", "Bubblegum", "Mr Pepper",
+                "Dewberry", "Le Male JPG", "Miss D Dior", "Poison Dior", "Good Girl C Herrera",
+                "Fahrenheit Dior", "Candy Floss", "Baccarat Rouge", "Creed Irish Tweed",
+                "Creed Silver Mountain", "Dove", "White Musk", "Bad Boy", "Decedance", "Eternity (Women)"
+            ];
+
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Mobile Filter Toggle
+            const filterToggle = document.getElementById('filter-toggle');
+            const filterSidebar = document.getElementById('filter-sidebar');
+            const filterOverlay = document.getElementById('filter-overlay');
+            const closeFilter = document.getElementById('close-filter');
+            
+            if (filterToggle) {
+                filterToggle.addEventListener('click', function() {
+                    filterSidebar.classList.add('open');
+                    filterOverlay.classList.add('open');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            if (closeFilter) {
+                closeFilter.addEventListener('click', function() {
+                    filterSidebar.classList.remove('open');
+                    filterOverlay.classList.remove('open');
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            if (filterOverlay) {
+                filterOverlay.addEventListener('click', function() {
+                    filterSidebar.classList.remove('open');
+                    filterOverlay.classList.remove('open');
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            // Price Slider
+            const priceSlider = document.getElementById('price-slider');
+            const priceValue = document.getElementById('price-value');
+            
+            if (priceSlider && priceValue) {
+                priceSlider.addEventListener('input', function() {
+                    priceValue.textContent = `£${this.value}`;
+                    filterProducts();
+                });
+            }
+            
+            // Category Filters
+            const categoryFilters = document.querySelectorAll('.category-filter');
+            
+            categoryFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    categoryFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    filterProducts();
+                });
+            });
+
+            // Category Links in Hero Section
+            const categoryLinks = document.querySelectorAll('.category-link');
+            
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.dataset.category;
+                    
+                    // Activate corresponding category filter
+                    categoryFilters.forEach(filter => {
+                        if (filter.dataset.category === category) {
+                            filter.click();
+                        }
+                    });
+                    
+                    // Scroll to products section
+                    document.querySelector('#products-grid').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+            
+            // Wishlist Toggle
+            const wishlistButtons = document.querySelectorAll('.wishlist-button');
+            
+            wishlistButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                    
+                    if (this.classList.contains('active')) {
+                        this.innerHTML = '<i class="fas fa-heart"></i>';
+                        
+                        // Add to liked items
+                        const productCard = this.closest('.product-card');
+                        const productName = productCard.querySelector('h3 a').textContent;
+                        const productPrice = productCard.querySelector('.font-bold').textContent;
+                        
+                        // Save to localStorage
+                        let likedItems = JSON.parse(localStorage.getItem('likedItems')) || [];
+                        likedItems.push({
+                            name: productName,
+                            price: productPrice
+                        });
+                        localStorage.setItem('likedItems', JSON.stringify(likedItems));
+                        
+                        // Update liked items display
+                        updateLikedItems();
+                    } else {
+                        this.innerHTML = '<i class="far fa-heart"></i>';
+                        
+                        // Remove from liked items
+                        const productCard = this.closest('.product-card');
+                        const productName = productCard.querySelector('h3 a').textContent;
+                        
+                        // Update localStorage
+                        let likedItems = JSON.parse(localStorage.getItem('likedItems')) || [];
+                        likedItems = likedItems.filter(item => item.name !== productName);
+                        localStorage.setItem('likedItems', JSON.stringify(likedItems));
+                        
+                        // Update liked items display
+                        updateLikedItems();
+                    }
+                });
+            });
+            
+            // Quick View Modal
+            const quickViewModal = document.getElementById('quick-view-modal');
+            const closeModal = document.getElementById('close-modal');
+            const quickAddButtons = document.querySelectorAll('.quick-add button');
+            const modalProductImage = document.getElementById('modal-product-image');
+            const modalProductName = document.getElementById('modal-product-name');
+            const modalProductPrice = document.getElementById('modal-product-price');
+            const modalAddToCart = document.getElementById('modal-add-to-cart');
+            
+            quickAddButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const productCard = this.closest('.product-card');
+                    const productImage = productCard.querySelector('img').src;
+                    const productName = productCard.querySelector('h3 a').textContent;
+                    const productPrice = productCard.querySelector('.font-bold').textContent;
+                    
+                    modalProductImage.src = productImage;
+                    modalProductName.textContent = productName;
+                    modalProductPrice.textContent = productPrice;
+                    
+                    quickViewModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+            
+            if (closeModal) {
+                closeModal.addEventListener('click', function() {
+                    quickViewModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === quickViewModal) {
+                    quickViewModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // Quantity Selector
+            const decreaseButtons = document.querySelectorAll('.decrease-quantity');
+            const increaseButtons = document.querySelectorAll('.increase-quantity');
+            const quantityInputs = document.querySelectorAll('.quantity-input');
+            
+            decreaseButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const input = this.parentNode.querySelector('.quantity-input');
+                    let value = parseInt(input.value);
+                    if (value > 1) {
+                        value--;
+                        input.value = value;
+                    }
+                });
+            });
+            
+            increaseButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const input = this.parentNode.querySelector('.quantity-input');
+                    let value = parseInt(input.value);
+                    if (value < 10) {
+                        value++;
+                        input.value = value;
+                    }
+                });
+            });
+            
+            quantityInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    let value = parseInt(this.value);
+                    if (isNaN(value) || value < 1) {
+                        this.value = 1;
+                    } else if (value > 10) {
+                        this.value = 10;
+                    }
+                });
+            });
+            
+            // Add to Cart
+            const addToCartButtons = document.querySelectorAll('[data-product-id]');
+            
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    const productName = this.dataset.productName;
+                    const productPrice = parseFloat(this.dataset.productPrice);
+                    const productImage = this.dataset.productImage;
+                    
+                    addToCart({
+                        id: productId,
+                        name: productName,
+                        price: productPrice,
+                        image: productImage,
+                        quantity: 1
+                    });
+                    
+                    // Animation
+                    const cartIcon = document.getElementById('cart-icon');
+                    cartIcon.classList.add('scale-125');
+                    setTimeout(() => {
+                        cartIcon.classList.remove('scale-125');
+                    }, 300);
+                });
+            });
+            
+            if (modalAddToCart) {
+                modalAddToCart.addEventListener('click', function() {
+                    const productName = modalProductName.textContent;
+                    const productPrice = parseFloat(modalProductPrice.textContent.replace('£', ''));
+                    const productImage = modalProductImage.src;
+                    const quantity = parseInt(document.querySelector('.quantity-input').value);
+                    const scent = document.getElementById('scent-select').value;
+                    
+                    if (!scent) {
+                        alert('Please select a scent before adding to cart');
+                        return;
+                    }
+                    
+                    addToCart({
+                        id: 'modal-product',
+                        name: productName,
+                        price: productPrice,
+                        image: productImage,
+                        quantity: quantity,
+                        scent: scent
+                    });
+                    
+                    // Close modal
+                    quickViewModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                    
+                    // Animation
+                    const cartIcon = document.getElementById('cart-icon');
+                    cartIcon.classList.add('scale-125');
+                    setTimeout(() => {
+                        cartIcon.classList.remove('scale-125');
+                    }, 300);
+                });
+            }
+            
+            // Function to add item to cart
+            function addToCart(product) {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                // Check if product already exists in cart
+                const existingProductIndex = cart.findIndex(item => item.id === product.id && item.scent === product.scent);
+                
+                if (existingProductIndex !== -1) {
+                    // Update quantity if product already exists
+                    cart[existingProductIndex].quantity += product.quantity;
+                } else {
+                    // Add new product to cart
+                    cart.push(product);
+                }
+                
+                // Save cart to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Update cart count
+                const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                document.getElementById('cart-count').textContent = cartCount;
+                
+                // Show confirmation message
+                alert(`${product.name} (${product.scent || 'No scent selected'}) added to cart!`);
+            }
+            
+            // Update cart count on page load
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+            
+            // Search Functionality
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.querySelector('.search-results');
+            
+            // Product database for search
+            const products = [
+                { name: 'Massage Soap', url: 'massage-soap.html', category: 'Soap' }
+            ];
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                // Clear previous results
+                searchResults.innerHTML = '';
+                
+                if (query.length < 2) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+                
+                // Filter products based on search query
+                const filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(query) || 
+                    product.category.toLowerCase().includes(query)
+                );
+                
+                // Display results
+                if (filteredProducts.length > 0) {
+                    searchResults.style.display = 'block';
+                    filteredProducts.forEach(product => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        resultItem.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-${product.category === 'Soap' ? 'soap' : product.category === 'Wax Melt' ? 'fire-alt' : 'gift'} text-pink-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">${product.name}</p>
+                                    <p class="text-xs text-gray-500">${product.category}</p>
+                                </div>
+                            </div>
+                        `;
+                        resultItem.addEventListener('click', function() {
+                            window.location.href = product.url;
+                        });
+                        searchResults.appendChild(resultItem);
+                    });
+                } else {
+                    searchResults.style.display = 'block';
+                    searchResults.innerHTML = `
+                        <div class="p-4 text-center text-gray-500">
+                            No products found for "${query}"
+                        </div>
+                    `;
+                }
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.search-container')) {
+                    searchResults.style.display = 'none';
+                }
+            });
+            
+            // Google Sign-In
+            window.handleCredentialResponse = function(response) {
+                // Send the token to your server for verification
+                const token = response.credential;
+                
+                // Store user info in localStorage
+                fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.user) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        localStorage.setItem('token', data.token);
+                        updateUserUI(data.user);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            };
+            
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                updateUserUI(user);
+            } else {
+                // Initialize Google Sign-In but don't render the button
+                google.accounts.id.initialize({
+                    client_id: '741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com',
+                    callback: handleCredentialResponse
+                });
+            }
+            
+            function updateUserUI(user) {
+                // Update user icon
+                const userIcon = document.getElementById('user-icon');
+                userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
+                userIcon.href = 'account.html';
+            }
+            
+            // Function to update liked items display
+            function updateLikedItems() {
+                const likedItemsContainer = document.getElementById('liked-items-container');
+                if (!likedItemsContainer) return;
+
+                const likedItems = JSON.parse(localStorage.getItem('likedItems')) || [];
+
+                if (likedItems.length === 0) {
+                    likedItemsContainer.innerHTML = '<p class="text-gray-500 text-sm italic">No liked items yet</p>';
+                    return;
+                }
+
+                likedItemsContainer.innerHTML = '';
+                likedItems.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-center justify-between bg-pink-50 p-2 rounded-lg';
+                    itemElement.innerHTML = `
+                        <span class="text-sm">${item.name}</span>
+                        <span class="text-sm font-medium">${item.price}</span>
+                    `;
+                    likedItemsContainer.appendChild(itemElement);
+                });
+            }
+
+            // Initialize liked items on page load
+            updateLikedItems();
+
+            // Filter products based on selected filters
+            function filterProducts() {
+                const products = document.querySelectorAll('.product-card');
+                const activeCategory = document.querySelector('.category-filter.active').dataset.category;
+                const maxPrice = parseFloat(priceSlider.value);
+                const selectedScents = Array.from(document.querySelectorAll('.scent-checkbox:checked')).map(checkbox => checkbox.dataset.scent);
+                
+                let visibleCount = 0;
+                
+                products.forEach(product => {
+                    const productCategory = product.dataset.category;
+                    const productPrice = parseFloat(product.dataset.price);
+                    
+                    let categoryMatch = activeCategory === 'all' || productCategory === activeCategory;
+                    let priceMatch = productPrice <= maxPrice;
+                    let scentMatch = selectedScents.length === 0 || selectedScents.includes(product.dataset.scent);
+                    
+                    if (categoryMatch && priceMatch && scentMatch) {
+                        product.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+                
+                // Update product count
+                document.getElementById('product-count').textContent = visibleCount;
+            }
+
+            // Sort products
+            const sortOptions = document.querySelectorAll('.sort-option');
+            sortOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const sortType = this.dataset.sort;
+                    sortProducts(sortType);
+                });
+            });
+
+            function sortProducts(sortType) {
+                const productsGrid = document.getElementById('products-grid');
+                const products = Array.from(productsGrid.querySelectorAll('.product-card'));
+                
+                products.sort((a, b) => {
+                    const priceA = parseFloat(a.querySelector('.font-bold').textContent.replace('£', ''));
+                    const priceB = parseFloat(b.querySelector('.font-bold').textContent.replace('£', ''));
+                    
+                    if (sortType === 'price-low') {
+                        return priceA - priceB;
+                    } else if (sortType === 'price-high') {
+                        return priceB - priceA;
+                    }
+                    
+                    return 0;
+                });
+                
+                // Clear and re-append sorted products
+                productsGrid.innerHTML = '';
+                products.forEach(product => {
+                    productsGrid.appendChild(product);
+                });
+            }
+
+            // Reset filters
+            const resetFiltersButton = document.getElementById('reset-filters');
+            if (resetFiltersButton) {
+                resetFiltersButton.addEventListener('click', function() {
+                    // Reset category filter
+                    document.querySelector('.category-filter[data-category="all"]').click();
+                    
+                    // Reset price slider
+                    priceSlider.value = 2.75;
+                    priceValue.textContent = `£${priceSlider.value}`;
+                    
+                    // Reset scent checkboxes
+                    document.querySelectorAll('.scent-checkbox').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    
+                    // Apply filters
+                    filterProducts();
+                });
+            }
+
+            // Product Details Link
+            const productDetailsLinks = document.querySelectorAll('.product-details-link');
+            productDetailsLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const productCard = this.closest('.product-card');
+                    const productImage = productCard.querySelector('img').src;
+                    const productName = this.textContent;
+                    const productPrice = productCard.querySelector('.font-bold').textContent;
+                    
+                    modalProductImage.src = productImage;
+                    modalProductName.textContent = productName;
+                    modalProductPrice.textContent = productPrice;
+                    
+                    quickViewModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Scent Modal
+            const viewAllScentsButton = document.getElementById('view-all-scents');
+            const scentModal = document.getElementById('scent-modal');
+            const closeScentModal = document.getElementById('close-scent-modal');
+            const scentGrid = document.getElementById('scent-grid');
+            const applyScent = document.getElementById('apply-scent');
+            const showMoreScentsButton = document.getElementById('show-more-scents');
+            
+            // Populate scent grid
+            function populateScentGrid() {
+                scentGrid.innerHTML = '';
+                
+                allScents.forEach(scent => {
+                    const scentItem = document.createElement('div');
+                    scentItem.className = 'scent-item p-2';
+                    scentItem.innerHTML = `
+                        <label class="flex items-center">
+                            <input type="radio" name="modal-scent" value="${scent}" class="form-radio h-5 w-5 text-pink-500">
+                            <span class="ml-2 text-sm">${scent}</span>
+                        </label>
+                    `;
+                    scentGrid.appendChild(scentItem);
+                });
+            }
+            
+            // Show all scents modal
+            if (viewAllScentsButton) {
+                viewAllScentsButton.addEventListener('click', function() {
+                    populateScentGrid();
+                    scentModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            if (showMoreScentsButton) {
+                showMoreScentsButton.addEventListener('click', function() {
+                    populateScentGrid();
+                    scentModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+            
+            // Close scent modal
+            if (closeScentModal) {
+                closeScentModal.addEventListener('click', function() {
+                    scentModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            }
+            
+            // Apply selected scent
+            if (applyScent) {
+                applyScent.addEventListener('click', function() {
+                    const selectedScent = document.querySelector('input[name="modal-scent"]:checked');
+                    
+                    if (selectedScent) {
+                        const scentSelect = document.getElementById('scent-select');
+                        
+                        // Find or create option
+                        let option = Array.from(scentSelect.options).find(opt => opt.value === selectedScent.value);
+                        
+                        if (!option) {
+                            option = new Option(selectedScent.value, selectedScent.value);
+                            scentSelect.add(option);
+                        }
+                        
+                        // Select the option
+                        scentSelect.value = selectedScent.value;
+                    }
+                    
+                    scentModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products | Melissa's Melts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: '#FFF5F7',
+                            100: '#FFEAEF',
+                            200: '#FFCBD8',
+                            300: '#FFABC1',
+                            400: '#FF8CAA',
+                            500: '#FF6D93',
+                            600: '#FF4E7D',
+                            700: '#FF2F67',
+                            800: '#FF1051',
+                            900: '#E0003B',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
+                        'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
+        }
+        
+        /* Fancy Underline */
+        .fancy-underline {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .fancy-underline::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 3px;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            border-radius: 3px;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-sans bg-pink-50 text-gray-800">
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
+        <p>Free shipping on orders over £50! Use code <span class="font-bold">MELT10</span> for 10% off your first order</p>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-soft sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-3xl font-serif font-bold gradient-text">Melissa's Melts</a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
+                    <a href="products.html" class="nav-link font-medium text-pink-600 border-b-2 border-pink-500 pb-1">Products</a>
+                    <a href="about.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">About</a>
+                    <a href="contact.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="#" class="text-gray-600 hover:text-pink-500 transition-colors">
+                        <i class="fas fa-search text-lg"></i>
+                    </a>
+                    <a href="login.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+                        <i class="fas fa-user text-lg"></i>
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+                <div class="flex flex-col space-y-3">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
+                    <a href="products.html" class="font-medium text-pink-600 py-2">Products</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-serif font-bold mb-6 fancy-underline">Our Products</h1>
+            <p class="text-gray-600 max-w-2xl mx-auto">Discover our handcrafted soaps and wax melts, made with natural ingredients and love. Each product is carefully created to provide a luxurious experience for you and your home.</p>
+        </div>
+    </section>
+
+    <!-- Filter and Sort Section -->
+    <section class="py-8 bg-pink-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center bg-white rounded-xl shadow-soft p-4">
+                <!-- Categories -->
+                <div class="flex flex-wrap gap-2 mb-4 md:mb-0">
+                    <button class="category-btn bg-pink-500 text-white px-4 py-2 rounded-full text-sm font-medium">All Products</button>
+                    <button class="category-btn bg-white text-gray-700 hover:bg-pink-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Soaps</button>
+                    <button class="category-btn bg-white text-gray-700 hover:bg-pink-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Wax Melts</button>
+                    <button class="category-btn bg-white text-gray-700 hover:bg-pink-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">Gift Sets</button>
+                    <button class="category-btn bg-white text-gray-700 hover:bg-pink-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">New Arrivals</button>
+                </div>
+                
+                <!-- Sort -->
+                <div class="flex items-center">
+                    <label for="sort" class="text-gray-700 mr-2 text-sm">Sort by:</label>
+                    <select id="sort" class="border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                        <option value="featured">Featured</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="newest">Newest</option>
+                        <option value="bestselling">Best Selling</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="py-16 bg-pink-50">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="products-grid">
+                <!-- Product 1: Massage Soap -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://i.ebayimg.com/images/g/IkoAAOSwQTthiS78/s-l1600.webp" alt="Massage Soap" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Massage Soap</h3>
+                            <span class="bg-pink-100 text-pink-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Best Seller</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Our luxurious massage soap is handcrafted with natural ingredients to provide a soothing and relaxing experience...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£2.50</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2: Lavender Soap -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up delay-100">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://images.unsplash.com/photo-1600428877878-1a0ff561d8ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Lavender Soap" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Lavender Soap</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Calming lavender essential oil soap for relaxation and stress relief. Perfect for a soothing bath or shower...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£3.99</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3: Rose Wax Melts -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up delay-200">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://images.unsplash.com/photo-1602910344008-22f323cc1817?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Rose Wax Melts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Rose Wax Melts</h3>
+                            <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">New</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Floral rose scented wax melts for your home, providing a long-lasting fragrance that fills any room...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£4.99</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4: Peppermint Bath Bombs -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://images.unsplash.com/photo-1612623098863-0cb0fd5c1a46?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Peppermint Bath Bombs" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Peppermint Bath Bombs</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Refreshing peppermint bath bombs to invigorate your senses and relax your body after a long day...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£6.99</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 5: Coconut Milk Soap -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up delay-100">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://images.unsplash.com/photo-1607006483224-75ee0df7c8a4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Coconut Milk Soap" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Coconut Milk Soap</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Creamy coconut milk soap that moisturizes and nourishes your skin, leaving it soft and hydrated...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£3.99</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 6: Vanilla Wax Melts -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up delay-200">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Vanilla Wax Melts" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Vanilla Wax Melts</h3>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Popular</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Sweet vanilla scented wax melts that create a warm and inviting atmosphere in your home...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£4.99</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 7: Gift Set Collection -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://images.unsplash.com/photo-1601390696201-48cc438b028a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Gift Set Collection" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Gift Set Collection</h3>
+                            <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Gift</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">A beautifully packaged gift set including our most popular soaps and melts, perfect for gifting...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£15.99</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 8: Citrus Soap -->
+                <div class="bg-white rounded-xl shadow-card overflow-hidden hover-lift animate-fade-up delay-100">
+                    <div class="overflow-hidden h-64">
+                        <a href="massage-soap.html">
+                            <img src="https://images.unsplash.com/photo-1584305574647-0cc949a2bb9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Citrus Soap" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-lg">Citrus Soap</h3>
+                            <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">New</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 text-sm">Refreshing citrus soap with lemon, orange, and grapefruit essential oils to energize your morning routine...</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg text-pink-600">£3.99</span>
+                            <a href="massage-soap.html" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-full transition-colors text-sm font-medium">View Product</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="flex justify-center mt-12">
+                <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Previous</span>
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-pink-500 bg-pink-50 text-sm font-medium text-pink-600">1</a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</a>
+                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">8</a>
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">Next</span>
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl p-8 md:p-12 shadow-glow">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-3xl font-serif font-bold text-white mb-4">Join Our Newsletter</h2>
+                    <p class="text-pink-100 mb-8">Subscribe to our newsletter to receive updates on new products, special offers, and exclusive discounts.</p>
+                    
+                    <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                        <input type="email" placeholder="Your email address" class="flex-1 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300">
+                        <button type="submit" class="bg-white text-pink-600 hover:bg-pink-50 font-medium px-6 py-3 rounded-lg transition-colors">Subscribe</button>
+                    </form>
+                    
+                    <p class="text-pink-100 text-sm mt-4">By subscribing, you agree to receive marketing emails from us. You can unsubscribe at any time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-20 pb-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6 gradient-text">Melissa's Melts</h3>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Handcrafted soaps and wax melts made with love and natural ingredients for your home and body.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-pinterest-p text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-tiktok text-pink-400"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Shop Links -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Shop</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">All Products</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Soaps</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Wax Melts</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Gift Sets</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">New Arrivals</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Best Sellers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Information -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Information</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">123 Soap Street, Meltville, ML 12345</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">hello@melissasmelts.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">(123) 456-7890</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">Mon-Fri: 9am - 5pm EST</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                <div class="flex items-center space-x-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2022/01/09/07/23/american-express-6926131_640.png" alt="American Express" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/45/paypal-6850398_640.png" alt="PayPal" class="h-6">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));  {
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                // Update user icon
+                const userIcon = document.getElementById('user-icon');
+                userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
+                userIcon.href = 'account.html';
+            }
+            
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Category Buttons
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    categoryButtons.forEach(btn => {
+                        btn.classList.remove('bg-pink-500', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-700', 'hover:bg-pink-100');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.remove('bg-white', 'text-gray-700', 'hover:bg-pink-100');
+                    this.classList.add('bg-pink-500', 'text-white');
+                    
+                    // Filter products (would normally fetch from server or filter existing products)
+                    // For demo purposes, we'll just show an alert
+                    const category = this.textContent.trim();
+                    console.log(`Filtering by category: ${category}`);
+                    
+                    // In a real application, you would filter the products here
+                });
+            });
+            
+            // Sort Select
+            document.getElementById('sort').addEventListener('change', function() {
+                const sortValue = this.value;
+                console.log(`Sorting by: ${sortValue}`);
+                
+                // In a real application, you would sort the products here
+            });
+        });
+    </script>
+</body>
+</html>

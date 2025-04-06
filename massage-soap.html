@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Massage Soap | Melissa's Melts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: '#FFF5F7',
+                            100: '#FFEAEF',
+                            200: '#FFCBD8',
+                            300: '#FFABC1',
+                            400: '#FF8CAA',
+                            500: '#FF6D93',
+                            600: '#FF4E7D',
+                            700: '#FF2F67',
+                            800: '#FF1051',
+                            900: '#E0003B',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
+                        'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
+        }
+        
+        /* Custom Button Styles */
+        .btn-primary {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, #FF2F67, #FF6D93);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-primary:hover::before {
+            width: 100%;
+        }
+        
+        /* Fancy Underline */
+        .fancy-underline {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .fancy-underline::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 3px;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            border-radius: 3px;
+        }
+        
+        .fancy-underline.left-align::after {
+            left: 0;
+            transform: none;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Navbar Animation */
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #FF6D93;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Search Results */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 0.5rem 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-container:focus-within .search-results {
+            display: block;
+        }
+        
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .search-result-item:hover {
+            background-color: #FFF5F7;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-slow {
+            animation: float 8s ease-in-out infinite;
+        }
+
+        /* Customer Photos Section */
+        .customer-photo {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+            border-radius: 0.75rem;
+        }
+        
+        .customer-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .customer-photo:hover img {
+            transform: scale(1.1);
+        }
+        
+        .customer-photo .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 109, 147, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .customer-photo:hover .overlay {
+            opacity: 1;
+        }
+
+        /* Scent Grid */
+        .scent-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 640px) {
+            .scent-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Wishlist Button */
+        .wishlist-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .wishlist-button:hover {
+            background: #FFF5F7;
+            transform: scale(1.1);
+        }
+
+        .wishlist-button.active {
+            color: #FF4E7D;
+        }
+
+        /* Liked Items Section */
+        .liked-items {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            z-index: 50;
+            overflow: hidden;
+            transform: translateY(120%);
+            transition: transform 0.3s ease;
+        }
+
+        .liked-items.show {
+            transform: translateY(0);
+        }
+
+        .liked-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .liked-item:last-child {
+            border-bottom: none;
+        }
+
+        .liked-item-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        /* Scent Modal */
+        .scent-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .scent-modal-content {
+            background-color: white;
+            margin: 5% auto;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .scent-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 640px) {
+            .scent-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .scent-list {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .scent-item {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .scent-item:hover {
+            background-color: #FFF5F7;
+        }
+
+        .scent-item.selected {
+            background-color: #FFCBD8;
+            font-weight: 500;
+        }
+    </style>
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="font-sans bg-pink-50 text-gray-800">
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
+        <p>Use code <span class="font-bold">MELT10</span> for 10% off your first order</p>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-soft sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-3xl font-serif font-bold gradient-text">Melissa's Melts</a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
+                    <a href="shop.html" class="nav-link font-medium text-pink-600 border-b-2 border-pink-500 pb-1">Shop</a>
+                    <a href="about.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">About</a>
+                    <a href="contact.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <div class="relative search-container">
+                        <input type="text" id="search-input" placeholder="Search products..." class="py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent w-40 md:w-60">
+                        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div class="search-results">
+                            <!-- Search results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div id="user-container">
+                        <a href="login.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+                            <i class="fas fa-user text-lg"></i>
+                        </a>
+                        <!-- Google Sign-In functionality is kept but hidden -->
+                        <div id="g_id_onload"
+                            data-client_id="741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com"
+                            data-context="signin"
+                            data-callback="handleCredentialResponse"
+                            data-auto_prompt="false"
+                            style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+                <div class="flex flex-col space-y-3">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
+                    <a href="shop.html" class="font-medium text-pink-600 py-2">Shop</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Product Detail Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row -mx-4">
+                <!-- Product Image -->
+                <div class="md:w-1/2 px-4 mb-8 md:mb-0 animate-fade-up">
+                    <div class="sticky top-24">
+                        <div class="bg-pink-50 p-8 rounded-xl relative">
+                            <button class="wishlist-button" id="add-to-wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <img src="https://i.ebayimg.com/images/g/IkoAAOSwQTthiS78/s-l1600.webp" alt="Massage Soap" class="w-full h-auto rounded-lg shadow-soft">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Info -->
+                <div class="md:w-1/2 px-4 animate-fade-up delay-100">
+                    <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-2">NewNew</span>
+                    <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4">Massage Soap</h2>
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-pink-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="text-gray-500 ml-2">(24 reviews)</span>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <span class="text-2xl font-bold text-pink-600">£2.75</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            <i class="fas fa-award mr-1"></i> Earn 5 loyalty points
+                        </span>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6 leading-relaxed">
+                        Our luxurious massage soap is handcrafted with natural ingredients to provide a soothing and relaxing experience. Each bar is designed to gently exfoliate while moisturizing your skin, leaving it feeling soft and rejuvenated.
+                    </p>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-medium text-lg mb-2">Key Features:</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>Handmade with natural ingredients</li>
+                            <li>Gentle exfoliating texture</li>
+                            <li>Long-lasting fragrance</li>
+                            <li>Moisturizing formula</li>
+                            <li>Suitable for all skin types</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Scent Selection -->
+                    <div class="mb-6">
+                        <label for="scent" class="block font-medium text-gray-800 mb-2">Select Scent:</label>
+                        <select id="scent" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="">-- Select a Scent --</option>
+                            <option value="Baby Powder">Baby Powder</option>
+                            <option value="Coconut">Coconut</option>
+                            <option value="Twilight Opium">Twilight Opium (Black Opium)</option>
+                            <option value="Spirit">Spirit (Ghost)</option>
+                            <option value="Olympia">Olympia (Paco Rabane Olympia)</option>
+                            <option value="Diva">Diva (Ari by Ariana Grande)</option>
+                            <option value="Belle">Belle (La Vie Est Belle)</option>
+                            <option value="Feirce">Feirce (Sauvage)</option>
+                            <option value="Glorious">Glorious (Soap & Glory)</option>
+                            <option value="Billionairess">Billionairess (Creed Aventus Women)</option>
+                        </select>
+                        <button id="view-all-scents" class="text-pink-600 text-sm mt-2 hover:underline">View all scents</button>
+                    </div>
+                    
+                    <!-- Quantity -->
+                    <div class="mb-8">
+                        <label for="quantity" class="block font-medium text-gray-800 mb-2">Quantity:</label>
+                        <div class="flex items-center">
+                            <button id="decrease-quantity" class="bg-pink-100 text-pink-600 w-10 h-10 rounded-l-lg flex items-center justify-center hover:bg-pink-200 transition-colors">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity" value="1" min="1" class="w-16 h-10 border-y border-gray-300 text-center focus:outline-none">
+                            <button id="increase-quantity" class="bg-pink-100 text-pink-600 w-10 h-10 rounded-r-lg flex items-center justify-center hover:bg-pink-200 transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button id="add-to-cart" class="bg-transparent border-2 border-pink-400 text-pink-600 hover:bg-pink-100 font-medium py-3 px-8 rounded-full transition-colors flex-1">Add to Cart</button>
+                        <button id="buy-now" class="btn-primary text-white font-medium py-3 px-8 rounded-full flex-1 shadow-glow">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Details Tabs -->
+    <section class="py-16 bg-pink-50">
+        <div class="container mx-auto px-4">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <!-- Tabs Navigation -->
+                <div class="flex border-b overflow-x-auto">
+                    <button id="tab-description" class="tab-button px-6 py-4 text-pink-600 border-b-2 border-pink-500 font-medium whitespace-nowrap">Description</button>
+                    <button id="tab-ingredients" class="tab-button px-6 py-4 text-gray-500 font-medium whitespace-nowrap">Ingredients</button>
+                    <button id="tab-how-to-use" class="tab-button px-6 py-4 text-gray-500 font-medium whitespace-nowrap">How to Use</button>
+                    <button id="tab-reviews" class="tab-button px-6 py-4 text-gray-500 font-medium whitespace-nowrap">Reviews (24)</button>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="p-6 md:p-8">
+                    <!-- Description Tab (Active by default) -->
+                    <div id="content-description" class="tab-content active">
+                        <h3 class="text-xl font-medium mb-4">About Massage Soap</h3>
+                        <p class="mb-4 text-gray-700 leading-relaxed">
+                            Our Massage Soap is specially formulated to provide a luxurious bathing experience that soothes both body and mind. Each bar is handcrafted in small batches to ensure the highest quality and effectiveness.
+                        </p>
+                        <p class="mb-4 text-gray-700 leading-relaxed">
+                            The unique texture of our massage soap helps to gently exfoliate dead skin cells while the natural oils and butters moisturize and nourish your skin. The carefully selected essential oils provide aromatherapy benefits, helping to reduce stress and promote relaxation.
+                        </p>
+                        <p class="mb-4 text-gray-700 leading-relaxed">
+                            Perfect for daily use or as a special treat after a long day, our Massage Soap will leave your skin feeling soft, smooth, and rejuvenated. The bars are long-lasting and maintain their scent until the very last use.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                            <div class="bg-pink-50 p-4 rounded-lg text-center">
+                                <div class="text-pink-500 mb-2">
+                                    <i class="fas fa-leaf text-3xl"></i>
+                                </div>
+                                <h4 class="font-medium mb-2">Natural Ingredients</h4>
+                                <p class="text-sm text-gray-600">Made with organic oils and botanicals</p>
+                            </div>
+                            <div class="bg-pink-50 p-4 rounded-lg text-center">
+                                <div class="text-pink-500 mb-2">
+                                    <i class="fas fa-ban text-3xl"></i>
+                                </div>
+                                <h4 class="font-medium mb-2">Cruelty-Free</h4>
+                                <p class="text-sm text-gray-600">Never tested on animals</p>
+                            </div>
+                            <div class="bg-pink-50 p-4 rounded-lg text-center">
+                                <div class="text-pink-500 mb-2">
+                                    <i class="fas fa-recycle text-3xl"></i>
+                                </div>
+                                <h4 class="font-medium mb-2">Eco-Friendly</h4>
+                                <p class="text-sm text-gray-600">Sustainable packaging</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ingredients Tab (Hidden by default) -->
+                    <div id="content-ingredients" class="tab-content hidden">
+                        <h3 class="text-xl font-medium mb-4">Ingredients</h3>
+                        <p class="mb-6 text-gray-700">
+                            We believe in transparency and only use ingredients that are safe for you and the environment.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-pink-50 rounded-lg">
+                                <h4 class="font-medium mb-2">Base Oils</h4>
+                                <p class="text-gray-700">
+                                    Olive Oil, Coconut Oil, Palm Oil (sustainably sourced), Shea Butter, Cocoa Butter
+                                </p>
+                            </div>
+                            <div class="p-4 bg-pink-50 rounded-lg">
+                                <h4 class="font-medium mb-2">Essential Oils</h4>
+                                <p class="text-gray-700">
+                                    Varies by scent. May include: Lavender, Vanilla, Coconut, Rose, Lemon, Eucalyptus, Peppermint, Sandalwood, Jasmine, Orange, Bergamot, Chamomile, Cinnamon, or Almond.
+                                </p>
+                            </div>
+                            <div class="p-4 bg-pink-50 rounded-lg">
+                                <h4 class="font-medium mb-2">Additional Ingredients</h4>
+                                <p class="text-gray-700">
+                                    Sodium Hydroxide (lye, required for soap-making process, none remains in final product), Distilled Water, Natural Clay (for color), Dried Herbs or Flower Petals (in some varieties)
+                                </p>
+                            </div>
+                        </div>
+                        <p class="mt-6 text-sm text-gray-600">
+                            * All ingredients are subject to change. Please refer to the product packaging for the most up-to-date ingredient list.
+                        </p>
+                    </div>
+                    
+                    <!-- How to Use Tab (Hidden by default) -->
+                    <div id="content-how-to-use" class="tab-content hidden">
+                        <h3 class="text-xl font-medium mb-4">How to Use</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="bg-pink-100 rounded-full p-3 text-pink-500 mr-4">
+                                    <span class="font-bold">1</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-2">Wet the Soap and Your Skin</h4>
+                                    <p class="text-gray-700">
+                                        Start with wet skin and wet the soap bar under warm water.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-pink-100 rounded-full p-3 text-pink-500 mr-4">
+                                    <span class="font-bold">2</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-2">Create a Lather</h4>
+                                    <p class="text-gray-700">
+                                        Work the soap in your hands or with a washcloth to create a rich lather.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-pink-100 rounded-full p-3 text-pink-500 mr-4">
+                                    <span class="font-bold">3</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-2">Massage and Enjoy</h4>
+                                    <p class="text-gray-700">
+                                        Apply the lather to your skin using gentle circular motions. Take a moment to enjoy the aroma and the sensation.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-pink-100 rounded-full p-3 text-pink-500 mr-4">
+                                    <span class="font-bold">4</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-2">Rinse Thoroughly</h4>
+                                    <p class="text-gray-700">
+                                        Rinse your skin with warm water until all soap is removed.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-pink-100 rounded-full p-3 text-pink-500 mr-4">
+                                    <span class="font-bold">5</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-2">Store Properly</h4>
+                                    <p class="text-gray-700">
+                                        Allow the soap to dry between uses on a well-draining soap dish to extend its life.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reviews Tab (Hidden by default) -->
+                    <div id="content-reviews" class="tab-content hidden">
+                        <h3 class="text-xl font-medium mb-4">Customer Reviews</h3>
+                        <div class="flex items-center mb-6">
+                            <div class="flex text-yellow-400 mr-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-lg font-medium">5.0</span>
+                            <span class="text-gray-500 ml-2">(24 reviews)</span>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <!-- Review 1 -->
+                            <div class="border-b border-gray-100 pb-6">
+                                <div class="flex items-center mb-2">
+                                    <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="Sarah T." class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h4 class="font-medium">Sarah T.</h4>
+                                        <div class="flex text-yellow-400 text-sm">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <span class="ml-auto text-gray-500 text-sm">2 weeks ago</span>
+                                </div>
+                                <p class="text-gray-700">
+                                    This massage soap is amazing! The scent is perfect - not too strong but lasts all day. My skin feels so soft and moisturized after using it. Will definitely be ordering more!
+                                </p>
+                            </div>
+                            
+                            <!-- Review 2 -->
+                            <div class="border-b border-gray-100 pb-6">
+                                <div class="flex items-center mb-2">
+                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Robert K." class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h4 class="font-medium">Robert K.</h4>
+                                        <div class="flex text-yellow-400 text-sm">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <span class="ml-auto text-gray-500 text-sm">1 month ago</span>
+                                </div>
+                                <p class="text-gray-700">
+                                    I bought this as a gift for my wife and she absolutely loves it! The quality is outstanding and the scent is divine. Great product at a great price.
+                                </p>
+                            </div>
+                            
+                            <!-- Review 3 -->
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jessica M." class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h4 class="font-medium">Jessica M.</h4>
+                                        <div class="flex text-yellow-400 text-sm">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <span class="ml-auto text-gray-500 text-sm">2 months ago</span>
+                                </div>
+                                <p class="text-gray-700">
+                                    I'm obsessed with this soap! My whole bathroom smells amazing and my skin has never felt better. The exfoliating texture is perfect - not too harsh but effective. The quality is outstanding compared to store-bought brands.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <button class="text-pink-600 font-medium mt-6 hover:text-pink-700 transition-colors">Load More Reviews</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Scents Modal -->
+    <div class="scent-modal" id="scent-modal">
+        <div class="scent-modal-content">
+            <span class="close" id="close-scent-modal">&times;</span>
+            <h2 class="text-2xl font-serif font-bold mb-4">All Available Scents</h2>
+            <p class="text-gray-600 mb-4">Choose from our wide range of premium scents for your Massage Soap.</p>
+            
+            <div class="scent-list" id="scent-list">
+                <!-- Scents will be populated here via JavaScript -->
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button id="apply-scent" class="btn-primary text-white font-medium py-2 px-6 rounded-full shadow-glow">Apply Selected Scent</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liked Items Section -->
+    <div class="liked-items" id="liked-items">
+        <div class="bg-gradient-to-r from-pink-600 to-pink-400 text-white p-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-medium">Liked Items</h3>
+                <button id="close-liked-items" class="text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div id="liked-items-content" class="p-4 max-h-80 overflow-y-auto">
+            <!-- Liked items will be populated here -->
+            <p class="text-gray-500 text-center py-4">No items liked yet</p>
+        </div>
+        <div class="p-4 border-t border-gray-100">
+            <button id="view-all-liked" class="w-full bg-pink-100 text-pink-600 hover:bg-pink-200 font-medium py-2 rounded-lg transition-colors">View All Liked Items</button>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-serif font-bold mb-8 text-center">You May Also Like</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Related Product 1 -->
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden hover-lift">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Lavender Soap" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 left-0 bg-pink-500 text-white text-xs font-bold px-3 py-1 m-2 rounded-full">
+                            New
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium mb-1">Lavender Soap</h3>
+                        <p class="text-gray-500 text-sm mb-2">Calming & Soothing</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-pink-600">£2.75</span>
+                            <button class="text-pink-600 hover:text-pink-700 transition-colors">
+                                <i class="fas fa-shopping-bag"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Product 2 -->
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden hover-lift">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1602910344008-22f323cc1817?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Rose Wax Melts" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium mb-1">Rose Wax Melts</h3>
+                        <p class="text-gray-500 text-sm mb-2">Floral & Romantic</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-pink-600">£2.75</span>
+                            <button class="text-pink-600 hover:text-pink-700 transition-colors">
+                                <i class="fas fa-shopping-bag"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Product 3 -->
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden hover-lift">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1607006483224-75ee0df7c8a4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Vanilla Soap" class="w-full h-48 object-cover">
+                        <div class="absolute top-0 left-0 bg-yellow-500 text-white text-xs font-bold px-3 py-1 m-2 rounded-full">
+                            Bestseller
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium mb-1">Vanilla Soap</h3>
+                        <p class="text-gray-500 text-sm mb-2">Sweet & Comforting</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-pink-600">£2.75</span>
+                            <button class="text-pink-600 hover:text-pink-700 transition-colors">
+                                <i class="fas fa-shopping-bag"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Related Product 4 -->
+                <div class="bg-white rounded-xl shadow-soft overflow-hidden hover-lift">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Citrus Wax Melts" class="w-full h-48 object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium mb-1">Citrus Wax Melts</h3>
+                        <p class="text-gray-500 text-sm mb-2">Energizing & Fresh</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-pink-600">£2.75</span>
+                            <button class="text-pink-600 hover:text-pink-700 transition-colors">
+                                <i class="fas fa-shopping-bag"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-20 pb-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6 gradient-text">Melissa's Melts</h3>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Handcrafted soaps and wax melts made with love and natural ingredients for your home and body.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-pinterest-p text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-tiktok text-pink-400"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Shop Links -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Shop</h3>
+                    <ul class="space-y-3">
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">All Products</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Soaps</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Wax Melts</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Gift Sets</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">New Arrivals</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Best Sellers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Information -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Information</h3>
+                    <ul class="space-y-3">
+                        <li><a href="about.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">123 Soap Street, Meltville, ML 12345</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">hello@melissasmelts.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">(123) 456-7890</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">Mon-Fri: 9am - 5pm EST</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                <div class="flex items-center space-x-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2022/01/09/07/23/american-express-6926131_640.png" alt="American Express" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/45/paypal-6850398_640.png" alt="PayPal" class="h-6">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // All available scents
+            const allScents = [
+                "Baby Powder", "Coconut", "Twilight Opium (Black Opium)", "Spirit (Ghost)", 
+                "Olympia (Paco Rabane Olympia)", "Diva (Ari by Ariana Grande)", "Belle (La Vie Est Belle)", 
+                "Feirce (Sauvage)", "Glorious (Soap & Glory)", "Billionairess (Creed Aventus Women)",
+                "Seakay (CK Shock)", "Billionaire (Creed Aventus Men)", "Million (Lady Millions)",
+                "Conscience (Gucci Guilty)", "Petal (Marc Jacobs Daisy)", "Love (Flower Bomb)",
+                "Ice Queen (Lush Snow Fairy)", "Mediterranean (Jo Malone Lime,Basil & Mand)",
+                "Midnight Orchid (Tom Ford Black Orchid)", "Sparkle (Daimonds)", "Sweetie (Viktor Rolf Bon Bon)",
+                "Bergamot", "Eucalyptus", "Jasmine", "Lavender", "Lemon", "Lemongrass", "Orange",
+                "Peppermint", "Vanilla", "J Adore", "Pink Peppercorn", "Wild Fig & Cassis", "Comforter",
+                "Love Potion", "Monkey Farts", "Tea Tree", "Manadarin", "Sandalwood", "Rhubarb & Rose",
+                "Dark Amber & Ginger Lily", "Coco & Sandalwood", "Peony & Blush Suede", "Avobath",
+                "Foamy Call Soap & Glory", "Virtuous Butter Soap & Glory", "Pop Friction Soap & Glory",
+                "Go Lotion Soap & Glory", "White Dove Dove Soap", "Coconut Lime", "Boss Bottled",
+                "Invictus", "Armani Code", "Spice Bomb Viktor Rolf", "Pomegranate Noir Jo Malone",
+                "Pixie Dust", "Alien", "Honey Suckle", "Sherbet Lemon", "Helpful Sleep", "Love Spell",
+                "Relax", "Rose Petal", "Rush Gucci", "Angel", "Joop", "One Thousand Wishes",
+                "Cucumber & Aloe Vera", "One Thousand Nights Elie Saab", "Bubblegum", "Mr Pepper",
+                "Dewberry", "Le Male JPG", "Miss D Dior", "Poison Dior", "Good Girl C Herrera",
+                "Fahrenheit Dior", "Candy Floss", "Baccarat Rouge", "Creed Irish Tweed",
+                "Creed Silver Mountain", "Dove", "White Musk", "Bad Boy", "Decedance", "Eternity (Women)"
+            ];
+
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Tab Switching
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('text-pink-600', 'border-b-2', 'border-pink-500');
+                        btn.classList.add('text-gray-500');
+                    });
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                        content.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('text-pink-600', 'border-b-2', 'border-pink-500');
+                    this.classList.remove('text-gray-500');
+                    
+                    // Show corresponding content
+                    const contentId = 'content-' + this.id.split('-')[1];
+                    document.getElementById(contentId).classList.remove('hidden');
+                    document.getElementById(contentId).classList.add('active');
+                });
+            });
+            
+            // Quantity Selector
+            const decreaseQuantity = document.getElementById('decrease-quantity');
+            const increaseQuantity = document.getElementById('increase-quantity');
+            const quantityInput = document.getElementById('quantity');
+            
+            decreaseQuantity.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                }
+            });
+            
+            increaseQuantity.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                quantityInput.value = quantity + 1;
+            });
+            
+            quantityInput.addEventListener('change', function() {
+                let quantity = parseInt(this.value);
+                if (isNaN(quantity) || quantity < 1) {
+                    this.value = 1;
+                }
+            });
+            
+            // Scent Modal
+            const viewAllScentsButton = document.getElementById('view-all-scents');
+            const scentModal = document.getElementById('scent-modal');
+            const closeScentModal = document.getElementById('close-scent-modal');
+            const scentList = document.getElementById('scent-list');
+            const applyScent = document.getElementById('apply-scent');
+            const scentSelect = document.getElementById('scent');
+            
+            // Populate scent list
+            function populateScentList() {
+                scentList.innerHTML = '';
+                
+                allScents.forEach(scent => {
+                    const scentItem = document.createElement('div');
+                    scentItem.className = 'scent-item';
+                    scentItem.textContent = scent;
+                    scentItem.dataset.scent = scent;
+                    
+                    if (scentSelect.value === scent) {
+                        scentItem.classList.add('selected');
+                    }
+                    
+                    scentItem.addEventListener('click', function() {
+                        // Remove selected class from all items
+                        document.querySelectorAll('.scent-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
+                        // Add selected class to clicked item
+                        this.classList.add('selected');
+                    });
+                    
+                    scentList.appendChild(scentItem);
+                });
+            }
+            
+            viewAllScentsButton.addEventListener('click', function() {
+                populateScentList();
+                scentModal.style.display = 'block';
+            });
+            
+            closeScentModal.addEventListener('click', function() {
+                scentModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === scentModal) {
+                    scentModal.style.display = 'none';
+                }
+            });
+            
+            applyScent.addEventListener('click', function() {
+                const selectedScent = document.querySelector('.scent-item.selected');
+                
+                if (selectedScent) {
+                    // Find or create option
+                    let option = Array.from(scentSelect.options).find(opt => opt.value === selectedScent.dataset.scent);
+                    
+                    if (!option) {
+                        option = new Option(selectedScent.dataset.scent, selectedScent.dataset.scent);
+                        scentSelect.add(option);
+                    }
+                    
+                    // Select the option
+                    scentSelect.value = selectedScent.dataset.scent;
+                }
+                
+                scentModal.style.display = 'none';
+            });
+            
+            // Add to Cart
+            const addToCartButton = document.getElementById('add-to-cart');
+            const buyNowButton = document.getElementById('buy-now');
+            
+            addToCartButton.addEventListener('click', function() {
+                const scent = scentSelect.value;
+                
+                if (!scent) {
+                    alert('Please select a scent before adding to cart');
+                    return;
+                }
+                
+                const quantity = parseInt(quantityInput.value);
+                
+                // Add to cart
+                addToCart({
+                    id: 'massage-soap',
+                    name: 'Massage Soap',
+                    price: 2.75,
+                    image: 'https://i.ebayimg.com/images/g/IkoAAOSwQTthiS78/s-l1600.webp',
+                    quantity: quantity,
+                    scent: scent
+                });
+                
+                // Show confirmation
+                alert(`Added ${quantity} Massage Soap (${scent}) to cart`);
+                
+                // Update cart count
+                updateCartCount();
+            });
+            
+            buyNowButton.addEventListener('click', function() {
+                const scent = scentSelect.value;
+                
+                if (!scent) {
+                    alert('Please select a scent before proceeding');
+                    return;
+                }
+                
+                const quantity = parseInt(quantityInput.value);
+                
+                // Add to cart
+                addToCart({
+                    id: 'massage-soap',
+                    name: 'Massage Soap',
+                    price: 2.75,
+                    image: 'https://i.ebayimg.com/images/g/IkoAAOSwQTthiS78/s-l1600.webp',
+                    quantity: quantity,
+                    scent: scent
+                });
+                
+                // Redirect to checkout
+                window.location.href = 'cart.html';
+            });
+            
+            function addToCart(product) {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                // Check if product already exists in cart
+                const existingProductIndex = cart.findIndex(item => item.id === product.id && item.scent === product.scent);
+                
+                if (existingProductIndex !== -1) {
+                    // Update quantity if product already exists
+                    cart[existingProductIndex].quantity += product.quantity;
+                } else {
+                    // Add new product to cart
+                    cart.push(product);
+                }
+                
+                // Save cart to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Update cart count
+                updateCartCount();
+            }
+            
+            function updateCartCount() {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                document.getElementById('cart-count').textContent = cartCount;
+            }
+            
+            // Initialize cart count
+            updateCartCount();
+            
+            // Wishlist functionality
+            const addToWishlistButton = document.getElementById('add-to-wishlist');
+            const likedItems = document.getElementById('liked-items');
+            const closeLikedItems = document.getElementById('close-liked-items');
+            const likedItemsContent = document.getElementById('liked-items-content');
+            const viewAllLiked = document.getElementById('view-all-liked');
+            
+            addToWishlistButton.addEventListener('click', function() {
+                this.classList.toggle('active');
+                
+                if (this.classList.contains('active')) {
+                    this.innerHTML = '<i class="fas fa-heart"></i>';
+                    
+                    // Add to liked items
+                    addToLikedItems({
+                        id: 'massage-soap',
+                        name: 'Massage Soap',
+                        price: '£2.75',
+                        image: 'https://i.ebayimg.com/images/g/IkoAAOSwQTthiS78/s-l1600.webp'
+                    });
+                    
+                    // Show liked items
+                    likedItems.classList.add('show');
+                    setTimeout(() => {
+                        likedItems.classList.remove('show');
+                    }, 3000);
+                } else {
+                    this.innerHTML = '<i class="far fa-heart"></i>';
+                    
+                    // Remove from liked items
+                    removeFromLikedItems('massage-soap');
+                }
+            });
+            
+            closeLikedItems.addEventListener('click', function() {
+                likedItems.classList.remove('show');
+            });
+            
+            viewAllLiked.addEventListener('click', function() {
+                window.location.href = 'wishlist.html';
+            });
+            
+            function addToLikedItems(product) {
+                let likedItemsList = JSON.parse(localStorage.getItem('likedItems')) || [];
+                
+                // Check if product already exists in liked items
+                const existingProductIndex = likedItemsList.findIndex(item => item.id === product.id);
+                
+                if (existingProductIndex === -1) {
+                    // Add new product to liked items
+                    likedItemsList.push(product);
+                    
+                    // Save liked items to localStorage
+                    localStorage.setItem('likedItems', JSON.stringify(likedItemsList));
+                    
+                    // Update liked items display
+                    updateLikedItemsDisplay();
+                }
+            }
+            
+            function removeFromLikedItems(productId) {
+                let likedItemsList = JSON.parse(localStorage.getItem('likedItems')) || [];
+                
+                // Remove product from liked items
+                likedItemsList = likedItemsList.filter(item => item.id !== productId);
+                
+                // Save liked items to localStorage
+                localStorage.setItem('likedItems', JSON.stringify(likedItemsList));
+                
+                // Update liked items display
+                updateLikedItemsDisplay();
+            }
+            
+            function updateLikedItemsDisplay() {
+                const likedItemsList = JSON.parse(localStorage.getItem('likedItems')) || [];
+                
+                if (likedItemsList.length === 0) {
+                    likedItemsContent.innerHTML = '<p class="text-gray-500 text-center py-4">No items liked yet</p>';
+                    return;
+                }
+                
+                likedItemsContent.innerHTML = '';
+                
+                likedItemsList.forEach(item => {
+                    const likedItem = document.createElement('div');
+                    likedItem.className = 'liked-item';
+                    likedItem.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="liked-item-image">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-sm">${item.name}</h4>
+                            <p class="text-pink-600 text-sm">${item.price}</p>
+                        </div>
+                        <button class="text-gray-400 hover:text-pink-500 remove-liked" data-id="${item.id}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    
+                    likedItemsContent.appendChild(likedItem);
+                });
+                
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-liked').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.id;
+                        removeFromLikedItems(productId);
+                        
+                        // Update wishlist button if on product page
+                        if (productId === 'massage-soap' && addToWishlistButton) {
+                            addToWishlistButton.classList.remove('active');
+                            addToWishlistButton.innerHTML = '<i class="far fa-heart"></i>';
+                        }
+                    });
+                });
+            }
+            
+            // Initialize liked items display
+            updateLikedItemsDisplay();
+            
+            // Check if product is in liked items
+            const likedItemsList = JSON.parse(localStorage.getItem('likedItems')) || [];
+            const isLiked = likedItemsList.some(item => item.id === 'massage-soap');
+            
+            if (isLiked && addToWishlistButton) {
+                addToWishlistButton.classList.add('active');
+                addToWishlistButton.innerHTML = '<i class="fas fa-heart"></i>';
+            }
+            
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.querySelector('.search-results');
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                if (query.length < 2) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+                
+                // Filter scents based on search query
+                const filteredScents = allScents.filter(scent => 
+                    scent.toLowerCase().includes(query)
+                );
+                
+                // Display results
+                searchResults.innerHTML = '';
+                
+                if (filteredScents.length > 0) {
+                    filteredScents.slice(0, 5).forEach(scent => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        resultItem.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-soap text-pink-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Massage Soap</p>
+                                    <p class="text-xs text-gray-500">${scent}</p>
+                                </div>
+                            </div>
+                        `;
+                        
+                        resultItem.addEventListener('click', function() {
+                            window.location.href = 'massage-soap.html';
+                        });
+                        
+                        searchResults.appendChild(resultItem);
+                    });
+                    
+                    if (filteredScents.length > 5) {
+                        const moreResults = document.createElement('div');
+                        moreResults.className = 'search-result-item text-center text-pink-600';
+                        moreResults.textContent = `See all ${filteredScents.length} results`;
+                        
+                        moreResults.addEventListener('click', function() {
+                            window.location.href = 'shop.html?search=' + encodeURIComponent(query);
+                        });
+                        
+                        searchResults.appendChild(moreResults);
+                    }
+                } else {
+                    searchResults.innerHTML = `
+                        <div class="p-4 text-center text-gray-500">
+                            No products found for "${query}"
+                        </div>
+                    `;
+                }
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.search-container')) {
+                    searchResults.innerHTML = '';
+                }
+            });
+            
+            // Google Sign-In
+            window.handleCredentialResponse = function(response) {
+                // Send the token to your server for verification
+                const token = response.credential;
+                
+                // Store user info in localStorage
+                fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.user) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        localStorage.setItem('token', data.token);
+                        updateUserUI(data.user);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            };
+            
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                updateUserUI(user);
+            }
+            
+            function updateUserUI(user) {
+                // Update user icon
+                const userIcon = document.getElementById('user-icon');
+                userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
+                userIcon.href = 'account.html';
+            }
+        });
+    </script>
+</body>
+</html>
+
