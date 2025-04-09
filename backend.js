@@ -20,24 +20,38 @@ app.use((req, res, next) => {
   next()
 })
 
-// Enable CORS with a permissive configuration
-app.use(cors())
+// CORS configuration - CRITICAL FIX for Railway
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  }),
+)
 
-// Parse JSON bodies
+// Handle OPTIONS requests explicitly for CORS preflight
+app.options("*", cors())
+
+// Parse JSON bodies - IMPORTANT: Place before routes
 app.use(express.json())
 
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }))
 
-// Serve static files
-app.use(express.static(path.join(__dirname, "public")))
-
-// In-memory data store with file system backup
+// In-memory data store
 const store = {
   users: [],
   orders: [],
   sessions: {},
 }
+
+// CRITICAL FIX: Test endpoint to verify server is running
+app.get("/api/test", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() })
+})
 
 // Data directory and file paths
 const DATA_DIR = path.join(__dirname, "data")
@@ -378,12 +392,12 @@ app.put("/api/user", authenticate, (req, res) => {
 
 // PAYMENT AND ORDER ENDPOINTS
 
-// Create payment intent
+// CRITICAL FIX: Create payment intent endpoint - Simplified for reliability
 app.post("/api/create-payment-intent", async (req, res) => {
-  console.log("Payment intent request received", req.body)
+  console.log("Payment intent request received")
 
   try {
-    // Extract and validate amount
+    // Extract amount from request body
     const { amount } = req.body
 
     if (!amount) {
@@ -420,29 +434,17 @@ app.post("/api/create-payment-intent", async (req, res) => {
     console.error("Error creating payment intent:", error)
     return res.status(500).json({
       error: "Failed to create payment intent",
+      message: error.message,
     })
   }
 })
 
-// Create order
+// Create order endpoint
 app.post("/api/orders", (req, res) => {
   console.log("Create order request received")
 
   try {
-    const {
-      items,
-      total,
-      shipping,
-      discount,
-      paymentMethod,
-      customerEmail,
-      customerName,
-      customerAddress,
-      customerCity,
-      customerPostcode,
-      customerPhone,
-      paymentId,
-    } = req.body
+    const { items, total, shipping, discount, customerEmail, customerName, paymentId } = req.body
 
     // Basic validation
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -455,50 +457,19 @@ app.post("/api/orders", (req, res) => {
     // Create order object
     const order = {
       orderId,
-      userId: req.user?.userId || "guest",
       items,
       total: Number.parseFloat(total) || 0,
       shipping: Number.parseFloat(shipping) || 0,
       discount: Number.parseFloat(discount) || 0,
       status: paymentId ? "paid" : "pending",
       createdAt: new Date().toISOString(),
-      paymentMethod,
       customerEmail,
       customerName,
-      customerAddress,
-      customerCity,
-      customerPostcode,
-      customerPhone,
       paymentId,
     }
 
-    // Save order
+    // Save order in memory
     store.orders.push(order)
-    saveData("orders", store.orders)
-
-    // If user is authenticated, add order to user's orders
-    if (req.user) {
-      const userIndex = store.users.findIndex((u) => u.userId === req.user.userId)
-      if (userIndex !== -1) {
-        // Add order to user's orders
-        store.users[userIndex].orders.push(orderId)
-
-        // Add points (1 point per £1 spent)
-        const pointsEarned = Math.floor(Number.parseFloat(total) || 0)
-        store.users[userIndex].points += pointsEarned
-
-        // Save changes
-        saveData("users", store.users)
-
-        // Update session
-        const token = req.headers.authorization?.split(" ")[1]
-        if (token && store.sessions[token]) {
-          store.sessions[token].user.points = store.users[userIndex].points
-        }
-      }
-    }
-
-    console.log(`Order created: ${orderId}`)
 
     // Return success response
     return res.json({
@@ -556,7 +527,7 @@ app.get("/api/orders", authenticate, (req, res) => {
   }
 })
 
-// Apply coupon
+// Apply coupon endpoint
 app.post("/api/apply-coupon", (req, res) => {
   try {
     const { code } = req.body
@@ -701,6 +672,9 @@ app.post("/api/workshop-request", (req, res) => {
     })
   }
 })
+
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")))
 
 // Catch-all route for static files
 app.get("*", (req, res) => {

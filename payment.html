@@ -819,9 +819,28 @@
         let elements;
         let paymentElement;
 
-        // Update the initializeStripe function to better handle errors
+        // FIXED: Updated initializeStripe function to handle Railway deployment issues
         async function initializeStripe() {
             try {
+                // First, check if the API is available by making a test request
+                try {
+                    console.log('Testing API connection...');
+                    const testResponse = await fetch('/api/test', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (testResponse.ok) {
+                        console.log('API test successful, server is responding');
+                    } else {
+                        console.warn('API test failed, server may not be available');
+                    }
+                } catch (testError) {
+                    console.warn('API test failed:', testError);
+                }
+                
                 // Initialize Stripe
                 stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
                 
@@ -844,7 +863,7 @@
                 // Show debug info
                 console.log('Creating payment intent for amount:', amount);
                 
-                // Create payment intent on the server
+                // FIXED: Simplified payment intent request with better error handling
                 const response = await fetch('/api/create-payment-intent', {
                     method: 'POST',
                     headers: {
@@ -852,13 +871,7 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        amount: amount,
-                        currency: 'gbp',
-                        customer_email: document.getElementById('email').value || (user ? user.email : ''),
-                        metadata: {
-                            orderId: 'ORD-' + Date.now().toString().slice(-6),
-                            notificationEmail: 'alexandroghanem1@gmail.com'
-                        }
+                        amount: amount
                     }),
                 });
                 
@@ -1056,8 +1069,7 @@
                     await fetch('/api/orders', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(orderDetails)
                     });
