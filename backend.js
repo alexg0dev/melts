@@ -41,20 +41,31 @@ const CLIENT_ID = "741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleuser
 const CLIENT_SECRET = "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"
 const client = new OAuth2Client(CLIENT_ID)
 
+// Replace the entire CORS middleware setup with this improved version
 // CORS configuration - Allow all origins for development
 app.use(
   cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   }),
 )
 
-// Body parser middleware - Important to parse JSON before routes
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+// Ensure proper body parsing middleware setup
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      const url = req.originalUrl
+      if (url.startsWith("/webhook")) {
+        req.rawBody = buf.toString()
+      }
+    },
+  }),
+)
+app.use(express.urlencoded({ extended: true }))
 
-// Special handling for Stripe webhook
+// Special handling for Stripe webhook - must come AFTER the json middleware
 app.use("/webhook", express.raw({ type: "application/json" }))
 
 // Serve static files
@@ -225,42 +236,63 @@ function sendOrderEmail(email, order) {
 
 // STRIPE PAYMENT ROUTES - Placing this first to ensure it's not caught by other middleware
 
+// Replace the create-payment-intent route with this improved version
 // Create a payment intent
 app.post("/api/create-payment-intent", async (req, res) => {
+  console.log("Payment intent request received")
+
   try {
-    console.log("Creating payment intent with data:", req.body)
+    // Log the request body for debugging
+    console.log("Request body:", req.body)
+
+    // Validate input
     const { amount, currency = "gbp", customer_email, metadata = {} } = req.body
 
-    if (!amount || amount <= 0) {
-      return res.status(400).json({ error: "Valid amount is required" })
+    if (!amount || isNaN(Number.parseFloat(amount)) || Number.parseFloat(amount) <= 0) {
+      console.error("Invalid amount:", amount)
+      return res.status(400).json({
+        error: "Valid amount is required",
+        received: amount,
+      })
     }
 
-    // Add the notification email to metadata if not already present
-    if (!metadata.notificationEmail) {
-      metadata.notificationEmail = "alexandroghanem1@gmail.com"
+    // Convert amount to cents/pennies and ensure it's an integer
+    const amountInPence = Math.round(Number.parseFloat(amount) * 100)
+
+    console.log(`Creating payment intent for ${amountInPence} pence (£${amount})`)
+
+    // Add notification email to metadata if not present
+    const paymentMetadata = {
+      ...metadata,
+      notificationEmail: metadata.notificationEmail || "alexandroghanem1@gmail.com",
     }
 
-    // Create a PaymentIntent with the order amount and currency
+    // Create the payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents/pence
-      currency,
+      amount: amountInPence,
+      currency: currency.toLowerCase(),
       automatic_payment_methods: {
         enabled: true,
       },
       receipt_email: customer_email,
-      metadata,
+      metadata: paymentMetadata,
     })
 
     console.log("Payment intent created successfully:", paymentIntent.id)
 
-    // Send the client secret to the client
-    res.json({
+    // Return the client secret
+    return res.status(200).json({
       clientSecret: paymentIntent.client_secret,
       id: paymentIntent.id,
     })
   } catch (error) {
-    console.error("Error creating payment intent:", error)
-    res.status(500).json({ error: error.message || "Failed to create payment intent" })
+    console.error("Error creating payment intent:", error.message)
+
+    // Return a proper error response
+    return res.status(500).json({
+      error: error.message || "Failed to create payment intent",
+      details: error.stack,
+    })
   }
 })
 
@@ -269,14 +301,22 @@ app.post("/webhook", async (req, res) => {
   let event
 
   try {
+    // Get the raw body as a buffer
+    const payload = req.rawBody || req.body
+
     // Verify the webhook signature
     const signature = req.headers["stripe-signature"]
-    const endpointSecret = "whsec_your_webhook_signing_secret" // Replace with your webhook signing secret
+    const endpointSecret = "whsec_your_webhook_secret" // Replace with your actual webhook secret
 
     try {
-      event = stripe.webhooks.constructEvent(req.body, signature, endpointSecret)
+      if (signature && endpointSecret) {
+        event = stripe.webhooks.constructEvent(payload, signature, endpointSecret)
+      } else {
+        // For testing without signature verification
+        event = JSON.parse(payload)
+      }
     } catch (err) {
-      console.error(`⚠️  Webhook signature verification failed.`, err.message)
+      console.error(`⚠️ Webhook signature verification failed:`, err.message)
       return res.status(400).send(`Webhook Error: ${err.message}`)
     }
 
@@ -297,10 +337,10 @@ app.post("/webhook", async (req, res) => {
     }
 
     // Return a 200 response to acknowledge receipt of the event
-    res.send()
+    res.status(200).send({ received: true })
   } catch (error) {
     console.error("Error handling webhook:", error)
-    res.status(500).send(`Webhook Error: ${error.message}`)
+    res.status(500).send({ error: error.message })
   }
 })
 
@@ -728,9 +768,24 @@ app.get("*", (req, res) => {
   }
 })
 
+// Fix the server startup code to ensure proper error handling
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+})
+
+// Handle server errors
+server.on("error", (error) => {
+  console.error("Server error:", error)
+  if (error.code === "EADDRINUSE") {
+    console.error(`Port ${PORT} is already in use. Please use a different port.`)
+    process.exit(1)
+  }
+})
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason)
 })
 
 module.exports = app

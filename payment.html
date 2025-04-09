@@ -819,6 +819,7 @@
         let elements;
         let paymentElement;
 
+        // Update the initializeStripe function to better handle errors
         async function initializeStripe() {
             try {
                 // Initialize Stripe
@@ -856,32 +857,37 @@
                         customer_email: document.getElementById('email').value || (user ? user.email : ''),
                         metadata: {
                             orderId: 'ORD-' + Date.now().toString().slice(-6),
-                            notificationEmail: 'alexandroghanem1@gmail.com' // Admin notification email
+                            notificationEmail: 'alexandroghanem1@gmail.com'
                         }
                     }),
                 });
                 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Server response:', errorText);
-                    try {
-                        const errorData = JSON.parse(errorText);
-                        throw new Error(`Server error: ${errorData.error || response.statusText}`);
-                    } catch (e) {
-                        throw new Error(`Server error: ${response.statusText}. Response was not valid JSON.`);
-                    }
+                // Log the raw response for debugging
+                const responseText = await response.text();
+                console.log('Raw server response:', responseText);
+                
+                // Parse the response
+                let responseData;
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Failed to parse response as JSON:', e);
+                    throw new Error(`Server returned invalid JSON: ${responseText.substring(0, 100)}...`);
                 }
                 
-                const { clientSecret } = await response.json();
-                console.log('Received client secret from server');
+                if (!response.ok) {
+                    throw new Error(`Server error: ${responseData.error || response.statusText}`);
+                }
                 
-                if (!clientSecret) {
+                if (!responseData.clientSecret) {
                     throw new Error('No client secret received from server');
                 }
                 
+                console.log('Received client secret from server');
+                
                 // Create Elements instance
                 elements = stripe.elements({
-                    clientSecret,
+                    clientSecret: responseData.clientSecret,
                     appearance: {
                         theme: 'stripe',
                         variables: {
@@ -921,9 +927,14 @@
             } catch (error) {
                 console.error('Error initializing Stripe:', error);
                 const messageElement = document.getElementById('payment-message');
-                messageElement.textContent = `Error initializing payment system: ${error.message}. Please try again later.`;
+                messageElement.textContent = `Error initializing payment system: ${error.message}`;
                 messageElement.classList.remove('hidden');
-                document.getElementById('submit').disabled = true;
+                
+                // Hide loading spinner
+                document.getElementById('payment-element-loading').style.display = 'none';
+                
+                // Re-enable the submit button
+                document.getElementById('submit').disabled = false;
             }
         }
 
