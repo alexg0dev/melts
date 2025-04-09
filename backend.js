@@ -43,7 +43,14 @@ const client = new OAuth2Client(CLIENT_ID)
 
 // Middleware
 app.use(cors())
-app.use(bodyParser.json())
+// Use JSON parser for all non-webhook routes
+app.use((req, res, next) => {
+  if (req.originalUrl === "/webhook") {
+    next()
+  } else {
+    bodyParser.json()(req, res, next)
+  }
+})
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, "public")))
 
@@ -188,60 +195,88 @@ app.get("/api/user", authenticate, (req, res) => {
 })
 
 // Create order
-app.post("/api/orders", authenticate, (req, res) => {
-  const { items, total, shipping, discount, paymentMethod, customerEmail } = req.body
-
-  if (!items || !Array.isArray(items) || items.length === 0) {
-    return res.status(400).json({ error: "Items are required" })
-  }
-
-  if (typeof total !== "number" || total <= 0) {
-    return res.status(400).json({ error: "Valid total is required" })
-  }
-
-  // Create new order
-  const orders = readData(ORDERS_FILE)
-  const users = readData(USERS_FILE)
-
-  const userIndex = users.findIndex((u) => u.userId === req.user.userId)
-  if (userIndex === -1) {
-    return res.status(404).json({ error: "User not found" })
-  }
-
-  const orderId = Date.now().toString()
-  const order = {
-    orderId,
-    userId: req.user.userId,
-    items,
-    total,
-    shipping,
-    discount,
-    status: "pending",
-    createdAt: new Date().toISOString(),
-    paymentMethod,
-    customerEmail: customerEmail || req.user.email,
-  }
-
-  orders.push(order)
-  writeData(ORDERS_FILE, orders)
-
-  // Add points to user (1 point for each $1 spent)
-  const pointsEarned = Math.floor(total)
-  users[userIndex].points += pointsEarned
-  users[userIndex].orders.push(orderId)
-  writeData(USERS_FILE, users)
-
-  // Send email notification
-  sendOrderEmail(order.customerEmail, order)
-
-  res.json({
-    success: true,
-    order: {
+app.post("/api/orders", (req, res) => {
+  try {
+    const {
+      items,
+      total,
+      shipping,
+      discount,
+      paymentMethod,
+      customerEmail,
+      customerName,
+      customerAddress,
+      customerCity,
+      customerPostcode,
+      customerPhone,
+      paymentId,
       orderId,
-      status: "pending",
-      pointsEarned,
-    },
-  })
+    } = req.body
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: "Items are required" })
+    }
+
+    if (typeof total !== "number" || total <= 0) {
+      return res.status(400).json({ error: "Valid total is required" })
+    }
+
+    // Create new order
+    const orders = readData(ORDERS_FILE)
+
+    // Generate order ID if not provided
+    const newOrderId = orderId || Date.now().toString()
+
+    const order = {
+      orderId: newOrderId,
+      userId: req.user?.userId || "guest",
+      items,
+      total,
+      shipping,
+      discount,
+      status: paymentId ? "paid" : "pending",
+      createdAt: new Date().toISOString(),
+      paymentMethod,
+      customerEmail,
+      customerName,
+      customerAddress,
+      customerCity,
+      customerPostcode,
+      customerPhone,
+      paymentId,
+    }
+
+    orders.push(order)
+    writeData(ORDERS_FILE, orders)
+
+    // If user is authenticated, add points and update user record
+    if (req.user) {
+      const users = readData(USERS_FILE)
+      const userIndex = users.findIndex((u) => u.userId === req.user.userId)
+
+      if (userIndex !== -1) {
+        // Add points to user (1 point for each $1 spent)
+        const pointsEarned = Math.floor(total)
+        users[userIndex].points += pointsEarned
+        users[userIndex].orders.push(newOrderId)
+        writeData(USERS_FILE, users)
+      }
+    }
+
+    // Send email notification
+    sendOrderEmail(customerEmail, order)
+
+    res.json({
+      success: true,
+      order: {
+        orderId: newOrderId,
+        status: order.status,
+      },
+    })
+  } catch (error) {
+    console.error("Error creating order:", error)
+    res.status(500).json({ error: "Failed to create order" })
+  }
 })
 
 // Get user orders
@@ -460,7 +495,7 @@ function sendOrderEmail(email, order) {
     
     Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
     Shipping: £${order.shipping.toFixed(2)}
-    ${order.discount ? `-£${order.discount.toFixed(2)}` : ""}
+    ${order.discount ? `Discount: -£${order.discount.toFixed(2)}` : ""}
     Total: £${order.total.toFixed(2)}
     
     Your order is being processed and will be shipped soon.
@@ -475,7 +510,9 @@ function sendOrderEmail(email, order) {
     New Order Received!
     
     Order ID: ${order.orderId}
-    Customer: ${order.customerEmail || "Unknown"}
+    Customer: ${order.customerName || "Unknown"} (${order.customerEmail || "Unknown"})
+    Address: ${order.customerAddress || "Unknown"}, ${order.customerCity || "Unknown"}, ${order.customerPostcode || "Unknown"}
+    Phone: ${order.customerPhone || "Unknown"}
     Date: ${new Date(order.createdAt).toLocaleString()}
     
     Items:
@@ -483,10 +520,11 @@ function sendOrderEmail(email, order) {
     
     Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
     Shipping: £${order.shipping.toFixed(2)}
-    ${order.discount ? `-£${order.discount.toFixed(2)}` : ""}
+    ${order.discount ? `Discount: -£${order.discount.toFixed(2)}` : ""}
     Total: £${order.total.toFixed(2)}
     
     Payment Method: ${order.paymentMethod ? `${order.paymentMethod.type.toUpperCase()} (ending in ${order.paymentMethod.lastFour})` : "Unknown"}
+    Payment Status: ${order.status === "paid" ? "PAID" : "PENDING"}
     
     Please process this order as soon as possible.
   `
@@ -514,7 +552,12 @@ app.get("/products.html", (req, res) => {
 // Create a payment intent
 app.post("/api/create-payment-intent", async (req, res) => {
   try {
+    console.log("Creating payment intent with data:", req.body)
     const { amount, currency = "gbp", customer_email, metadata = {} } = req.body
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: "Valid amount is required" })
+    }
 
     // Add the notification email to metadata if not already present
     if (!metadata.notificationEmail) {
@@ -532,6 +575,8 @@ app.post("/api/create-payment-intent", async (req, res) => {
       metadata,
     })
 
+    console.log("Payment intent created successfully:", paymentIntent.id)
+
     // Send the client secret to the client
     res.json({
       clientSecret: paymentIntent.client_secret,
@@ -545,36 +590,42 @@ app.post("/api/create-payment-intent", async (req, res) => {
 
 // Webhook to handle Stripe events
 app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  const sig = req.headers["stripe-signature"]
-  const endpointSecret = "whsec_your_webhook_signing_secret" // Replace with your webhook signing secret
-
   let event
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret)
-  } catch (err) {
-    console.error(`Webhook Error: ${err.message}`)
-    return res.status(400).send(`Webhook Error: ${err.message}`)
-  }
+    // Verify the webhook signature
+    const signature = req.headers["stripe-signature"]
+    const endpointSecret = "whsec_your_webhook_signing_secret" // Replace with your webhook signing secret
 
-  // Handle the event
-  switch (event.type) {
-    case "payment_intent.succeeded":
-      const paymentIntent = event.data.object
-      console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`)
-      // Update order status in your database
-      handleSuccessfulPayment(paymentIntent)
-      break
-    case "payment_intent.payment_failed":
-      const failedPayment = event.data.object
-      console.log(`Payment failed: ${failedPayment.last_payment_error?.message}`)
-      break
-    default:
-      console.log(`Unhandled event type ${event.type}`)
-  }
+    try {
+      event = stripe.webhooks.constructEvent(req.body, signature, endpointSecret)
+    } catch (err) {
+      console.error(`⚠️  Webhook signature verification failed.`, err.message)
+      return res.status(400).send(`Webhook Error: ${err.message}`)
+    }
 
-  // Return a 200 response to acknowledge receipt of the event
-  res.send()
+    // Handle the event
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        const paymentIntent = event.data.object
+        console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`)
+        // Update order status in your database
+        await handleSuccessfulPayment(paymentIntent)
+        break
+      case "payment_intent.payment_failed":
+        const failedPayment = event.data.object
+        console.log(`Payment failed: ${failedPayment.last_payment_error?.message}`)
+        break
+      default:
+        console.log(`Unhandled event type ${event.type}`)
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    res.send()
+  } catch (error) {
+    console.error("Error handling webhook:", error)
+    res.status(500).send(`Webhook Error: ${error.message}`)
+  }
 })
 
 // Helper function to handle successful payments
@@ -599,7 +650,7 @@ async function handleSuccessfulPayment(paymentIntent) {
         sendEmail(orders[orderIndex].customerEmail, {
           subject: `Payment Confirmed for Order #${orderId}`,
           body: `
-            Dear Customer,
+            Dear ${orders[orderIndex].customerName || "Customer"},
             
             We're happy to confirm that your payment for order #${orderId} has been successfully processed.
             
@@ -627,7 +678,7 @@ async function handleSuccessfulPayment(paymentIntent) {
           
           Subtotal: £${orders[orderIndex].items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
           Shipping: £${orders[orderIndex].shipping.toFixed(2)}
-          ${orders[orderIndex].discount ? `-£${orders[orderIndex].discount.toFixed(2)}` : ""}
+          ${orders[orderIndex].discount ? `Discount: -£${orders[orderIndex].discount.toFixed(2)}` : ""}
           Total: £${orders[orderIndex].total.toFixed(2)}
           
           Payment Method: ${orders[orderIndex].paymentMethod ? `${orders[orderIndex].paymentMethod.type.toUpperCase()} (ending in ${orders[orderIndex].paymentMethod.lastFour})` : "Unknown"}
@@ -640,6 +691,24 @@ async function handleSuccessfulPayment(paymentIntent) {
     console.error("Error handling successful payment:", error)
   }
 }
+
+// Get order by ID
+app.get("/api/orders/:orderId", (req, res) => {
+  try {
+    const { orderId } = req.params
+    const orders = readData(ORDERS_FILE)
+    const order = orders.find((o) => o.orderId === orderId)
+
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" })
+    }
+
+    res.json(order)
+  } catch (error) {
+    console.error("Error fetching order:", error)
+    res.status(500).json({ error: "Failed to fetch order" })
+  }
+})
 
 // Serve static files
 app.get("*", (req, res) => {
