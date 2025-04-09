@@ -932,6 +932,115 @@
                 callback: handleCredentialResponse
             });
         }
+
+// Add coupon code functionality
+document.getElementById('apply-coupon').addEventListener('click', function() {
+    const couponCode = document.getElementById('coupon-code').value.trim();
+    const couponMessage = document.getElementById('coupon-message');
+    
+    if (!couponCode) {
+        couponMessage.textContent = 'Please enter a coupon code';
+        couponMessage.className = 'mt-2 text-sm text-red-500';
+        couponMessage.classList.remove('hidden');
+        return;
+    }
+    
+    // Call the backend to validate the coupon
+    fetch('/api/apply-coupon', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code: couponCode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const coupon = data.coupon;
+            let discountAmount = 0;
+            const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('£', ''));
+            
+            if (coupon.type === 'percentage') {
+                discountAmount = subtotal * coupon.discount;
+                couponMessage.textContent = `${coupon.description} applied!`;
+            } else if (coupon.type === 'fixed') {
+                discountAmount = coupon.discount;
+                couponMessage.textContent = `${coupon.description} applied!`;
+            }
+            
+            // Update the discount display
+            document.getElementById('discount').textContent = `-£${discountAmount.toFixed(2)}`;
+            
+            // Store the discount in localStorage
+            localStorage.setItem('discount', discountAmount);
+            localStorage.setItem('couponCode', couponCode);
+            
+            // Update the total
+            const shipping = document.getElementById('shipping').textContent === 'Free' ? 0 : 
+                parseFloat(document.getElementById('shipping').textContent.replace('£', ''));
+            const total = subtotal + shipping - discountAmount;
+            document.getElementById('total').textContent = `£${total.toFixed(2)}`;
+            
+            couponMessage.className = 'mt-2 text-sm text-green-500';
+        } else {
+            couponMessage.textContent = data.error || 'Invalid coupon code';
+            couponMessage.className = 'mt-2 text-sm text-red-500';
+        }
+        
+        couponMessage.classList.remove('hidden');
+    })
+    .catch(error => {
+        console.error('Error applying coupon:', error);
+        couponMessage.textContent = 'Error applying coupon. Please try again.';
+        couponMessage.className = 'mt-2 text-sm text-red-500';
+        couponMessage.classList.remove('hidden');
+    });
+});
+
+// Update the updateOrderSummary function to handle discounts properly
+function updateOrderSummary(subtotal, discount, shipping) {
+    document.getElementById('subtotal').textContent = `£${subtotal.toFixed(2)}`;
+    document.getElementById('discount').textContent = `-£${discount.toFixed(2)}`;
+    
+    if (shipping === 0) {
+        document.getElementById('shipping').textContent = 'Free';
+    } else {
+        document.getElementById('shipping').textContent = `£${shipping.toFixed(2)}`;
+    }
+    
+    const total = subtotal - discount + shipping;
+    document.getElementById('total').textContent = `£${total.toFixed(2)}`;
+}
+
+// Add this function to handle cart item event listeners
+function addCartItemEventListeners() {
+    // Add event listeners to increase quantity buttons
+    document.querySelectorAll('.increase-quantity').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-id');
+            const itemScent = this.getAttribute('data-scent');
+            updateCartItemQuantity(itemId, itemScent, 1);
+        });
+    });
+    
+    // Add event listeners to decrease quantity buttons
+    document.querySelectorAll('.decrease-quantity').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-id');
+            const itemScent = this.getAttribute('data-scent');
+            updateCartItemQuantity(itemId, itemScent, -1);
+        });
+    });
+    
+    // Add event listeners to remove item buttons
+    document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-id');
+            const itemScent = this.getAttribute('data-scent');
+            removeCartItem(itemId, itemScent);
+        });
+    });
+}
     </script>
 </body>
 </html>

@@ -521,8 +521,11 @@
                             <h2 class="text-xl font-semibold text-gray-800 mb-4">Payment Details</h2>
                             
                             <form id="payment-form">
-                                <div id="card-element" class="mb-6 p-4 border border-gray-300 rounded-md">
-                                    <!-- Stripe Card Element will be inserted here -->
+                                <div id="card-element" class="mb-6 p-4 border border-gray-300 rounded-md min-h-[200px]">
+                                    <!-- Stripe Payment Element will be inserted here -->
+                                    <div class="flex items-center justify-center h-full">
+                                        <div class="spinner" id="payment-element-loading"></div>
+                                    </div>
                                 </div>
                                 
                                 <button id="submit" class="w-full bg-gradient-to-r from-pink-600 to-pink-500 text-white py-3 px-4 rounded-md font-medium hover:opacity-90 transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2">
@@ -740,272 +743,306 @@
         }
 
         function loadOrderDetails() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const orderItems = document.getElementById('order-items');
-            const subtotalElement = document.getElementById('subtotal');
-            const shippingElement = document.getElementById('shipping');
-            const discountElement = document.getElementById('discount');
-            const totalElement = document.getElementById('total');
-            
-            // Clear existing items
-            orderItems.innerHTML = '';
-            
-            // Calculate totals
-            let subtotal = 0;
-            
-            // Add each item to the order summary
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                
-                const itemElement = document.createElement('div');
-                itemElement.className = 'flex justify-between items-center';
-                itemElement.innerHTML = `
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center mr-3">
-                            <i class="fas fa-soap text-gray-500"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-800 font-medium">${item.name}</p>
-                            <p class="text-gray-500 text-sm">Qty: ${item.quantity}</p>
-                        </div>
-                    </div>
-                    <span class="font-medium">£${itemTotal.toFixed(2)}</span>
-                `;
-                orderItems.appendChild(itemElement);
-            });
-            
-            // Set shipping cost (free over £50)
-            const shipping = subtotal >= 50 ? 0 : 3.99;
-            
-            // Get discount from localStorage if any
-            const discount = parseFloat(localStorage.getItem('discount') || 0);
-            
-            // Calculate total
-            const total = subtotal + shipping - discount;
-            
-            // Update display
-            subtotalElement.textContent = `£${subtotal.toFixed(2)}`;
-            shippingElement.textContent = shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`;
-            discountElement.textContent = `-£${discount.toFixed(2)}`;
-            totalElement.textContent = `£${total.toFixed(2)}`;
-            
-            // Store order details for payment processing
-            localStorage.setItem('orderTotal', total);
-            localStorage.setItem('orderShipping', shipping);
-            localStorage.setItem('orderDiscount', discount);
-        }
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const orderItems = document.getElementById('order-items');
+    const subtotalElement = document.getElementById('subtotal');
+    const shippingElement = document.getElementById('shipping');
+    const discountElement = document.getElementById('discount');
+    const totalElement = document.getElementById('total');
+    
+    // Clear existing items
+    orderItems.innerHTML = '';
+    
+    // If cart is empty, redirect back to cart page
+    if (cart.length === 0) {
+        alert('Your cart is empty. Please add items before checkout.');
+        window.location.href = 'cart.html';
+        return;
+    }
+    
+    // Calculate totals
+    let subtotal = parseFloat(localStorage.getItem('orderSubtotal') || 0);
+    if (subtotal === 0) {
+        // Calculate from cart if not stored
+        subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+    
+    // Add each item to the order summary
+    cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        
+        const itemElement = document.createElement('div');
+        itemElement.className = 'flex justify-between items-center mb-3';
+        itemElement.innerHTML = `
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center mr-3 overflow-hidden">
+                    ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
+                    `<i class="fas fa-soap text-gray-500"></i>`}
+                </div>
+                <div>
+                    <p class="text-gray-800 font-medium">${item.name}</p>
+                    <p class="text-gray-500 text-sm">Qty: ${item.quantity} × £${item.price.toFixed(2)}</p>
+                    ${item.scent ? `<p class="text-gray-500 text-xs">Scent: ${item.scent}</p>` : ''}
+                </div>
+            </div>
+            <span class="font-medium">£${itemTotal.toFixed(2)}</span>
+        `;
+        orderItems.appendChild(itemElement);
+    });
+    
+    // Get shipping cost from localStorage or calculate (free over £50)
+    let shipping = parseFloat(localStorage.getItem('orderShipping') || 0);
+    if (shipping === 0 && subtotal < 50) {
+        shipping = 3.99;
+    }
+    
+    // Get discount from localStorage if any
+    const discount = parseFloat(localStorage.getItem('orderDiscount') || 0);
+    
+    // Calculate total
+    const total = subtotal + shipping - discount;
+    
+    // Update display
+    subtotalElement.textContent = `£${subtotal.toFixed(2)}`;
+    shippingElement.textContent = shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`;
+    discountElement.textContent = `-£${discount.toFixed(2)}`;
+    totalElement.textContent = `£${total.toFixed(2)}`;
+    
+    // Store order details for payment processing
+    localStorage.setItem('orderTotal', total);
+    localStorage.setItem('orderShipping', shipping);
+    localStorage.setItem('orderDiscount', discount);
+}
 
         // Stripe integration
         let stripe;
-        let card;
+        let elements;
+        let paymentElement;
 
         async function initializeStripe() {
-            // Initialize Stripe
-            stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
-            
-            // Get customer email from localStorage if available
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user && user.email) {
-                document.getElementById('email').value = user.email;
+    // Initialize Stripe
+    stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
+    
+    // Get customer email from localStorage if available
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.email) {
+        document.getElementById('email').value = user.email;
+    }
+    
+    // Get order total
+    const amount = parseFloat(localStorage.getItem('orderTotal') || 0);
+    
+    if (amount <= 0) {
+        document.getElementById('payment-message').textContent = 'Your cart is empty. Please add items before checkout.';
+        document.getElementById('payment-message').classList.remove('hidden');
+        document.getElementById('submit').disabled = true;
+        return;
+    }
+    
+    try {
+        // Create payment intent on the server
+        const response = await fetch('/api/create-payment-intent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                amount: amount,
+                currency: 'gbp',
+                customer_email: document.getElementById('email').value || (user ? user.email : ''),
+                metadata: {
+                    orderId: 'ORD-' + Date.now().toString().slice(-6),
+                    notificationEmail: 'alexandroghanem1@gmail.com' // Admin notification email
+                }
+            }),
+        });
+        
+        const { clientSecret } = await response.json();
+        
+        // Appearance for the Payment Element
+        const appearance = {
+            theme: 'stripe',
+            variables: {
+                colorPrimary: '#FF6D93',
+                colorBackground: '#ffffff',
+                colorText: '#32325d',
+                colorDanger: '#ff5252',
+                fontFamily: 'Montserrat, sans-serif',
+                spacingUnit: '4px',
+                borderRadius: '4px'
             }
-            
-            // Get order total
-            const amount = parseFloat(localStorage.getItem('orderTotal') || 0);
-            
-            if (amount <= 0) {
-                document.getElementById('payment-message').textContent = 'Your cart is empty. Please add items before checkout.';
-                document.getElementById('payment-message').classList.remove('hidden');
-                document.getElementById('submit').disabled = true;
-                return;
+        };
+        
+        // Options for the Payment Element
+        const options = {
+            clientSecret,
+            appearance,
+            layout: {
+                type: 'tabs',
+                defaultCollapsed: false
+            },
+            business: {
+                name: "Melissa's Melts"
             }
-            
-            // Create Stripe Elements
-            const elements = stripe.elements({
-                fonts: [
-                    {
-                        cssSrc: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
-                    },
-                ],
-            });
-            
-            // Create and mount the Card Element
-            const style = {
-                base: {
-                    color: '#32325d',
-                    fontFamily: '"Montserrat", sans-serif',
-                    fontSmoothing: 'antialiased',
-                    fontSize: '16px',
-                    '::placeholder': {
-                        color: '#aab7c4'
-                    },
-                    ':-webkit-autofill': {
-                        color: '#32325d',
-                    },
+        };
+        
+        // Create Elements instance
+        elements = stripe.elements(options);
+        
+        // Create and mount the Payment Element
+        paymentElement = elements.create('payment');
+        paymentElement.mount('#card-element');
+        
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', handleSubmit);
+        
+    } catch (error) {
+        console.error('Error initializing Stripe:', error);
+        document.getElementById('payment-message').textContent = 'Error initializing payment system. Please try again later.';
+        document.getElementById('payment-message').classList.remove('hidden');
+        document.getElementById('submit').disabled = true;
+    }
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const submitButton = document.getElementById('submit');
+    const messageElement = document.getElementById('payment-message');
+    const spinner = document.getElementById('spinner');
+    const buttonText = document.getElementById('button-text');
+    
+    // Get customer information
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+    const city = document.getElementById('city').value;
+    const postcode = document.getElementById('postcode').value;
+    
+    // Validate UK postcode format
+    const postcodeRegex = /^[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][A-Za-z]{2}$/;
+    if (!postcodeRegex.test(postcode)) {
+        messageElement.textContent = 'Please enter a valid UK postcode (e.g. AB12 3CD)';
+        messageElement.classList.remove('hidden');
+        return;
+    }
+    
+    // Validate required fields
+    if (!name || !email || !phone || !address || !city || !postcode) {
+        messageElement.textContent = 'Please fill in all required fields';
+        messageElement.classList.remove('hidden');
+        return;
+    }
+    
+    // Disable the submit button and show spinner
+    submitButton.disabled = true;
+    spinner.classList.remove('hidden');
+    buttonText.classList.add('hidden');
+    messageElement.classList.add('hidden');
+    
+    try {
+        // Get order details
+        const amount = parseFloat(localStorage.getItem('orderTotal') || 0);
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        if (amount <= 0 || cart.length === 0) {
+            throw new Error('Invalid order details');
+        }
+        
+        // Confirm payment with Stripe
+        const { error, paymentIntent } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: `${window.location.origin}/order-confirmation.html`,
+                payment_method_data: {
+                    billing_details: {
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        address: {
+                            line1: address,
+                            city: city,
+                            postal_code: postcode,
+                            country: 'GB'
+                        }
+                    }
                 },
-                invalid: {
-                    color: '#fa755a',
-                    iconColor: '#fa755a',
-                    '::placeholder': {
-                        color: '#FFCCA5',
-                    },
+                receipt_email: email
+            },
+            redirect: 'if_required'
+        });
+        
+        if (error) {
+            // Show error message
+            messageElement.textContent = error.message || 'An error occurred during payment. Please try again.';
+            messageElement.classList.remove('hidden');
+            
+            // Re-enable the submit button
+            submitButton.disabled = false;
+            spinner.classList.add('hidden');
+            buttonText.classList.remove('hidden');
+        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+            // Payment succeeded
+            // Save order details to send to server
+            const orderDetails = {
+                items: cart,
+                total: amount,
+                shipping: parseFloat(localStorage.getItem('orderShipping') || 0),
+                discount: parseFloat(localStorage.getItem('orderDiscount') || 0),
+                paymentMethod: {
+                    type: 'card',
+                    lastFour: paymentIntent.payment_method ? paymentIntent.payment_method.card.last4 : 'unknown'
                 },
+                customerEmail: email,
+                customerName: name,
+                customerPhone: phone,
+                customerAddress: address,
+                customerCity: city,
+                customerPostcode: postcode,
+                paymentId: paymentIntent.id,
+                orderId: paymentIntent.metadata ? paymentIntent.metadata.orderId : 'ORD-' + Date.now().toString().slice(-6)
             };
             
-            card = elements.create('card', { 
-                style: style,
-                hidePostalCode: true // We'll collect it separately
+            // Store customer info for order confirmation page
+            localStorage.setItem('customerName', name);
+            localStorage.setItem('customerEmail', email);
+            localStorage.setItem('customerPhone', phone);
+            localStorage.setItem('customerAddress', address);
+            localStorage.setItem('customerCity', city);
+            localStorage.setItem('customerPostcode', postcode);
+            localStorage.setItem('orderId', orderDetails.orderId);
+            localStorage.setItem('paymentId', paymentIntent.id);
+            
+            // Send order to server
+            await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                },
+                body: JSON.stringify(orderDetails)
             });
             
-            card.mount('#card-element');
+            // Clear cart after successful payment
+            localStorage.removeItem('cart');
             
-            // Handle form submission
-            const form = document.getElementById('payment-form');
-            form.addEventListener('submit', handleSubmit);
+            // Redirect to confirmation page
+            window.location.href = `order-confirmation.html?order_id=${paymentIntent.id}`;
         }
-
-        async function handleSubmit(e) {
-            e.preventDefault();
-            
-            const submitButton = document.getElementById('submit');
-            const messageElement = document.getElementById('payment-message');
-            const spinner = document.getElementById('spinner');
-            const buttonText = document.getElementById('button-text');
-            
-            // Get customer information
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const address = document.getElementById('address').value;
-            const city = document.getElementById('city').value;
-            const postcode = document.getElementById('postcode').value;
-            
-            // Validate UK postcode format
-            const postcodeRegex = /^[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][A-Za-z]{2}$/;
-            if (!postcodeRegex.test(postcode)) {
-                messageElement.textContent = 'Please enter a valid UK postcode (e.g. AB12 3CD)';
-                messageElement.classList.remove('hidden');
-                return;
-            }
-            
-            // Validate required fields
-            if (!name || !email || !phone || !address || !city || !postcode) {
-                messageElement.textContent = 'Please fill in all required fields';
-                messageElement.classList.remove('hidden');
-                return;
-            }
-            
-            // Disable the submit button and show spinner
-            submitButton.disabled = true;
-            spinner.classList.remove('hidden');
-            buttonText.classList.add('hidden');
-            messageElement.classList.add('hidden');
-            
-            try {
-                // Create payment intent on the server
-                const response = await fetch('/api/create-payment-intent', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        amount: parseFloat(localStorage.getItem('orderTotal') || 0),
-                        currency: 'gbp',
-                        customer_email: email,
-                        metadata: {
-                            orderId: Date.now().toString(),
-                            name: name,
-                            phone: phone,
-                            address: address,
-                            city: city,
-                            postcode: postcode,
-                            notificationEmail: 'alexandroghanem1@gmail.com' // Admin notification email
-                        }
-                    }),
-                });
-                
-                const { clientSecret } = await response.json();
-                
-                // Use card to create payment method and confirm payment
-                const result = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: card,
-                        billing_details: {
-                            name: name,
-                            email: email,
-                            phone: phone,
-                            address: {
-                                line1: address,
-                                city: city,
-                                postal_code: postcode,
-                                country: 'GB'
-                            }
-                        }
-                    },
-                    receipt_email: email
-                });
-                
-                if (result.error) {
-                    // Show error message
-                    messageElement.textContent = result.error.message;
-                    messageElement.classList.remove('hidden');
-                    
-                    // Re-enable the submit button
-                    submitButton.disabled = false;
-                    spinner.classList.add('hidden');
-                    buttonText.classList.remove('hidden');
-                } else {
-                    // Payment succeeded
-                    // Save order details to send to server
-                    const orderDetails = {
-                        items: JSON.parse(localStorage.getItem('cart')) || [],
-                        total: parseFloat(localStorage.getItem('orderTotal') || 0),
-                        shipping: parseFloat(localStorage.getItem('orderShipping') || 0),
-                        discount: parseFloat(localStorage.getItem('orderDiscount') || 0),
-                        paymentMethod: {
-                            type: 'card',
-                            lastFour: result.paymentIntent.payment_method.card.last4
-                        },
-                        customerEmail: email,
-                        customerName: name,
-                        customerPhone: phone,
-                        customerAddress: address,
-                        customerCity: city,
-                        customerPostcode: postcode,
-                        paymentId: result.paymentIntent.id
-                    };
-                    
-                    // Store customer info for order confirmation page
-                    localStorage.setItem('customerName', name);
-                    localStorage.setItem('customerAddress', address);
-                    localStorage.setItem('customerCity', city);
-                    localStorage.setItem('customerPostcode', postcode);
-                    
-                    // Send order to server
-                    await fetch('/api/orders', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-                        },
-                        body: JSON.stringify(orderDetails)
-                    });
-                    
-                    // Redirect to confirmation page
-                    window.location.href = `order-confirmation.html?order_id=${result.paymentIntent.id}`;
-                }
-                
-            } catch (error) {
-                console.error('Payment error:', error);
-                messageElement.textContent = 'An unexpected error occurred during payment. Please try again.';
-                messageElement.classList.remove('hidden');
-                
-                // Re-enable the submit button
-                submitButton.disabled = false;
-                spinner.classList.add('hidden');
-                buttonText.classList.remove('hidden');
-            }
-        }
+        
+    } catch (error) {
+        console.error('Payment error:', error);
+        messageElement.textContent = 'An unexpected error occurred during payment. Please try again.';
+        messageElement.classList.remove('hidden');
+        
+        // Re-enable the submit button
+        submitButton.disabled = false;
+        spinner.classList.add('hidden');
+        buttonText.classList.remove('hidden');
+    }
+}
     </script>
 </body>
 </html>

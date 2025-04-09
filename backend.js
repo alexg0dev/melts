@@ -382,21 +382,26 @@ app.post("/api/use-points", authenticate, (req, res) => {
 app.post("/api/apply-coupon", (req, res) => {
   const { code } = req.body
 
-  // Simple coupon validation
-  // In a real app, you would have a database of valid coupons
+  // Expanded coupon validation with more coupon codes
   const validCoupons = {
-    MELTS5: { discount: 0.05, type: "percentage" }, // Hidden coupon code - 5% off
+    WELCOME10: { discount: 0.1, type: "percentage", description: "10% off your order" },
+    MELTS5: { discount: 0.05, type: "percentage", description: "5% off your order" },
+    SOAP20: { discount: 0.2, type: "percentage", description: "20% off your order" },
+    FREESHIP: { discount: 5.99, type: "fixed", description: "Free shipping" },
+    SUMMER15: { discount: 0.15, type: "percentage", description: "15% summer discount" },
   }
 
-  if (!code || !validCoupons[code]) {
+  if (!code || !validCoupons[code.toUpperCase()]) {
     return res.status(400).json({ error: "Invalid coupon code" })
   }
+
+  const coupon = validCoupons[code.toUpperCase()]
 
   res.json({
     success: true,
     coupon: {
-      code,
-      ...validCoupons[code],
+      code: code.toUpperCase(),
+      ...coupon,
     },
   })
 })
@@ -509,11 +514,16 @@ app.get("/products.html", (req, res) => {
 // Create a payment intent
 app.post("/api/create-payment-intent", async (req, res) => {
   try {
-    const { amount, currency = "usd", customer_email, metadata = {} } = req.body
+    const { amount, currency = "gbp", customer_email, metadata = {} } = req.body
+
+    // Add the notification email to metadata if not already present
+    if (!metadata.notificationEmail) {
+      metadata.notificationEmail = "alexandroghanem1@gmail.com"
+    }
 
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
+      amount: Math.round(amount * 100), // Convert to cents/pence
       currency,
       automatic_payment_methods: {
         enabled: true,
@@ -599,6 +609,32 @@ async function handleSuccessfulPayment(paymentIntent) {
           `,
         })
       }
+
+      // Always send notification to the admin email
+      sendEmail("alexandroghanem1@gmail.com", {
+        subject: `New Order #${orderId} - Payment Confirmed`,
+        body: `
+          New Order Received!
+          
+          Order ID: ${orderId}
+          Customer: ${orders[orderIndex].customerName || "Unknown"} (${orders[orderIndex].customerEmail || "Unknown"})
+          Address: ${orders[orderIndex].customerAddress || "Unknown"}, ${orders[orderIndex].customerCity || "Unknown"}, ${orders[orderIndex].customerPostcode || "Unknown"}
+          Phone: ${orders[orderIndex].customerPhone || "Unknown"}
+          Date: ${new Date().toLocaleString()}
+          
+          Items:
+          ${orders[orderIndex].items.map((item) => `- ${item.name} (${item.quantity}) - £${item.price.toFixed(2)}`).join("\n")}
+          
+          Subtotal: £${orders[orderIndex].items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+          Shipping: £${orders[orderIndex].shipping.toFixed(2)}
+          ${orders[orderIndex].discount ? `-£${orders[orderIndex].discount.toFixed(2)}` : ""}
+          Total: £${orders[orderIndex].total.toFixed(2)}
+          
+          Payment Method: ${orders[orderIndex].paymentMethod ? `${orders[orderIndex].paymentMethod.type.toUpperCase()} (ending in ${orders[orderIndex].paymentMethod.lastFour})` : "Unknown"}
+          
+          Please process this order as soon as possible.
+        `,
+      })
     }
   } catch (error) {
     console.error("Error handling successful payment:", error)
