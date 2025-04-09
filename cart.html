@@ -344,47 +344,13 @@
                                     <p id="coupon-message" class="mt-2 text-sm hidden"></p>
                                 </div>
                                 
-                                <!-- Payment Form -->
-                                <div id="payment-form" class="mb-6 border-t border-gray-100 pt-6 mt-4">
-                                    <h3 class="text-lg font-medium mb-4">Payment Details</h3>
+                                <!-- Checkout Button -->
+                                <div class="mb-6 border-t border-gray-100 pt-6 mt-4">
+                                    <a href="payment.html" id="proceed-to-checkout" class="btn-primary text-white font-medium py-3 px-6 rounded-full w-full shadow-glow mb-4 text-center block">
+                                        Proceed to Checkout
+                                    </a>
                                     
-                                    <!-- Card Information -->
-                                    <div class="mb-4">
-                                        <label for="card-number" class="block text-sm font-medium text-gray-700 mb-2">Card Number</label>
-                                        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" maxlength="19">
-                                    </div>
-                                    
-                                    <div class="flex gap-4 mb-4">
-                                        <div class="flex-1">
-                                            <label for="card-expiry" class="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
-                                            <input type="text" id="card-expiry" placeholder="MM/YY" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" maxlength="5">
-                                        </div>
-                                        <div class="flex-1">
-                                            <label for="card-cvc" class="block text-sm font-medium text-gray-700 mb-2">CVC</label>
-                                            <input type="text" id="card-cvc" placeholder="123" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent" maxlength="4">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="mb-4">
-                                        <label for="card-name" class="block text-sm font-medium text-gray-700 mb-2">Name on Card</label>
-                                        <input type="text" id="card-name" placeholder="John Smith" class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                                    </div>
-                                    
-                                    <div class="flex items-center mb-4">
-                                        <div class="flex items-center">
-                                            <input type="radio" id="card-type-visa" name="card-type" value="visa" class="mr-2" checked>
-                                            <label for="card-type-visa" class="text-sm text-gray-700 mr-4">Visa</label>
-                                        </div>
-                                        <div class="flex items-center">
-                                            <input type="radio" id="card-type-mastercard" name="card-type" value="mastercard" class="mr-2">
-                                            <label for="card-type-mastercard" class="text-sm text-gray-700">Mastercard</label>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Checkout Button -->
-                                    <button id="checkout-button" class="btn-primary text-white font-medium py-3 px-6 rounded-full w-full shadow-glow mb-4">Complete Purchase</button>
-                                    
-                                    <p class="text-xs text-gray-500 text-center">Your payment information is processed securely. We do not store your credit card details.</p>
+                                    <p class="text-xs text-gray-500 text-center">Your payment information is processed securely on our checkout page.</p>
                                     <p class="text-xs text-gray-500 text-center mt-2">If there are any issues with your order, please contact: <a href="https://www.facebook.com/melissasmelts" class="text-pink-500 hover:underline">Melissa's Melts on Facebook</a></p>
                                 </div>
                                 
@@ -684,7 +650,75 @@
             
             // Load cart items
             function loadCartItems() {
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                // Get cart from localStorage
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const token = localStorage.getItem('token');
+                
+                // If user is logged in, sync with backend first
+                if (token) {
+                    fetch('/api/cart', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.cart) {
+                            // Merge server cart with local cart
+                            const serverCart = data.cart;
+                            const mergedCart = mergeCart(cart, serverCart);
+                            
+                            // Update localStorage
+                            localStorage.setItem('cart', JSON.stringify(mergedCart));
+                            
+                            // Now display the merged cart
+                            displayCart(mergedCart);
+                        } else {
+                            // Display local cart if no server cart available
+                            displayCart(cart);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching cart from server:', error);
+                        // Still display local cart if server request fails
+                        displayCart(cart);
+                    });
+                } else {
+                    // Just display local cart if user not logged in
+                    displayCart(cart);
+                }
+            }
+
+            // Add the mergeCart helper function
+            function mergeCart(localCart, serverCart) {
+                // Create a map of products by ID and scent for easy lookup
+                const productMap = new Map();
+                
+                // Add local cart items to the map
+                localCart.forEach(item => {
+                    const key = `${item.id}_${item.scent || ''}`;
+                    productMap.set(key, item);
+                });
+                
+                // Merge server cart items
+                serverCart.forEach(item => {
+                    const key = `${item.id}_${item.scent || ''}`;
+                    if (productMap.has(key)) {
+                        // Take the higher quantity if item exists in both carts
+                        const localItem = productMap.get(key);
+                        localItem.quantity = Math.max(localItem.quantity, item.quantity);
+                    } else {
+                        productMap.set(key, item);
+                    }
+                });
+                
+                // Convert map back to array
+                return Array.from(productMap.values());
+            }
+
+            // Create a displayCart function to handle the display logic
+            function displayCart(cart) {
                 const cartItemsContainer = document.getElementById('cart-items');
                 const emptyCartMessage = document.getElementById('empty-cart-message');
                 const cartItemsCount = document.getElementById('cart-items-count');
@@ -720,368 +754,184 @@
                     const cartItemElement = document.createElement('div');
                     cartItemElement.className = 'p-6 flex items-center';
                     cartItemElement.innerHTML = `
-                    <div class="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
-                        ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
-                        `<span class="text-pink-500 text-sm">Image</span>`}
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-medium">${item.name}</h3>
-                        <p class="text-gray-500 text-sm">Price: £${item.price.toFixed(2)}</p>
-                        ${item.scent ? `<p class="text-gray-500 text-sm">Scent: ${item.scent}</p>` : ''}
-                    </div>
-                    <div class="flex items-center">
-                        <button class="decrease-quantity bg-gray-100 hover:bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center" data-id="${item.id}" data-scent="${item.scent || ''}">
-                            <i class="fas fa-minus text-xs"></i>
+                        <div class="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                            ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
+                            `<span class="text-pink-500 text-sm">Image</span>`}
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium">${item.name}</h3>
+                            <p class="text-gray-500 text-sm">Price: £${item.price.toFixed(2)}</p>
+                            ${item.scent ? `<p class="text-gray-500 text-sm">Scent: ${item.scent}</p>` : ''}
+                        </div>
+                        <div class="flex items-center">
+                            <button class="decrease-quantity bg-gray-100 hover:bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center" data-id="${item.id}" data-scent="${item.scent || ''}">
+                                <i class="fas fa-minus text-xs"></i>
+                            </button>
+                            <span class="mx-3 w-8 text-center">${item.quantity}</span>
+                            <button class="increase-quantity bg-gray-100 hover:bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center" data-id="${item.id}" data-scent="${item.scent || ''}">
+                                <i class="fas fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="ml-6 w-24 text-right">
+                            <p class="font-medium">£${itemTotal.toFixed(2)}</p>
+                        </div>
+                        <button class="remove-item ml-4 text-gray-400 hover:text-pink-500" data-id="${item.id}" data-scent="${item.scent || ''}">
+                            <i class="fas fa-trash"></i>
                         </button>
-                        <span class="mx-3 w-8 text-center">${item.quantity}</span>
-                        <button class="increase-quantity bg-gray-100 hover:bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center" data-id="${item.id}" data-scent="${item.scent || ''}">
-                            <i class="fas fa-plus text-xs"></i>
-                        </button>
-                    </div>
-                    <div class="ml-6 w-24 text-right">
-                        <p class="font-medium">£${itemTotal.toFixed(2)}</p>
-                    </div>
-                    <button class="remove-item ml-4 text-gray-400 hover:text-pink-500" data-id="${item.id}" data-scent="${item.scent || ''}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
+                    `;
+                    
+                    cartItemsContainer.appendChild(cartItemElement);
+                });
                 
-                cartItemsContainer.appendChild(cartItemElement);
-            });
-            
-            // Add event listeners to cart item buttons
-            addCartItemEventListeners();
-            
-            // Calculate shipping (free for orders over £50)
-            const shipping = subtotal >= 50 ? 0 : 5.99;
-            
-            // Calculate discount (0 for now)
-            const discount = 0;
-            
-            // Update order summary
-            updateOrderSummary(subtotal, discount, shipping);
-        }
-        
-        // Add event listeners to cart item buttons
-        function addCartItemEventListeners() {
-            // Decrease quantity buttons
-            document.querySelectorAll('.decrease-quantity').forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.dataset.id;
-                    const itemScent = this.dataset.scent;
-                    updateCartItemQuantity(itemId, itemScent, -1);
-                });
-            });
-            
-            // Increase quantity buttons
-            document.querySelectorAll('.increase-quantity').forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.dataset.id;
-                    const itemScent = this.dataset.scent;
-                    updateCartItemQuantity(itemId, itemScent, 1);
-                });
-            });
-            
-            // Remove item buttons
-            document.querySelectorAll('.remove-item').forEach(button => {
-                button.addEventListener('click', function() {
-                    const itemId = this.dataset.id;
-                    const itemScent = this.dataset.scent;
-                    removeCartItem(itemId, itemScent);
-                });
-            });
-        }
-        
-        // Update cart item quantity
-        function updateCartItemQuantity(itemId, itemScent, change) {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const itemIndex = cart.findIndex(item => item.id === itemId && (item.scent || '') === (itemScent || ''));
-            
-            if (itemIndex !== -1) {
-                cart[itemIndex].quantity += change;
+                // Add event listeners to cart item buttons
+                addCartItemEventListeners();
                 
-                // Remove item if quantity is 0 or less
-                if (cart[itemIndex].quantity <= 0) {
+                // Calculate shipping (free for orders over £50)
+                const shipping = subtotal >= 50 ? 0 : 5.99;
+                
+                // Calculate discount (0 for now)
+                const discount = 0;
+                
+                // Update order summary
+                updateOrderSummary(subtotal, discount, shipping);
+            }
+
+            // Also update updateCartItemQuantity and removeCartItem to sync with backend
+            function updateCartItemQuantity(itemId, itemScent, change) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const itemIndex = cart.findIndex(item => item.id === itemId && (item.scent || '') === (itemScent || ''));
+                
+                if (itemIndex !== -1) {
+                    cart[itemIndex].quantity += change;
+                    
+                    // Remove item if quantity is 0 or less
+                    if (cart[itemIndex].quantity <= 0) {
+                        cart.splice(itemIndex, 1);
+                    }
+                    
+                    // Save cart to localStorage
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    
+                    // Update cart count
+                    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                    document.getElementById('cart-count').textContent = cartCount;
+                    
+                    // Sync with backend if user is logged in
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        fetch('/api/cart/update', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ itemId, itemScent, change })
+                        })
+                        .catch(error => console.error('Error syncing cart with server:', error));
+                    }
+                    
+                    // Reload cart items
+                    displayCart(cart);
+                }
+            }
+
+            function removeCartItem(itemId, itemScent) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const itemIndex = cart.findIndex(item => item.id === itemId && (item.scent || '') === (itemScent || ''));
+                
+                if (itemIndex !== -1) {
                     cart.splice(itemIndex, 1);
-                }
-                
-                // Save cart to localStorage
-                localStorage.setItem('cart', JSON.stringify(cart));
-                
-                // Update cart count
-                const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-                document.getElementById('cart-count').textContent = cartCount;
-                
-                // Reload cart items
-                loadCartItems();
-            }
-        }
-        
-        // Remove cart item
-        function removeCartItem(itemId, itemScent) {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const itemIndex = cart.findIndex(item => item.id === itemId && (item.scent || '') === (itemScent || ''));
-            
-            if (itemIndex !== -1) {
-                cart.splice(itemIndex, 1);
-                
-                // Save cart to localStorage
-                localStorage.setItem('cart', JSON.stringify(cart));
-                
-                // Update cart count
-                const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-                document.getElementById('cart-count').textContent = cartCount;
-                
-                // Reload cart items
-                loadCartItems();
-            }
-        }
-        
-        // Update order summary
-        function updateOrderSummary(subtotal, discount, shipping) {
-            document.getElementById('subtotal').textContent = `£${subtotal.toFixed(2)}`;
-            document.getElementById('discount').textContent = `-£${discount.toFixed(2)}`;
-            document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`;
-            
-            const total = subtotal - discount + shipping;
-            document.getElementById('total').textContent = `£${total.toFixed(2)}`;
-        }
-        
-        // Apply coupon
-        const applyCouponButton = document.getElementById('apply-coupon');
-        const couponCodeInput = document.getElementById('coupon-code');
-        const couponMessage = document.getElementById('coupon-message');
-
-        applyCouponButton.addEventListener('click', function() {
-            const couponCode = couponCodeInput.value.trim().toUpperCase();
-            
-            if (!couponCode) {
-                showCouponMessage('Please enter a coupon code', 'error');
-                return;
-            }
-            
-            // Send coupon code to backend for validation
-            fetch('/api/apply-coupon', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ code: couponCode })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Apply discount
-                    const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('£', ''));
-                    let discount = 0;
                     
-                    if (data.coupon.type === 'percentage') {
-                        discount = subtotal * data.coupon.discount;
-                    } else {
-                        discount = data.coupon.discount;
+                    // Save cart to localStorage
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    
+                    // Update cart count
+                    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                    document.getElementById('cart-count').textContent = cartCount;
+                    
+                    // Sync with backend if user is logged in
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        fetch('/api/cart/remove', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ itemId, itemScent })
+                        })
+                        .catch(error => console.error('Error syncing cart with server:', error));
                     }
                     
-                    // Update discount in order summary
-                    document.getElementById('discount').textContent = `-£${discount.toFixed(2)}`;
-                    
-                    // Update total
-                    const shipping = document.getElementById('shipping').textContent === 'Free' ? 0 : parseFloat(document.getElementById('shipping').textContent.replace('£', ''));
-                    const total = subtotal - discount + shipping;
-                    document.getElementById('total').textContent = `£${total.toFixed(2)}`;
-                    
-                    showCouponMessage('Coupon applied successfully!', 'success');
-                } else {
-                    showCouponMessage(data.error || 'Invalid coupon code', 'error');
+                    // Reload cart items
+                    displayCart(cart);
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showCouponMessage('Error applying coupon', 'error');
+            }
+
+            // Update the checkout flow to redirect to payment page
+            document.getElementById('proceed-to-checkout').addEventListener('click', function(e) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                if (cart.length === 0) {
+                    e.preventDefault();
+                    alert('Your cart is empty');
+                    return;
+                }
+                
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    e.preventDefault();
+                    alert('Please sign in to checkout');
+                    return;
+                }
+                
+                // Calculate order details
+                const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('£', ''));
+                const discount = parseFloat(document.getElementById('discount').textContent.replace('-£', ''));
+                const shipping = document.getElementById('shipping').textContent === 'Free' ? 0 : parseFloat(document.getElementById('shipping').textContent.replace('£', ''));
+                const total = subtotal - discount + shipping;
+                
+                // Store order details in localStorage for the payment page
+                localStorage.setItem('orderTotal', total);
+                localStorage.setItem('orderSubtotal', subtotal);
+                localStorage.setItem('orderShipping', shipping);
+                localStorage.setItem('orderDiscount', discount);
+                
+                // Continue to payment page
             });
-        });
-        
-        function showCouponMessage(message, type) {
-            couponMessage.textContent = message;
-            couponMessage.classList.remove('hidden', 'text-green-600', 'text-red-600');
-            
-            if (type === 'success') {
-                couponMessage.classList.add('text-green-600');
-            } else {
-                couponMessage.classList.add('text-red-600');
-            }
-            
-            couponMessage.classList.remove('hidden');
-        }
-        
-        // Checkout button
-        const checkoutButton = document.getElementById('checkout-button');
 
-        checkoutButton.addEventListener('click', function() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            if (cart.length === 0) {
-                alert('Your cart is empty');
-                return;
-            }
-            
-            const token = localStorage.getItem('token');
-            
-            if (!token) {
-                alert('Please sign in to checkout');
-                return;
-            }
-            
-            // Validate payment form
-            const cardNumber = document.getElementById('card-number').value.trim().replace(/\s/g, '');
-            const cardExpiry = document.getElementById('card-expiry').value.trim();
-            const cardCVC = document.getElementById('card-cvc').value.trim();
-            const cardName = document.getElementById('card-name').value.trim();
-            const cardType = document.querySelector('input[name="card-type"]:checked').value;
-            
-            if (!cardNumber || cardNumber.length < 16) {
-                alert('Please enter a valid card number');
-                return;
-            }
-            
-            if (!cardExpiry || !cardExpiry.match(/^\d{2}\/\d{2}$/)) {
-                alert('Please enter a valid expiry date (MM/YY)');
-                return;
-            }
-            
-            if (!cardCVC || cardCVC.length < 3) {
-                alert('Please enter a valid CVC');
-                return;
-            }
-            
-            if (!cardName) {
-                alert('Please enter the name on your card');
-                return;
-            }
-            
-            // Calculate order details
-            const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('£', ''));
-            const discount = parseFloat(document.getElementById('discount').textContent.replace('-£', ''));
-            const shipping = document.getElementById('shipping').textContent === 'Free' ? 0 : parseFloat(document.getElementById('shipping').textContent.replace('£', ''));
-            const total = subtotal - discount + shipping;
-            
-            // Show loading state
-            checkoutButton.disabled = true;
-            checkoutButton.textContent = 'Processing...';
-            
-            // In a real application, you would use a payment processor like Stripe
-            // For this demo, we'll simulate a payment process
-            setTimeout(() => {
-                // Send order to backend
-                fetch('/api/orders', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        items: cart,
-                        total: total,
-                        shipping: shipping,
-                        discount: discount,
-                        paymentMethod: {
-                            type: cardType,
-                            lastFour: cardNumber.slice(-4)
-                        },
-                        customerEmail: JSON.parse(localStorage.getItem('user')).email
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Clear cart
-                        localStorage.removeItem('cart');
-                        
-                        // Show success message
-                        alert(`Order placed successfully! Order ID: ${data.order.orderId}`);
-                        
-                        // Redirect to order confirmation page
-                        window.location.href = `order-confirmation.html?orderId=${data.order.orderId}`;
-                    } else {
-                        alert(data.error || 'Error placing order');
-                        checkoutButton.disabled = false;
-                        checkoutButton.textContent = 'Complete Purchase';
+            // Add logout functionality
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    // Clear user data from localStorage
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    
+                    // Reset user icon
+                    const userIcon = document.getElementById('user-icon');
+                    if (userIcon) {
+                        userIcon.innerHTML = `<i class="fas fa-user text-lg"></i>`;
+                        userIcon.href = 'login.html';
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error placing order');
-                    checkoutButton.disabled = false;
-                    checkoutButton.textContent = 'Complete Purchase';
+                    
+                    // Hide dropdown
+                    document.getElementById('user-dropdown').classList.add('hidden');
+                    
+                    // Reload page to reset state
+                    window.location.reload();
                 });
-            }, 1500); // Simulate payment processing
-        });
-
-        // Format card number with spaces
-        document.getElementById('card-number').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 16) value = value.slice(0, 16);
-            
-            // Add spaces every 4 digits
-            let formattedValue = '';
-            for (let i = 0; i < value.length; i++) {
-                if (i > 0 && i % 4 === 0) formattedValue += ' ';
-                formattedValue += value[i];
-            }
-            
-            e.target.value = formattedValue;
-        });
-
-        // Format expiry date with slash
-        document.getElementById('card-expiry').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 4) value = value.slice(0, 4);
-            
-            if (value.length > 2) {
-                e.target.value = value.slice(0, 2) + '/' + value.slice(2);
-            } else {
-                e.target.value = value;
             }
         });
 
-        // Limit CVC to numbers only
-        document.getElementById('card-cvc').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 4) value = value.slice(0, 4);
-            e.target.value = value;
-        });
-
-        // Add logout functionality
-        const logoutButton = document.getElementById('logout-button');
-        if (logoutButton) {
-            logoutButton.addEventListener('click', function() {
-                // Clear user data from localStorage
-                localStorage.removeItem('user');
-                localStorage.removeItem('token');
-                
-                // Reset user icon
-                const userIcon = document.getElementById('user-icon');
-                if (userIcon) {
-                    userIcon.innerHTML = `<i class="fas fa-user text-lg"></i>`;
-                    userIcon.href = 'login.html';
-                }
-                
-                // Hide dropdown
-                document.getElementById('user-dropdown').classList.add('hidden');
-                
-                // Reload page to reset state
-                window.location.reload();
+        // Initialize Google Sign-In if user is not logged in
+        if (!user && typeof google !== 'undefined' && google.accounts) {
+            google.accounts.id.initialize({
+                client_id: '741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com',
+                callback: handleCredentialResponse
             });
         }
-    });
-
-    // Initialize Google Sign-In if user is not logged in
-    if (!user && typeof google !== 'undefined' && google.accounts) {
-        google.accounts.id.initialize({
-            client_id: '741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com',
-            callback: handleCredentialResponse
-        });
-    }
-</script>
+    </script>
 </body>
 </html>
-
