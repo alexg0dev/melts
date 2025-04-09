@@ -41,6 +41,10 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="theme-color" content="#FF6D93">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Melissa's Melts">
     <style>
         /* Custom Animations */
         @keyframes fadeUp {
@@ -971,6 +975,51 @@
             right: -0.5rem;
             font-family: serif;
         }
+
+        /* Add mobile-specific improvements to CSS */
+        @media (max-width: 768px) {
+            /* Adjust hero section for mobile */
+            .hero-content {
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+            }
+            
+            /* Improve mobile touch targets */
+            .nav-link, .mobile-nav-link {
+                padding: 0.5rem 0;
+            }
+            
+            /* Ensure proper spacing on mobile */
+            .mobile-section-spacing {
+                margin-bottom: 2rem;
+            }
+            
+            /* Improve card spacing on mobile */
+            .product-card, .feature-card, .testimonial-item, .coming-soon-card {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        /* Mobile menu animation */
+        .mobile-menu-enter {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-menu-enter-active {
+            max-height: 500px;
+        }
+
+        .mobile-menu-exit {
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-menu-exit-active {
+            max-height: 0;
+        }
     </style>
     <!-- Google Sign-In API -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -1058,13 +1107,30 @@
                     <a href="shop.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Shop</a>
                     <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
                     <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
+                    <hr class="border-gray-200 my-1">
+                    <a href="account.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2" id="mobile-account-link">My Account</a>
+                    <button class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2 text-left hidden" id="mobile-logout-button">Logout</button>
+                    <div id="mobile-google-signin" class="py-2"></div>
                 </div>
             </div>
         </div>
     </header>
+    <!-- Mobile spacing helper -->
+    <style>
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            section {
+                padding-top: 2.5rem;
+                padding-bottom: 2.5rem;
+            }
+        }
+    </style>
 
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-b from-pink-100 to-pink-50 py-20 md:py-28">
+    <section class="relative overflow-hidden bg-gradient-to-b from-pink-100 to-pink-50 py-12 md:py-28">
         <div class="absolute top-20 left-10 w-32 h-32 bg-pink-300 rounded-full opacity-30 blur-xl floating"></div>
         <div class="absolute bottom-20 right-10 w-40 h-40 bg-pink-400 rounded-full opacity-20 blur-xl floating-slow"></div>
         <div class="absolute -top-10 right-1/4 w-24 h-24 bg-pink-200 rounded-full opacity-40 blur-lg floating-slow"></div>
@@ -1679,6 +1745,14 @@
         </div>
     </footer>
 
+    <!-- Mobile Fixed Cart Button -->
+    <div class="md:hidden fixed bottom-4 right-4 z-50 bg-pink-500 text-white shadow-lg rounded-full w-14 h-14 flex items-center justify-center" id="mobile-cart-button">
+        <div class="relative">
+            <i class="fas fa-shopping-bag text-xl"></i>
+            <span class="absolute -top-2 -right-2 bg-white text-pink-500 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="mobile-cart-count">0</span>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1837,6 +1911,9 @@
                         userDropdown.classList.add('hidden');
                     }
                 });
+                
+                // Inside the updateUserUI function, after all current code, add:
+                updateMobileUserUI(user);
             }
             
             // Update cart count
@@ -1935,8 +2012,103 @@
                     window.location.reload();
                 });
             }
+
+            // Add to the DOMContentLoaded event handler before the closing });
+            // Mobile Account Management
+            const mobileAccountLink = document.getElementById('mobile-account-link');
+            const mobileLogoutButton = document.getElementById('mobile-logout-button');
+            const mobileGoogleSignin = document.getElementById('mobile-google-signin');
+
+            function updateMobileUserUI(user) {
+                if (user) {
+                    // User is logged in
+                    if (mobileAccountLink) {
+                        mobileAccountLink.classList.remove('hidden');
+                        // You could add the user's name or initial here
+                        if (user.name) {
+                            mobileAccountLink.innerHTML = `<i class="fas fa-user mr-2"></i> ${user.name.split(' ')[0]}`;
+                        }
+                    }
+                    
+                    if (mobileLogoutButton) {
+                        mobileLogoutButton.classList.remove('hidden');
+                        mobileLogoutButton.addEventListener('click', function() {
+                            // Clear user data from localStorage
+                            localStorage.removeItem('user');
+                            localStorage.removeItem('token');
+                            
+                            // Reload page to reset state
+                            window.location.reload();
+                        });
+                    }
+                    
+                    if (mobileGoogleSignin) {
+                        mobileGoogleSignin.classList.add('hidden');
+                    }
+                } else {
+                    // User is not logged in
+                    if (mobileAccountLink) {
+                        mobileAccountLink.href = 'login.html';
+                        mobileAccountLink.innerHTML = `<i class="fas fa-sign-in-alt mr-2"></i> Sign In`;
+                    }
+                    
+                    if (mobileLogoutButton) {
+                        mobileLogoutButton.classList.add('hidden');
+                    }
+                    
+                    if (mobileGoogleSignin && typeof google !== 'undefined' && google.accounts) {
+                        mobileGoogleSignin.classList.remove('hidden');
+                        // Render Google sign-in button for mobile
+                        google.accounts.id.renderButton(
+                            mobileGoogleSignin,
+                            { theme: 'outline', size: 'medium', width: 200 }
+                        );
+                    }
+                }
+            }
+
+            // Check and update mobile UI
+            const userData = JSON.parse(localStorage.getItem('user'));
+            if (userData) {
+                updateMobileUserUI(userData);
+            } else {
+                updateMobileUserUI(null);
+            }
         });
+    </script>
+
+    <!-- Mobile Fixed Cart Button -->
+    <div class="md:hidden fixed bottom-4 right-4 z-50 bg-pink-500 text-white shadow-lg rounded-full w-14 h-14 flex items-center justify-center" id="mobile-cart-button">
+        <div class="relative">
+            <i class="fas fa-shopping-bag text-xl"></i>
+            <span class="absolute -top-2 -right-2 bg-white text-pink-500 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="mobile-cart-count">0</span>
+        </div>
+    </div>
+
+    <script>
+        // Mobile cart button
+        const mobileCartButton = document.getElementById('mobile-cart-button');
+        const mobileCartCount = document.getElementById('mobile-cart-count');
+        
+        if (mobileCartButton) {
+            mobileCartButton.addEventListener('click', function() {
+                window.location.href = 'cart.html';
+            });
+        }
+        
+        // Sync cart count with mobile count
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount) cartCount.textContent = count;
+            
+            if (mobileCartCount) mobileCartCount.textContent = count;
+        }
+        
+        // Call on page load
+        updateCartCount();
     </script>
 </body>
 </html>
-

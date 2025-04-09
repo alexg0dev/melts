@@ -505,7 +505,26 @@
         loginMessage.classList.remove('hidden');
     }
 });
+
+// Check for redirect after login
+window.addEventListener('load', function() {
+    // Check if user just logged in
+    if (localStorage.getItem('justLoggedIn') === 'true') {
+        // Redirect to previous page or home
+        const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+        window.location.href = redirectUrl;
+    }
+});
+
+// Modify the handleCredentialResponse function to set justLoggedIn flag
+const originalHandleCredentialResponse = window.handleCredentialResponse;
+window.handleCredentialResponse = function(response) {
+    // Call the original function
+    originalHandleCredentialResponse(response);
+    
+    // Set the justLoggedIn flag
+    localStorage.setItem('justLoggedIn', 'true');
+};
     </script>
 </body>
 </html>
-

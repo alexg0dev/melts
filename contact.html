@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | Melissa's Melts</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    pink: {
+                        50: '#FFF5F7',
+                        100: '#FFEAEF',
+                        200: '#FFCBD8',
+                        300: '#FFABC1',
+                        400: '#FF8CAA',
+                        500: '#FF6D93',
+                        600: '#FF4E7D',
+                        700: '#FF2F67',
+                        800: '#FF1051',
+                        900: '#E0003B',
+                    }
+                },
+                fontFamily: {
+                    'sans': ['Montserrat', 'sans-serif'],
+                    'serif': ['Playfair Display', 'serif'],
+                },
+                boxShadow: {
+                    'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
+                    'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
+                    'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                }
+            }
+        }
+    }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Custom Animations */
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-up {
+        animation: fadeUp 0.8s ease forwards;
+        opacity: 0;
+    }
+    
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+    
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+    
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+    
+    .delay-400 {
+        animation-delay: 0.4s;
+    }
+    
+    .delay-500 {
+        animation-delay: 0.5s;
+    }
+    
+    /* Gradient Text */
+    .gradient-text {
+        background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    /* Fancy Underline */
+    .fancy-underline {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .fancy-underline::after {
+        content: '';
+        position: absolute;
+        width: 70px;
+        height: 3px;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+        border-radius: 3px;
+    }
+
+    .fancy-underline.left-align::after {
+        left: 0;
+        transform: none;
+    }
+    
+    /* Navbar Animation */
+    .nav-link {
+        position: relative;
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: #FF6D93;
+        transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+        width: 100%;
+    }
+    
+    /* Search Results */
+    .search-results {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: 0 0 0.5rem 0.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .search-container:focus-within .search-results {
+        display: block;
+    }
+    
+    .search-result-item {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .search-result-item:hover {
+        background-color: #FFF5F7;
+    }
+    
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+    
+    /* Custom Button Styles */
+    .btn-primary {
+        background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+    }
+    
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(to right, #FF2F67, #FF6D93);
+        transition: all 0.3s ease;
+        z-index: -1;
+    }
+    
+    .btn-primary:hover::before {
+        width: 100%;
+    }
+
+    /* Floating Animation */
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-15px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+    
+    .floating {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .floating-slow {
+        animation: float 8s ease-in-out infinite;
+    }
+
+    /* Contact Card Hover */
+    .contact-card {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .contact-card:hover .contact-icon {
+        transform: scale(1.1);
+        background-color: #FF6D93;
+        color: white;
+    }
+    
+    .contact-icon {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    /* FAQ Accordion */
+    .faq-item {
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item.active {
+        border-left-color: #FF6D93;
+    }
+    
+    .faq-question {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item:hover .faq-question {
+        background-color: #FFF5F7;
+    }
+    
+    .faq-item.active .faq-question {
+        background-color: #FFF0F5;
+    }
+    
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .faq-item.active .faq-answer {
+        max-height: 1000px;
+    }
+    
+    .faq-icon {
+        transition: all 0.3s ease;
+    }
+    
+    .faq-item.active .faq-icon {
+        background-color: #FF6D93;
+        color: white;
+        transform: rotate(45deg);
+    }
+    
+    /* Blob Animation */
+    @keyframes morphBlob {
+        0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+        50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+        100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    }
+    
+    .blob {
+        animation: morphBlob 8s ease-in-out infinite;
+    }
+    
+    /* Social Media Hover */
+    .social-hover {
+        transition: all 0.3s ease;
+    }
+    
+    .social-hover:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Ripple Effect */
+    .ripple {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ripple:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform .5s, opacity 1s;
+    }
+    
+    .ripple:active:after {
+        transform: scale(0, 0);
+        opacity: .3;
+        transition: 0s;
+    }
+    
+    /* Gradient Border */
+    .gradient-border {
+        position: relative;
+        border-radius: 0.5rem;
+        background: white;
+    }
+    
+    .gradient-border::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #FF4E7D, #FF8CAA, #FF4E7D);
+        z-index: -1;
+        border-radius: 0.6rem;
+        background-size: 200% 200%;
+        animation: gradientMove 3s ease infinite;
+    }
+    
+    @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    /* Scroll Animation */
+    .scroll-animate {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .scroll-animate.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Pulse Animation */
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 109, 147, 0.4); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 109, 147, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 109, 147, 0); }
+    }
+    
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+    
+    /* Shimmer Effect */
+    @keyframes shimmer {
+        0% { background-position: -100% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
+    .shimmer-effect {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .shimmer-effect::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0.2) 50%, 
+            rgba(255,255,255,0) 100%);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+        z-index: 1;
+    }
+</style>
+<!-- Google Sign-In API -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="font-sans bg-white text-gray-800">
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
+        <p>Free shipping on orders over £50!</p>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-soft sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-3xl font-serif font-bold gradient-text">Melissa's Melts</a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
+                    <a href="shop.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Shop</a>
+                    <a href="about.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">About</a>
+                    <a href="contact.html" class="nav-link font-medium text-pink-600">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <div class="relative search-container">
+                        <input type="text" id="search-input" placeholder="Search products..." class="py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent w-40 md:w-60">
+                        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div class="search-results">
+                            <!-- Search results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div id="user-container">
+                        <div class="relative">
+                            <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+                                <i class="fas fa-user text-lg"></i>
+                            </a>
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                                    My Account
+                                </a>
+                                <button id="logout-button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Google Sign-In Button -->
+                        <div id="g_id_onload"
+                            data-client_id="741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com"
+                            data-context="signin"
+                            data-callback="handleCredentialResponse"
+                            data-auto_prompt="false">
+                        </div>
+                        <div class="g_id_signin"
+                            data-type="standard"
+                            data-size="large"
+                            data-theme="outline"
+                            data-text="sign_in_with"
+                            data-shape="rectangular"
+                            data-logo_alignment="left"
+                            style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+                <div class="flex flex-col space-y-3">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
+                    <a href="shop.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Shop</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
+                    <a href="contact.html" class="font-medium text-pink-600 py-2">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login Success Message -->
+    <div id="login-success-message" class="hidden fixed top-20 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md z-50 animate-fade-up">
+        <div class="flex items-center">
+            <div class="py-1"><i class="fas fa-check-circle text-green-500 mr-3"></i></div>
+            <div>
+                <p class="font-bold">Successfully logged in!</p>
+                <p>Welcome back to Melissa's Melts.</p>
+            </div>
+            <button class="ml-6 text-green-500 hover:text-green-700" onclick="document.getElementById('login-success-message').classList.add('hidden')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Hero Section with Interactive Map -->
+    <section class="relative py-20 md:py-32 overflow-hidden bg-gradient-to-b from-pink-50 via-white to-white">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-20 right-10 w-64 h-64 bg-pink-200 rounded-full opacity-20 blur-xl floating"></div>
+            <div class="absolute bottom-40 left-20 w-80 h-80 bg-pink-300 rounded-full opacity-10 blur-xl floating-slow"></div>
+            <div class="absolute top-40 left-1/3 w-40 h-40 bg-pink-100 rounded-full opacity-30 blur-lg floating"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left animate-fade-up">
+                    <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">We'd Love To Hear From You</span>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6">Let's Connect</h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0">Have questions about our products or need assistance? Our team is here to help you with anything you need.</p>
+                    
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+                        <a href="#direct-contact" class="btn-primary text-white font-medium py-3 px-8 rounded-full shadow-glow inline-flex items-center ripple">
+                            <i class="fas fa-comment-dots mr-2"></i> Contact Us
+                        </a>
+                        <a href="#faq-section" class="bg-white text-pink-600 border-2 border-pink-500 font-medium py-3 px-8 rounded-full shadow-soft hover:bg-pink-50 transition-colors inline-flex items-center ripple">
+                            <i class="fas fa-question-circle mr-2"></i> View FAQs
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="relative animate-fade-up delay-200">
+                    <div class="absolute inset-0 bg-gradient-to-br from-pink-200 to-pink-400 rounded-2xl opacity-20 blur-lg transform rotate-6"></div>
+                    <div class="relative bg-white p-6 rounded-2xl shadow-card overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" alt="Contact Us" class="w-full h-64 object-cover rounded-xl mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-pink-50 p-4 rounded-xl text-center hover:bg-pink-100 transition-colors">
+                                <i class="fas fa-map-marker-alt text-pink-500 text-2xl mb-2"></i>
+                                <h3 class="font-medium">Visit Us</h3>
+                                <p class="text-sm text-gray-600">123 Soap Street, Meltville</p>
+                            </div>
+                            <div class="bg-pink-50 p-4 rounded-xl text-center hover:bg-pink-100 transition-colors">
+                                <i class="fas fa-phone-alt text-pink-500 text-2xl mb-2"></i>
+                                <h3 class="font-medium">Call Us</h3>
+                                <p class="text-sm text-gray-600">(123) 456-7890</p>
+                            </div>
+                            <div class="bg-pink-50 p-4 rounded-xl text-center hover:bg-pink-100 transition-colors">
+                                <i class="fas fa-envelope text-pink-500 text-2xl mb-2"></i>
+                                <h3 class="font-medium">Email Us</h3>
+                                <p class="text-sm text-gray-600">hello@melissasmelts.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Direct Contact Methods -->
+    <section id="direct-contact" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-12 scroll-animate">
+                <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">Get In Touch</span>
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-6 fancy-underline">Contact Us Directly</h2>
+                <p class="text-gray-600">We prefer to keep things simple! Reach out to us through any of these messaging platforms for the fastest response:</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <a href="https://wa.me/447123456789" target="_blank" class="group">
+                    <div class="bg-white rounded-xl p-8 text-center shadow-card hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2 scroll-animate">
+                        <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fab fa-whatsapp text-white text-4xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-medium mb-3">WhatsApp</h3>
+                        <p class="text-gray-600 mb-3">+44 7123 456789</p>
+                        <p class="text-gray-500 mb-4">Fastest response: 5-10 minutes</p>
+                        <span class="inline-block mt-2 text-green-500 font-medium group-hover:underline text-lg">
+                            Message Now <i class="fas fa-arrow-right ml-1"></i>
+                        </span>
+                    </div>
+                </a>
+                
+                <a href="https://m.me/MelissasMelts" target="_blank" class="group">
+                    <div class="bg-white rounded-xl p-8 text-center shadow-card hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2 scroll-animate delay-100">
+                        <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fab fa-facebook-messenger text-white text-4xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-medium mb-3">Messenger</h3>
+                        <p class="text-gray-600 mb-3">@MelissasMelts</p>
+                        <p class="text-gray-500 mb-4">Quick responses via Facebook</p>
+                        <span class="inline-block mt-2 text-blue-500 font-medium group-hover:underline text-lg">
+                            Chat Now <i class="fas fa-arrow-right ml-1"></i>
+                        </span>
+                    </div>
+                </a>
+                
+                <a href="sms:+1234567890" class="group">
+                    <div class="bg-white rounded-xl p-8 text-center shadow-card hover:shadow-glow transition-all duration-300 transform hover:-translate-y-2 scroll-animate delay-200">
+                        <div class="w-20 h-20 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-sms text-white text-4xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-medium mb-3">Text Message</h3>
+                        <p class="text-gray-600 mb-3">(123) 456-7890</p>
+                        <p class="text-gray-500 mb-4">Available during business hours</p>
+                        <span class="inline-block mt-2 text-pink-500 font-medium group-hover:underline text-lg">
+                            Text Now <i class="fas fa-arrow-right ml-1"></i>
+                        </span>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Business Hours Card -->
+            <div class="max-w-4xl mx-auto mt-16">
+                <div class="bg-pink-50 rounded-xl p-8 shadow-card">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-1/4 mb-6 md:mb-0 text-center">
+                            <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto">
+                                <i class="fas fa-clock text-pink-500 text-3xl"></i>
+                            </div>
+                        </div>
+                        <div class="md:w-3/4 md:pl-8">
+                            <h3 class="text-2xl font-medium mb-4">Business Hours</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="font-medium text-gray-700">Monday - Friday:</p>
+                                    <p class="text-gray-600">9:00 AM - 5:00 PM</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700">Saturday:</p>
+                                    <p class="text-gray-600">10:00 AM - 2:00 PM</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700">Sunday:</p>
+                                    <p class="text-gray-600">Closed</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700">Response Time:</p>
+                                    <p class="text-gray-600">Within 1 hour during business hours</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-12 scroll-animate">
+                <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">Visit Our Shop</span>
+                <h2 class="text-3xl font-serif font-bold mb-4">Find Us</h2>
+                <p class="text-gray-600">Visit our physical store to experience our products in person and meet our team.</p>
+            </div>
+            
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-card overflow-hidden scroll-animate">
+                    <div class="aspect-w-16 aspect-h-9">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.2858902513793!2d-0.12955492341297924!3d51.50736020953834!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604ce3941eb1f%3A0x1a5342fdf089c627!2sTrafalgar%20Square!5e0!3m2!1sen!2suk!4v1690000000000!5m2!1sen!2suk!4v1690000000000!5m2!1sen!2suk" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div class="p-6 bg-gradient-to-r from-pink-50 to-white">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between">
+                            <div>
+                                <h3 class="text-xl font-medium mb-2">Melissa's Melts Shop</h3>
+                                <p class="text-gray-600">123 Soap Street, Meltville, ML 12345</p>
+                            </div>
+                            <div class="mt-4 md:mt-0">
+                                <a href="https://goo.gl/maps/1234" target="_blank" class="inline-flex items-center bg-pink-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-pink-600 transition-colors">
+                                    <i class="fas fa-directions mr-2"></i> Get Directions
+                                </a>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <h4 class="font-medium mb-2 flex items-center">
+                                    <i class="fas fa-clock text-pink-500 mr-2"></i> Opening Hours
+                                </h4>
+                                <ul class="space-y-1 text-sm text-gray-600">
+                                    <li class="flex justify-between">
+                                        <span>Monday - Friday:</span>
+                                        <span>9:00 AM - 5:00 PM</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>Saturday:</span>
+                                        <span>10:00 AM - 4:00 PM</span>
+                                    </li>
+                                    <li class="flex justify-between">
+                                        <span>Sunday:</span>
+                                        <span>Closed</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <h4 class="font-medium mb-2 flex items-center">
+                                    <i class="fas fa-parking text-pink-500 mr-2"></i> Parking
+                                </h4>
+                                <p class="text-sm text-gray-600">Free parking available for customers in our dedicated lot behind the store.</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg shadow-sm">
+                                <h4 class="font-medium mb-2 flex items-center">
+                                    <i class="fas fa-bus text-pink-500 mr-2"></i> Public Transport
+                                </h4>
+                                <p class="text-sm text-gray-600">Bus routes 42 and 53 stop directly outside. Meltville Station is a 5-minute walk.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section with Improved Design -->
+    <section id="faq-section" class="py-16 md:py-24 bg-pink-50 relative overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-20 right-10 w-64 h-64 bg-pink-200 rounded-full opacity-20 blur-xl floating"></div>
+            <div class="absolute bottom-40 left-20 w-80 h-80 bg-pink-300 rounded-full opacity-10 blur-xl floating-slow"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 scroll-animate">
+                <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">Common Questions</span>
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-6 fancy-underline">Frequently Asked Questions</h2>
+                <p class="text-gray-600">Find answers to our most commonly asked questions. Can't find what you're looking for? Contact us directly.</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-card overflow-hidden scroll-animate">
+                    <div class="divide-y divide-gray-100">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-item">
+                            <div class="faq-question flex justify-between items-center p-6 hover:bg-pink-50 transition-colors">
+                                <h4 class="font-medium text-lg">How long does shipping take?</h4>
+                                <span class="faq-icon text-pink-500 bg-pink-100 w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                            </div>
+                            <div class="faq-answer bg-white px-6 pb-6">
+                                <p class="text-gray-600">Standard shipping typically takes 3-5 business days within the UK. International shipping can take 7-14 business days, depending on your location and customs processing. We offer expedited shipping options at checkout for faster delivery.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-item">
+                            <div class="faq-question flex justify-between items-center p-6 hover:bg-pink-50 transition-colors">
+                                <h4 class="font-medium text-lg">Do you offer custom orders?</h4>
+                                <span class="faq-icon text-pink-500 bg-pink-100 w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                            </div>
+                            <div class="faq-answer bg-white px-6 pb-6">
+                                <p class="text-gray-600">Yes! We love creating custom products for special occasions. Whether you need wedding favors, party gifts, or a unique scent combination, we're happy to work with you. Contact us with your requirements for a custom quote and timeline.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 3 -->
+                        <div class="faq-item">
+                            <div class="faq-question flex justify-between items-center p-6 hover:bg-pink-50 transition-colors">
+                                <h4 class="font-medium text-lg">Are your products vegan and cruelty-free?</h4>
+                                <span class="faq-icon text-pink-500 bg-pink-100 w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                            </div>
+                            <div class="faq-answer bg-white px-6 pb-6">
+                                <p class="text-gray-600">Most of our products are vegan and all are cruelty-free. We clearly label any products that contain honey, milk, or other non-vegan ingredients. All of our products are made without animal testing and we're committed to ethical sourcing practices.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 4 -->
+                        <div class="faq-item">
+                            <div class="faq-question flex justify-between items-center p-6 hover:bg-pink-50 transition-colors">
+                                <h4 class="font-medium text-lg">How should I store my soaps and wax melts?</h4>
+                                <span class="faq-icon text-pink-500 bg-pink-100 w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                            </div>
+                            <div class="faq-answer bg-white px-6 pb-6">
+                                <p class="text-gray-600">Keep soaps in a dry, well-ventilated area between uses with a soap dish that allows water to drain. Store wax melts in a cool, dry place away from direct sunlight to prevent melting and preserve the fragrance. Properly stored, our products will maintain their quality for up to a year.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 5 -->
+                        <div class="faq-item">
+                            <div class="faq-question flex justify-between items-center p-6 hover:bg-pink-50 transition-colors">
+                                <h4 class="font-medium text-lg">What is your return policy?</h4>
+                                <span class="faq-icon text-pink-500 bg-pink-100 w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                            </div>
+                            <div class="faq-answer bg-white px-6 pb-6">
+                                <p class="text-gray-600">We accept returns within 30 days of purchase for unopened and unused products. Due to the nature of our handcrafted items, we cannot accept returns on opened products unless they arrived damaged. Please contact us if you receive a damaged item and we'll make it right.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ Item 6 -->
+                        <div class="faq-item">
+                            <div class="faq-question flex justify-between items-center p-6 hover:bg-pink-50 transition-colors">
+                                <h4 class="font-medium text-lg">Do you ship internationally?</h4>
+                                <span class="faq-icon text-pink-500 bg-pink-100 w-8 h-8 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                            </div>
+                            <div class="faq-answer bg-white px-6 pb-6">
+                                <p class="text-gray-600">Yes, we ship to most countries worldwide. International shipping rates and delivery times vary by location. Please note that customers are responsible for any customs fees or import taxes that may apply. Contact us if you have questions about shipping to your specific location.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section with Improved Design -->
+    <section class="py-16 md:py-24 bg-white overflow-hidden relative">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-5xl mx-auto bg-gradient-to-r from-pink-500 to-pink-600 rounded-2xl shadow-glow p-8 md:p-12 scroll-animate">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-8 md:mb-0 text-white">
+                        <span class="inline-block bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">Join Our Community</span>
+                        <h2 class="text-3xl font-serif font-bold mb-4">Stay Connected</h2>
+                        <p class="text-pink-100 mb-6">Subscribe to our newsletter for exclusive offers, new product announcements, and soap-making tips.</p>
+                        
+                        <form class="space-y-4">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="email" placeholder="Your email address" class="flex-grow px-4 py-3 rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-white/50">
+                                <button type="submit" class="bg-white text-pink-600 font-medium py-3 px-6 rounded-lg shadow-md hover:bg-pink-50 transition-colors inline-flex items-center justify-center ripple">
+                                    Subscribe
+                                </button>
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="newsletter-consent" class="mt-1 mr-2 bg-transparent border-white">
+                                <label for="newsletter-consent" class="text-pink-100 text-sm">I agree to receive marketing emails and can unsubscribe at any time.</label>
+                            </div>
+                        </form>
+                        
+                        <p class="text-pink-100 text-sm mt-4">We respect your privacy and will never share your information.</p>
+                    </div>
+                    
+                    <div class="md:w-1/2 md:pl-10">
+                        <div class="bg-white/10 p-6 rounded-xl backdrop-blur-sm">
+                            <h3 class="text-xl font-medium mb-4 text-white">Connect With Us</h3>
+                            <p class="text-pink-100 mb-6">Follow us on social media for daily inspiration, behind-the-scenes content, and exclusive offers.</p>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <a href="#" class="flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 social-hover">
+                                    <i class="fab fa-instagram text-white text-2xl mr-3"></i>
+                                    <div class="text-white">
+                                        <p class="font-medium">Instagram</p>
+                                        <p class="text-pink-100 text-sm">@melissasmelts</p>
+                                    </div>
+                                </a>
+                                
+                                <a href="#" class="flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 social-hover">
+                                    <i class="fab fa-facebook-f text-white text-2xl mr-3"></i>
+                                    <div class="text-white">
+                                        <p class="font-medium">Facebook</p>
+                                        <p class="text-pink-100 text-sm">@melissasmelts</p>
+                                    </div>
+                                </a>
+                                
+                                <a href="#" class="flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 social-hover">
+                                    <i class="fab fa-pinterest-p text-white text-2xl mr-3"></i>
+                                    <div class="text-white">
+                                        <p class="font-medium">Pinterest</p>
+                                        <p class="text-pink-100 text-sm">@melissasmelts</p>
+                                    </div>
+                                </a>
+                                
+                                <a href="#" class="flex items-center p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 social-hover">
+                                    <i class="fab fa-tiktok text-white text-2xl mr-3"></i>
+                                    <div class="text-white">
+                                        <p class="font-medium">TikTok</p>
+                                        <p class="text-pink-100 text-sm">@melissasmelts</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-20 pb-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6 gradient-text">Melissa's Melts</h3>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Handcrafted soaps and wax melts made with love and natural ingredients for your home and body.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-pinterest-p text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-tiktok text-pink-400"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Shop Links -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Shop</h3>
+                    <ul class="space-y-3">
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">All Products</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Soaps</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Wax Melts</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Gift Sets</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">New Arrivals</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Best Sellers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Information -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Information</h3>
+                    <ul class="space-y-3">
+                        <li><a href="about.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">123 Soap Street, Meltville, ML 12345</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">hello@melissasmelts.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">(123) 456-7890</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">Mon-Fri: 9am - 5pm GMT</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                <div class="flex items-center space-x-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2022/01/09/07/23/american-express-6926131_640.png" alt="American Express" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/45/paypal-6850398_640.png" alt="PayPal" class="h-6">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Search Functionality
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.querySelector('.search-results');
+            
+            // Product database for search
+            const products = [
+                { name: 'Massage Soap', url: 'massage-soap.html' },
+                { name: 'Lavender Soap', url: 'massage-soap.html' },
+                { name: 'Rose Wax Melts', url: 'massage-soap.html' },
+                { name: 'Vanilla Soap', url: 'massage-soap.html' },
+                { name: 'Citrus Wax Melts', url: 'massage-soap.html' }
+            ];
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                
+                // Clear previous results
+                searchResults.innerHTML = '';
+                
+                if (query.length < 2) return;
+                
+                // Filter products based on search query
+                const filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(query)
+                );
+                
+                // Display results
+                if (filteredProducts.length > 0) {
+                    filteredProducts.forEach(product => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        resultItem.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-soap text-pink-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">${product.name}</p>
+                                </div>
+                            </div>
+                        `;
+                        resultItem.addEventListener('click', function() {
+                            window.location.href = product.url;
+                        });
+                        searchResults.appendChild(resultItem);
+                    });
+                } else {
+                    searchResults.innerHTML = `
+                        <div class="p-4 text-center text-gray-500">
+                            No products found for "${query}"
+                        </div>
+                    `;
+                }
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.search-container')) {
+                    searchResults.style.display = 'none';
+                }
+            });
+            
+            searchInput.addEventListener('focus', function() {
+                if (searchResults.children.length > 0) {
+                    searchResults.style.display = 'block';
+                }
+            });
+            
+            // FAQ Accordions
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const faqItem = this.parentElement;
+                    faqItem.classList.toggle('active');
+                    
+                    // Update icon
+                    const icon = this.querySelector('.faq-icon i');
+                    if (faqItem.classList.contains('active')) {
+                        icon.classList.remove('fa-plus');
+                        icon.classList.add('fa-minus');
+                    } else {
+                        icon.classList.remove('fa-minus');
+                        icon.classList.add('fa-plus');
+                    }
+                });
+            });
+            
+            // Scroll Animation
+            const scrollAnimateElements = document.querySelectorAll('.scroll-animate');
+            
+            function checkScroll() {
+                scrollAnimateElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (elementTop < windowHeight * 0.85) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+            
+            // Initial check
+            checkScroll();
+            
+            // Check on scroll
+            window.addEventListener('scroll', checkScroll);
+            
+            // Google Sign-In
+            window.handleCredentialResponse = function(response) {
+                // Send the token to your server for verification
+                const token = response.credential;
+                
+                // For demo purposes, decode the JWT to get user info
+                // In production, this should be verified on the server
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                const payload = JSON.parse(jsonPayload);
+                
+                // Create user object
+                const user = {
+                    userId: payload.sub,
+                    name: payload.name,
+                    email: payload.email,
+                    picture: payload.picture,
+                    points: 0
+                };
+                
+                // Store user info in localStorage
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('token', token);
+                localStorage.setItem('justLoggedIn', 'true');
+                
+                // Update UI
+                updateUserUI(user);
+                
+                // Redirect to previous page or home
+                const redirectUrl = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+                window.location.href = redirectUrl;
+            };
+            
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                updateUserUI(user);
+                
+                // Check if user just logged in
+                if (localStorage.getItem('justLoggedIn') === 'true') {
+                    // Show login success message
+                    const loginSuccessMessage = document.getElementById('login-success-message');
+                    if (loginSuccessMessage) {
+                        loginSuccessMessage.classList.remove('hidden');
+                        
+                        // Hide message after 5 seconds
+                        setTimeout(() => {
+                            loginSuccessMessage.classList.add('hidden');
+                            localStorage.removeItem('justLoggedIn');
+                        }, 5000);
+                    }
+                }
+            }
+            
+            function updateUserUI(user) {
+                // Update user icon
+                const userIcon = document.getElementById('user-icon');
+                const userDropdown = document.getElementById('user-dropdown');
+                
+                if (userIcon && user.picture) {
+                    userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
+                    userIcon.href = 'account.html';
+                    
+                    // Add click event to toggle dropdown
+                    userIcon.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        userDropdown.classList.toggle('hidden');
+                    });
+                }
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (userDropdown && !userIcon.contains(e.target) && !userDropdown.contains(e.target)) {
+                        userDropdown.classList.add('hidden');
+                    }
+                });
+                
+                // Update cart count
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement) {
+                    cartCountElement.textContent = cartCount;
+                }
+            }
+            
+            // Add logout functionality
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    // Clear user data from localStorage
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    
+                    // Reset user icon
+                    const userIcon = document.getElementById('user-icon');
+                    if (userIcon) {
+                        userIcon.innerHTML = `<i class="fas fa-user text-lg"></i>`;
+                        userIcon.href = 'login.html';
+                    }
+                    
+                    // Hide dropdown
+                    const userDropdown = document.getElementById('user-dropdown');
+                    if (userDropdown) {
+                        userDropdown.classList.add('hidden');
+                    }
+                    
+                    // Reload page to reset state
+                    window.location.reload();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

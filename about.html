@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Melissa's Melts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  colors: {
+                      pink: {
+                          50: '#FFF5F7',
+                          100: '#FFEAEF',
+                          200: '#FFCBD8',
+                          300: '#FFABC1',
+                          400: '#FF8CAA',
+                          500: '#FF6D93',
+                          600: '#FF4E7D',
+                          700: '#FF2F67',
+                          800: '#FF1051',
+                          900: '#E0003B',
+                      }
+                  },
+                  fontFamily: {
+                      'sans': ['Montserrat', 'sans-serif'],
+                      'serif': ['Playfair Display', 'serif'],
+                  },
+                  boxShadow: {
+                      'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
+                      'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
+                      'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                  }
+              }
+          }
+      }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="theme-color" content="#FF6D93">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Melissa's Melts">
+  <style>
+      /* Custom Animations */
+      @keyframes fadeUp {
+          from {
+              opacity: 0;
+              transform: translateY(30px);
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+      
+      .animate-fade-up {
+          animation: fadeUp 0.8s ease forwards;
+          opacity: 0;
+      }
+      
+      .delay-100 {
+          animation-delay: 0.1s;
+      }
+      
+      .delay-200 {
+          animation-delay: 0.2s;
+      }
+      
+      .delay-300 {
+          animation-delay: 0.3s;
+      }
+      
+      /* Gradient Text */
+      .gradient-text {
+          background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          color: #FF6D93; /* Fallback */
+      }
+      
+      /* Fancy Underline */
+      .fancy-underline {
+          position: relative;
+          display: inline-block;
+      }
+      
+      .fancy-underline::after {
+          content: '';
+          position: absolute;
+          width: 70px;
+          height: 3px;
+          bottom: -12px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+          border-radius: 3px;
+      }
+
+      .fancy-underline.left-align::after {
+          left: 0;
+          transform: none;
+      }
+      
+      /* Simpler navbar styling */
+      .nav-link, .mobile-nav-link {
+          transition: color 0.3s ease;
+      }
+
+      .nav-link {
+          position: relative;
+      }
+
+      .nav-link::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: -4px;
+          left: 0;
+          background-color: #FF6D93;
+          transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+          width: 100%;
+      }
+      
+      /* Search Results */
+      .search-results {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: white;
+          border-radius: 0 0 0.5rem 0.5rem;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          z-index: 50;
+          max-height: 300px;
+          overflow-y: auto;
+      }
+      
+      .search-container:focus-within .search-results {
+          display: block;
+      }
+      
+      .search-result-item {
+          padding: 0.75rem 1rem;
+          border-bottom: 1px solid #f0f0f0;
+          cursor: pointer;
+          transition: background-color 0.2s;
+      }
+      
+      .search-result-item:hover {
+          background-color: #FFF5F7;
+      }
+      
+      .search-result-item:last-child {
+          border-bottom: none;
+      }
+      
+      /* Custom Button Styles */
+      .btn-primary {
+          background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+          transition: all 0.3s ease;
+          position: relative;
+          z-index: 1;
+          overflow: hidden;
+      }
+      
+      .btn-primary::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 0%;
+          height: 100%;
+          background: linear-gradient(to right, #FF2F67, #FF6D93);
+          transition: all 0.3s ease;
+          z-index: -1;
+      }
+      
+      .btn-primary:hover::before {
+          width: 100%;
+      }
+
+      /* Floating Animation */
+      @keyframes float {
+          0% {
+              transform: translateY(0px);
+          }
+          50% {
+              transform: translateY(-15px);
+          }
+          100% {
+              transform: translateY(0px);
+          }
+      }
+      
+      .floating {
+          animation: float 6s ease-in-out infinite;
+      }
+      
+      .floating-slow {
+          animation: float 8s ease-in-out infinite;
+      }
+      
+      /* Process Timeline */
+      .timeline-container {
+          position: relative;
+      }
+      
+      .timeline-container::before {
+          content: '';
+          position: absolute;
+          width: 3px;
+          background: linear-gradient(to bottom, #FF4E7D, #FF8CAA);
+          top: 0;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+      }
+      
+      .timeline-item {
+          position: relative;
+          width: 50%;
+          padding: 0 40px 50px 0;
+          box-sizing: border-box;
+      }
+      
+      .timeline-item:nth-child(even) {
+          left: 50%;
+          padding: 0 0 50px 40px;
+      }
+      
+      .timeline-dot {
+          position: absolute;
+          width: 25px;
+          height: 25px;
+          background: white;
+          border: 4px solid #FF6D93;
+          border-radius: 50%;
+          top: 0;
+          right: -12.5px;
+      }
+      
+      .timeline-item:nth-child(even) .timeline-dot {
+          left: -12.5px;
+      }
+      
+      @media screen and (max-width: 768px) {
+          .timeline-container::before {
+              left: 40px;
+          }
+          
+          .timeline-item {
+              width: 100%;
+              padding-left: 60px;
+              padding-right: 0;
+          }
+          
+          .timeline-item:nth-child(even) {
+              left: 0;
+              padding-left: 60px;
+              padding-right: 0;
+          }
+          
+          .timeline-dot {
+              left: 28px;
+              right: unset;
+          }
+          
+          .timeline-item:nth-child(even) .timeline-dot {
+              left: 28px;
+          }
+      }
+
+      /* Team Member Cards */
+      .team-card {
+          transition: all 0.3s ease;
+          border-radius: 1rem;
+          overflow: hidden;
+          height: 100%;
+      }
+
+      .team-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
+      }
+
+      .team-image {
+          transition: all 0.3s ease;
+          transform: scale(1);
+      }
+
+      .team-card:hover .team-image {
+          transform: scale(1.05);
+      }
+
+      /* Values Cards */
+      .value-card {
+          transition: all 0.3s ease;
+          border-radius: 1rem;
+          overflow: hidden;
+          height: 100%;
+      }
+
+      .value-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
+      }
+
+      .value-icon {
+          transition: all 0.3s ease;
+          transform: scale(1);
+      }
+
+      .value-card:hover .value-icon {
+          transform: rotate(10deg) scale(1.1);
+      }
+      
+      /* Image Gallery */
+      .gallery-container {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          grid-template-rows: repeat(2, 200px);
+          gap: 16px;
+      }
+      
+      .gallery-item {
+          overflow: hidden;
+          border-radius: 12px;
+          position: relative;
+          cursor: pointer;
+      }
+      
+      .gallery-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.5s ease;
+      }
+      
+      .gallery-item:hover img {
+          transform: scale(1.1);
+      }
+      
+      .gallery-item-1 {
+          grid-column: span 2;
+          grid-row: span 2;
+      }
+      
+      .gallery-item-2 {
+          grid-column: span 2;
+      }
+      
+      @media (max-width: 768px) {
+          .gallery-container {
+              grid-template-columns: repeat(2, 1fr);
+              grid-template-rows: repeat(4, 150px);
+          }
+          
+          .gallery-item-1, .gallery-item-2 {
+              grid-column: span 2;
+              grid-row: span 1;
+          }
+      }
+      
+      /* Animated Counter */
+      .counter-value {
+          transition: all 0.5s ease;
+      }
+      
+      /* Parallax Effect */
+      .parallax {
+          background-attachment: fixed;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: cover;
+      }
+      
+      /* Soap Bubble Animation */
+      @keyframes bubble-float {
+          0% {
+              transform: translateY(0) translateX(0) rotate(0);
+              opacity: 1;
+          }
+          50% {
+              transform: translateY(-30px) translateX(15px) rotate(10deg);
+              opacity: 0.8;
+          }
+          100% {
+              transform: translateY(0) translateX(0) rotate(0);
+              opacity: 1;
+          }
+      }
+      
+      .bubble {
+          position: absolute;
+          border-radius: 50%;
+          background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+      
+      .bubble-1 {
+          width: 60px;
+          height: 60px;
+          animation: bubble-float 8s ease-in-out infinite;
+      }
+      
+      .bubble-2 {
+          width: 40px;
+          height: 40px;
+          animation: bubble-float 6s ease-in-out infinite 1s;
+      }
+      
+      .bubble-3 {
+          width: 30px;
+          height: 30px;
+          animation: bubble-float 7s ease-in-out infinite 2s;
+      }
+      
+      /* 3D Card Effect */
+      .card-3d {
+          transition: transform 0.5s ease;
+          transform-style: preserve-3d;
+          perspective: 1000px;
+      }
+      
+      .card-3d:hover {
+          transform: rotateY(5deg) rotateX(5deg);
+      }
+      
+      /* Sticky Header Animation */
+      .header-sticky {
+          transform: translateY(-100%);
+          transition: transform 0.3s ease;
+      }
+      
+      .header-sticky.visible {
+          transform: translateY(0);
+      }
+      
+      /* Image Hover Effect */
+      .image-hover {
+          position: relative;
+          overflow: hidden;
+      }
+      
+      .image-hover::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(to bottom, rgba(255, 77, 125, 0) 0%, rgba(255, 77, 125, 0.7) 100%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+      }
+      
+      .image-hover:hover::after {
+          opacity: 1;
+      }
+      
+      .image-hover-content {
+          position: absolute;
+          bottom: -50px;
+          left: 0;
+          width: 100%;
+          padding: 20px;
+          color: white;
+          z-index: 1;
+          transition: bottom 0.3s ease;
+      }
+      
+      .image-hover:hover .image-hover-content {
+          bottom: 0;
+      }
+      
+      /* Animated Background */
+      .animated-bg {
+          background: linear-gradient(-45deg, #FFE6EE, #FFCBD8, #FFABC1, #FF8CAA);
+          background-size: 400% 400%;
+          animation: gradient 15s ease infinite;
+      }
+      
+      @keyframes gradient {
+          0% {
+              background-position: 0% 50%;
+          }
+          50% {
+              background-position: 100% 50%;
+          }
+          100% {
+              background-position: 0% 50%;
+          }
+      }
+
+      /* Mobile menu animation */
+      .mobile-menu-enter {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+      }
+
+      .mobile-menu-enter-active {
+          max-height: 500px;
+      }
+
+      .mobile-menu-exit {
+          max-height: 500px;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+      }
+
+      .mobile-menu-exit-active {
+          max-height: 0;
+      }
+
+      /* Mobile improvements */
+      @media (max-width: 768px) {
+          .container {
+              padding-left: 1rem;
+              padding-right: 1rem;
+          }
+          section {
+              padding-top: 2.5rem;
+              padding-bottom: 2.5rem;
+          }
+          .nav-link, .mobile-nav-link {
+              padding: 0.5rem 0;
+          }
+          .fancy-underline::after {
+              width: 50px;
+              bottom: -8px;
+          }
+      }
+
+      /* Touch-friendly buttons */
+      .touch-target {
+          min-height: 44px;
+          min-width: 44px;
+      }
+
+      /* Header Styles */
+      .site-header {
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Active nav link */
+      .nav-active {
+          color: #FF6D93;
+          font-weight: 600;
+          position: relative;
+      }
+
+      .nav-active::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #FF6D93;
+      }
+
+      /* Search bar */
+      .search-bar {
+          position: relative;
+      }
+
+      .search-results {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background: white;
+          border-radius: 0 0 8px 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          z-index: 50;
+          margin-top: 4px;
+          display: none;
+          border: 1px solid #eee;
+      }
+
+      .search-bar input:focus + .search-results,
+      .search-results:hover {
+          display: block;
+      }
+
+      /* Cart badge */
+      .cart-badge {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background-color: #FF6D93;
+          color: white;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          font-size: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+      }
+
+      /* Mobile menu */
+      .mobile-menu {
+          display: none;
+          background-color: white;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          z-index: 40;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .mobile-menu.active {
+          display: block;
+      }
+
+      .mobile-menu a {
+          display: block;
+          padding: 12px 16px;
+          border-bottom: 1px solid #f0f0f0;
+          color: #333;
+          font-weight: 500;
+      }
+
+      .mobile-menu a:hover {
+          background-color: #f9f9f9;
+      }
+
+      .mobile-menu a.active {
+          color: #FF6D93;
+          font-weight: 600;
+      }
+
+/* Like Animation */
+.heart-icon {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.heart-icon:hover {
+    transform: scale(1.1);
+}
+
+.heart-icon.scale-125 {
+    transform: scale(1.25);
+}
+  </style>
+  <!-- Google Sign-In API -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="font-sans bg-pink-50 text-gray-800">
+  <!-- Announcement Bar -->
+<div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
+    <p>Free shipping on orders over £50</p>
+</div>
+
+<!-- Header/Navigation -->
+<header class="bg-white shadow-soft sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="index.html" class="text-3xl font-serif font-bold gradient-text">Melissa's Melts</a>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
+                <a href="shop.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Shop</a>
+                <a href="about.html" class="nav-link font-medium text-pink-600">About</a>
+                <a href="contact.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Contact</a>
+            </div>
+            
+            <div class="flex items-center space-x-6">
+                <div class="relative search-container">
+                    <input type="text" id="search-input" placeholder="Search products..." class="py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent w-40 md:w-60">
+                    <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div class="search-results">
+                        <!-- Search results will be populated here -->
+                    </div>
+                </div>
+                
+                <div id="user-container">
+    <div class="relative">
+        <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+            <i class="fas fa-user text-lg"></i>
+        </a>
+        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+            <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                My Account
+            </a>
+            <button id="logout-button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                Logout
+            </button>
+        </div>
+    </div>
+    <!-- Google Sign-In Button -->
+    <div id="g_id_onload"
+        data-client_id="741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com"
+        data-context="signin"
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="outline"
+        data-text="sign_in_with"
+        data-shape="rectangular"
+        data-logo_alignment="left"
+        style="display: none;">
+    </div>
+</div>
+                
+                <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+                    <i class="fas fa-shopping-bag text-lg"></i>
+                    <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                </a>
+                
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+            <div class="flex flex-col space-y-3">
+                <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
+                <a href="shop.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Shop</a>
+                <a href="about.html" class="font-medium text-pink-600 py-2">About</a>
+                <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
+                <hr class="border-gray-200 my-1">
+                <a href="account.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2" id="mobile-account-link">My Account</a>
+                <button class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2 text-left hidden" id="mobile-logout-button">Logout</button>
+                <div id="mobile-google-signin" class="py-2"></div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Mobile spacing helper -->
+<style>
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        section {
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem;
+        }
+    }
+</style>
+
+  <!-- About Hero Section with Animated Background -->
+  <section class="relative animated-bg py-20 md:py-32 overflow-hidden">
+      <div class="absolute top-20 left-10 w-32 h-32 bg-pink-300 rounded-full opacity-30 blur-xl floating"></div>
+      <div class="absolute bottom-20 right-10 w-40 h-40 bg-pink-400 rounded-full opacity-20 blur-xl floating-slow"></div>
+      <div class="absolute -top-10 right-1/4 w-24 h-24 bg-pink-200 rounded-full opacity-40 blur-lg floating-slow"></div>
+      <div class="absolute -bottom-10 left-1/3 w-28 h-28 bg-pink-300 rounded-full opacity-30 blur-xl floating"></div>
+      
+      <!-- Animated Soap Bubbles -->
+      <div class="bubble bubble-1 top-1/4 right-1/4"></div>
+      <div class="bubble bubble-2 top-1/3 left-1/4"></div>
+      <div class="bubble bubble-3 bottom-1/4 right-1/3"></div>
+      
+      <div class="container mx-auto px-4 relative z-10">
+          <div class="text-center max-w-3xl mx-auto">
+              <span class="inline-block bg-white bg-opacity-30 backdrop-blur-sm text-pink-700 text-xs font-bold px-3 py-1 rounded-full mb-4 animate-fade-up">Our Journey</span>
+              <h1 class="text-4xl md:text-6xl font-serif font-bold mb-6 animate-fade-up text-white">The Melissa's Melts Story</h1>
+              <p class="text-lg text-white mb-8 animate-fade-up delay-100">From kitchen experiments to handcrafted luxury - discover how our passion for natural skincare blossomed into a beloved soap company.</p>
+              <div class="flex justify-center animate-fade-up delay-200">
+                  <a href="#our-story" class="bg-white hover:bg-pink-50 text-pink-600 font-medium py-3 px-8 rounded-full transition-colors shadow-soft flex items-center touch-target">
+                      Discover More
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                  </a>
+              </div>
+          </div>
+      </div>
+  </section>
+  
+  <!-- Our Story Section with Simplified Layout -->
+  <section id="our-story" class="py-16 md:py-20 bg-white">
+      <div class="container mx-auto px-4">
+          <div class="flex flex-col md:flex-row items-center gap-12">
+              <div class="md:w-1/2 animate-fade-up">
+                  <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">Established 2019</span>
+                  <h2 class="text-3xl md:text-4xl font-serif font-bold mb-6 fancy-underline left-align">The Beginning</h2>
+                  <p class="text-gray-700 mb-6 leading-relaxed">
+                      Melissa's Melts began in 2019 as a creative outlet in the founder's small kitchen. What started as a hobby quickly grew into a passion as friends and family couldn't get enough of the handcrafted soaps and wax melts.
+                  </p>
+                  <div class="mb-6 bg-pink-50 p-6 rounded-lg border-l-4 border-pink-500">
+                      <p class="italic text-gray-700">
+                          "I started making soaps because I wanted products that were kind to my sensitive skin and kind to the planet. I never imagined it would grow into what it is today, but I'm grateful for every customer who has joined us on this journey."
+                      </p>
+                      <p class="mt-2 font-medium">— Melissa Johnson, Founder</p>
+                  </div>
+                  <p class="text-gray-700 leading-relaxed">
+                      From a small market stall to an online store, we've grown steadily, but our commitment remains the same: creating luxurious, handcrafted soaps using only the finest natural ingredients while providing exceptional customer service.
+                  </p>
+                  
+                  <!-- Milestones -->
+                  <div class="mt-8 space-y-4">
+                      <h3 class="text-xl font-medium text-pink-600">Our Milestones</h3>
+                      <div class="flex items-start">
+                          <div class="bg-pink-100 text-pink-600 font-bold rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 mt-1">
+                              <span>2019</span>
+                          </div>
+                          <div class="ml-4">
+                              <h4 class="font-medium">First Batch</h4>
+                              <p class="text-gray-600">Created our first successful soap recipe in Melissa's kitchen</p>
+                          </div>
+                      </div>
+                      <div class="flex items-start">
+                          <div class="bg-pink-100 text-pink-600 font-bold rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 mt-1">
+                              <span>2020</span>
+                          </div>
+                          <div class="ml-4">
+                              <h4 class="font-medium">Market Launch</h4>
+                              <p class="text-gray-600">Sold our first products at local farmers markets</p>
+                          </div>
+                      </div>
+                      <div class="flex items-start">
+                          <div class="bg-pink-100 text-pink-600 font-bold rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 mt-1">
+                              <span>2021</span>
+                          </div>
+                          <div class="ml-4">
+                              <h4 class="font-medium">Online Store</h4>
+                              <p class="text-gray-600">Launched our website and began shipping nationwide</p>
+                          </div>
+                      </div>
+                      <div class="flex items-start">
+                          <div class="bg-pink-100 text-pink-600 font-bold rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 mt-1">
+                              <span>2023</span>
+                          </div>
+                          <div class="ml-4">
+                              <h4 class="font-medium">Expansion</h4>
+                              <p class="text-gray-600">Moved to a dedicated workshop and expanded our product line</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="md:w-1/2 relative animate-fade-up delay-200">
+                  <div class="relative card-3d">
+                      <div class="absolute -top-6 -left-6 w-full h-full bg-pink-200 rounded-2xl transform rotate-3"></div>
+                      <div class="absolute -bottom-6 -right-6 w-full h-full bg-pink-300 rounded-2xl transform -rotate-3"></div>
+                      <img src="https://images.unsplash.com/photo-1584305574647-0cc949a2bb9f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Handcrafted Soaps" class="w-full h-auto rounded-2xl shadow-card relative z-10">
+                      <div class="absolute top-4 right-4 bg-white py-2 px-4 rounded-full shadow-md text-pink-600 font-medium text-sm">
+                          <span>Est. 2019</span>
+                      </div>
+                  </div>
+                  
+                  <!-- Image Gallery -->
+                  <div class="mt-8 grid grid-cols-3 gap-4">
+                      <div class="image-hover rounded-lg overflow-hidden shadow-soft">
+                          <img src="https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Soap Making Process" class="h-24 w-full object-cover">
+                          <div class="image-hover-content">
+                              <p class="text-sm font-medium">Handcrafted</p>
+                          </div>
+                      </div>
+                      <div class="image-hover rounded-lg overflow-hidden shadow-soft">
+                          <img src="https://images.unsplash.com/photo-1602910344008-22f323cc1817?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Handcrafted Soaps" class="h-24 w-full object-cover">
+                          <div class="image-hover-content">
+                              <p class="text-sm font-medium">Natural</p>
+                          </div>
+                      </div>
+                      <div class="image-hover rounded-lg overflow-hidden shadow-soft">
+                          <img src="https://images.unsplash.com/photo-1607006483224-75ee0df7c8a4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Natural Ingredients" class="h-24 w-full object-cover">
+                          <div class="image-hover-content">
+                              <p class="text-sm font-medium">Luxurious</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- Our Values Section with Interactive Cards -->
+  <section class="py-16 md:py-20 bg-pink-50 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-pink-200 rounded-full opacity-30 blur-xl -mr-32 -mt-32"></div>
+      <div class="absolute bottom-0 left-0 w-64 h-64 bg-pink-300 rounded-full opacity-20 blur-xl -ml-32 -mb-32"></div>
+      
+      <div class="container mx-auto px-4 relative z-10">
+          <div class="text-center max-w-3xl mx-auto mb-16">
+              <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">Our Values</span>
+              <h2 class="text-3xl md:text-5xl font-serif font-bold mb-6 fancy-underline">What We Stand For</h2>
+              <p class="text-gray-600">At Melissa's Melts, our mission goes beyond creating beautiful soaps. We're committed to values that guide everything we do.</p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <!-- Value 1 -->
+              <div class="value-card bg-white p-8 rounded-xl shadow-card transform transition-all duration-300 hover:-translate-y-4">
+                  <div class="bg-pink-100 w-16 h-16 flex items-center justify-center rounded-full mb-6">
+                      <i class="fas fa-leaf value-icon text-2xl text-pink-500"></i>
+                  </div>
+                  <h3 class="text-xl font-medium mb-3">Natural Ingredients</h3>
+                  <p class="text-gray-600 mb-4">We believe what you put on your skin matters. That's why we use only natural, ethically sourced ingredients free from harmful chemicals.</p>
+                  <ul class="text-gray-600 space-y-2 mb-4">
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Organic base oils</span>
+                      </li>
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Pure essential oils</span>
+                      </li>
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>No synthetic fragrances</span>
+                      </li>
+                  </ul>
+              </div>
+              
+              <!-- Value 2 -->
+              <div class="value-card bg-white p-8 rounded-xl shadow-card transform transition-all duration-300 hover:-translate-y-4">
+                  <div class="bg-pink-100 w-16 h-16 flex items-center justify-center rounded-full mb-6">
+                      <i class="fas fa-recycle value-icon text-2xl text-pink-500"></i>
+                  </div>
+                  <h3 class="text-xl font-medium mb-3">Sustainability</h3>
+                  <p class="text-gray-600 mb-4">From our ingredients to our packaging, we make choices that minimize our environmental impact and promote a healthier planet.</p>
+                  <ul class="text-gray-600 space-y-2 mb-4">
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Plastic-free packaging</span>
+                      </li>
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Biodegradable materials</span>
+                      </li>
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Minimal waste production</span>
+                      </li>
+                  </ul>
+              </div>
+              
+              <!-- Value 3 -->
+              <div class="value-card bg-white p-8 rounded-xl shadow-card transform transition-all duration-300 hover:-translate-y-4">
+                  <div class="bg-pink-100 w-16 h-16 flex items-center justify-center rounded-full mb-6">
+                      <i class="fas fa-heart value-icon text-2xl text-pink-500"></i>
+                  </div>
+                  <h3 class="text-xl font-medium mb-3">Handcrafted With Love</h3>
+                  <p class="text-gray-600 mb-4">Each product is carefully handcrafted in small batches to ensure the highest quality. We put our heart into everything we make.</p>
+                  <ul class="text-gray-600 space-y-2 mb-4">
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Small batch production</span>
+                      </li>
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Attention to detail</span>
+                      </li>
+                      <li class="flex items-start">
+                          <svg class="h-5 w-5 text-pink-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                          <span>Quality over quantity</span>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+          
+          <div class="mt-16 text-center">
+              <a href="shop.html" class="btn-primary text-white font-medium py-3 px-8 rounded-full inline-block shadow-glow touch-target">
+                  Shop Our Products
+              </a>
+          </div>
+      </div>
+  </section>
+
+  <!-- Our Process Section -->
+  <section class="py-16 md:py-20 bg-pink-50">
+      <div class="container mx-auto px-4">
+          <div class="text-center max-w-3xl mx-auto mb-16">
+              <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">Our Process</span>
+              <h2 class="text-3xl md:text-5xl font-serif font-bold mb-6 fancy-underline">How We Craft Our Soaps</h2>
+              <p class="text-gray-600">Every bar of soap and wax melt goes through an artisanal process that ensures quality, beauty, and effectiveness.</p>
+          </div>
+          
+          <div class="timeline-container max-w-4xl mx-auto py-10">
+              <!-- Step 1 -->
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="bg-white p-6 rounded-xl shadow-soft transform transition-all duration-300 hover:shadow-card hover:-translate-y-2">
+                      <span class="text-pink-500 font-bold">Step 1</span>
+                      <h3 class="text-xl font-medium my-2">Ingredient Selection</h3>
+                      <p class="text-gray-600 mb-4">We carefully source the finest natural ingredients, from organic base oils to pure essential oils and botanicals, ensuring quality in every component.</p>
+                      <div class="flex items-center text-sm text-gray-500">
+                          <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                          <span>Ethically sourced materials</span>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Step 2 -->
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="bg-white p-6 rounded-xl shadow-soft transform transition-all duration-300 hover:shadow-card hover:-translate-y-2">
+                      <span class="text-pink-500 font-bold">Step 2</span>
+                      <h3 class="text-xl font-medium my-2">Recipe Formulation</h3>
+                      <p class="text-gray-600 mb-4">Each product begins with a precise recipe developed through research and testing to create the perfect balance of nourishing properties and sensory experience.</p>
+                      <div class="flex items-center text-sm text-gray-500">
+                          <i class="fas fa-flask text-blue-500 mr-2"></i>
+                          <span>Scientifically tested formulas</span>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Step 3 -->
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="bg-white p-6 rounded-xl shadow-soft transform transition-all duration-300 hover:shadow-card hover:-translate-y-2">
+                      <span class="text-pink-500 font-bold">Step 3</span>
+                      <h3 class="text-xl font-medium my-2">Small Batch Production</h3>
+                      <p class="text-gray-600 mb-4">We craft every product in small batches, allowing us to maintain close control over quality and give each item the attention it deserves.</p>
+                      <div class="flex items-center text-sm text-gray-500">
+                          <i class="fas fa-hands text-yellow-500 mr-2"></i>
+                          <span>Handcrafted with care</span>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Step 4 -->
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="bg-white p-6 rounded-xl shadow-soft transform transition-all duration-300 hover:shadow-card hover:-translate-y-2">
+                      <span class="text-pink-500 font-bold">Step 4</span>
+                      <h3 class="text-xl font-medium my-2">Curing & Quality Control</h3>
+                      <p class="text-gray-600 mb-4">Our soaps cure for 4-6 weeks, allowing excess water to evaporate and creating a mild, long-lasting bar. Every item undergoes quality checks before packaging.</p>
+                      <div class="flex items-center text-sm text-gray-500">
+                          <i class="fas fa-clipboard-check text-purple-500 mr-2"></i>
+                          <span>Rigorous quality standards</span>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Step 5 -->
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="bg-white p-6 rounded-xl shadow-soft transform transition-all duration-300 hover:shadow-card hover:-translate-y-2">
+                      <span class="text-pink-500 font-bold">Step 5</span>
+                      <h3 class="text-xl font-medium my-2">Eco-Friendly Packaging</h3>
+                      <p class="text-gray-600 mb-4">Finally, we wrap each product in sustainable, plastic-free packaging that protects the product while minimizing environmental impact.</p>
+                      <div class="flex items-center text-sm text-gray-500">
+                          <i class="fas fa-leaf text-green-500 mr-2"></i>
+                          <span>Environmentally conscious</span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="mt-16 text-center">
+              <a href="shop.html" class="btn-primary text-white font-medium py-3 px-8 rounded-full inline-block shadow-glow touch-target">
+                  Discover Our Products
+              </a>
+          </div>
+      </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="py-16 md:py-20 bg-white">
+      <div class="container mx-auto px-4">
+          <div class="text-center max-w-3xl mx-auto mb-16">
+              <span class="inline-block bg-pink-100 text-pink-600 text-xs font-bold px-3 py-1 rounded-full mb-4">Testimonials</span>
+              <h2 class="text-3xl md:text-5xl font-serif font-bold mb-6 fancy-underline">What Our Customers Say</h2>
+              <p class="text-gray-600">Don't just take our word for it - hear from our wonderful customers who have experienced the Melissa's Melts difference.</p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <!-- Testimonial 1 -->
+              <div class="bg-pink-50 rounded-xl p-8 shadow-soft transform transition-all duration-300 hover:-translate-y-2 hover:shadow-card">
+                  <div class="flex text-yellow-400 mb-4">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                  </div>
+                  <p class="text-gray-700 italic mb-6">"I've been using Melissa's soaps for over a year now, and my skin has never felt better. The lavender soap is my absolute favorite - it's so calming before bed!"</p>
+                  <div class="flex items-center">
+                      <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="Customer" class="w-10 h-10 rounded-full mr-3">
+                      <div>
+                          <h4 class="font-medium">Emma Wilson</h4>
+                          <p class="text-gray-500 text-sm">Loyal Customer</p>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Testimonial 2 -->
+              <div class="bg-pink-50 rounded-xl p-8 shadow-soft transform transition-all duration-300 hover:-translate-y-2 hover:shadow-card">
+                  <div class="flex text-yellow-400 mb-4">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                  </div>
+                  <p class="text-gray-700 italic mb-6">"These soaps make the perfect gifts! I ordered a gift set for my mom's birthday and she was absolutely thrilled. The packaging is beautiful and the scents are divine."</p>
+                  <div class="flex items-center">
+                      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" class="w-10 h-10 rounded-full mr-3">
+                      <div>
+                          <h4 class="font-medium">James Peterson</h4>
+                          <p class="text-gray-500 text-sm">Happy Customer</p>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Testimonial 3 -->
+              <div class="bg-pink-50 rounded-xl p-8 shadow-soft transform transition-all duration-300 hover:-translate-y-2 hover:shadow-card">
+                  <div class="flex text-yellow-400 mb-4">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                  </div>
+                  <p class="text-gray-700 italic mb-6">"I have sensitive skin and have struggled to find products that don't cause irritation. Melissa's soaps have been a game-changer for me. Gentle, moisturizing, and they smell amazing!"</p>
+                  <div class="flex items-center">
+                      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" class="w-10 h-10 rounded-full mr-3">
+                      <div>
+                          <h4 class="font-medium">Sophia Martinez</h4>
+                          <p class="text-gray-500 text-sm">Repeat Customer</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="mt-12 text-center">
+              <a href="shop.html" class="inline-block border-2 border-pink-400 text-pink-600 hover:bg-pink-100 font-medium py-3 px-8 rounded-full transition-colors touch-target">
+                  See All Reviews
+              </a>
+          </div>
+      </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="py-20 md:py-24 bg-gradient-to-r from-pink-600 to-pink-400 text-white relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full opacity-10 blur-xl -mr-32 -mt-32"></div>
+      <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full opacity-10 blur-xl -ml-32 -mb-32"></div>
+      
+      <div class="container mx-auto px-4 text-center relative z-10">
+          <h2 class="text-3xl md:text-5xl font-serif font-bold mb-6">Experience the Melissa's Melts Difference</h2>
+          <p class="text-xl mb-8 max-w-3xl mx-auto">Ready to transform your self-care routine with our handcrafted soaps and melts? Explore our collection today.</p>
+          <div class="flex flex-wrap justify-center gap-4">
+              <a href="shop.html" class="bg-white text-pink-600 hover:bg-gray-100 font-medium py-3 px-8 rounded-full inline-block shadow-glow touch-target">Shop Now</a>
+              <a href="contact.html" class="border-2 border-white text-white hover:bg-white/10 font-medium py-3 px-8 rounded-full transition-colors touch-target">Get in Touch</a>
+          </div>
+          
+          <div class="mt-12 pt-12 border-t border-white/20">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                  <div class="text-center">
+                      <div class="text-4xl font-bold mb-2 counter-value" data-target="1000">0</div>
+                      <div class="text-white/80">Happy Customers</div>
+                  </div>
+                  <div class="text-center">
+                      <div class="text-4xl font-bold mb-2 counter-value" data-target="50">0</div>
+                      <div class="text-white/80">Unique Scents</div>
+                  </div>
+                  <div class="text-center">
+                      <div class="text-4xl font-bold mb-2 counter-value" data-target="100">0</div>
+                      <div class="text-white/80">Natural Ingredients</div>
+                  </div>
+                  <div class="text-center">
+                      <div class="text-4xl font-bold mb-2">5★</div>
+                      <div class="text-white/80">Average Rating</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white pt-16 md:pt-20 pb-10">
+      <div class="container mx-auto px-4">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+              <!-- Company Info -->
+              <div>
+                  <h3 class="text-2xl font-serif font-bold mb-6 gradient-text">Melissa's Melts</h3>
+                  <p class="text-gray-400 mb-6 leading-relaxed">Handcrafted soaps and wax melts made with love and natural ingredients for your home and body.</p>
+                  <div class="flex space-x-4">
+                      <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                          <i class="fab fa-facebook-f text-pink-400"></i>
+                      </a>
+                      <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                          <i class="fab fa-instagram text-pink-400"></i>
+                      </a>
+                      <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                          <i class="fab fa-pinterest-p text-pink-400"></i>
+                      </a>
+                      <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                          <i class="fab fa-tiktok text-pink-400"></i>
+                      </a>
+                  </div>
+              </div>
+              
+              <!-- Shop Links -->
+              <div>
+                  <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Shop</h3>
+                  <ul class="space-y-3">
+                      <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">All Products</a></li>
+                      <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Soaps</a></li>
+                      <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Wax Melts</a></li>
+                      <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Gift Sets</a></li>
+                      <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">New Arrivals</a></li>
+                      <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Best Sellers</a></li>
+                  </ul>
+              </div>
+              
+              <!-- Information -->
+              <div>
+                  <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Information</h3>
+                  <ul class="space-y-3">
+                      <li><a href="about.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">About Us</a></li>
+                      <li><a href="contact.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Contact</a></li>
+                      <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">FAQ</a></li>
+                      <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Shipping & Returns</a></li>
+                      <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Privacy Policy</a></li>
+                      <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Terms & Conditions</a></li>
+                  </ul>
+              </div>
+              
+              <!-- Contact -->
+              <div>
+                  <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Contact Us</h3>
+                  <ul class="space-y-4">
+                      <li class="flex items-start">
+                          <i class="fas fa-map-marker-alt mt-1.5 mr-3 text-pink-400"></i>
+                          <span class="text-gray-400">123 Soap Street, Meltville, ML 12345</span>
+                      </li>
+                      <li class="flex items-start">
+                          <i class="fas fa-envelope mt-1.5 mr-3 text-pink-400"></i>
+                          <span class="text-gray-400">hello@melissasmelts.com</span>
+                      </li>
+                      <li class="flex items-start">
+                          <i class="fas fa-phone mt-1.5 mr-3 text-pink-400"></i>
+                          <span class="text-gray-400">(123) 456-7890</span>
+                      </li>
+                      <li class="flex items-start">
+                          <i class="fas fa-clock mt-1.5 mr-3 text-pink-400"></i>
+                          <span class="text-gray-400">Mon-Fri: 9am - 5pm EST</span>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+          
+          <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+              <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+              <div class="flex items-center space-x-6">
+                  <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                  <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                  <img src="https://cdn.pixabay.com/photo/2022/01/09/07/23/american-express-6926131_640.png" alt="American Express" class="h-6">
+                  <img src="https://cdn.pixabay.com/photo/2021/12/06/13/45/paypal-6850398_640.png" alt="PayPal" class="h-6">
+              </div>
+          </div>
+      </div>
+  </footer>
+
+  <!-- Mobile Fixed Cart Button -->
+  <div class="md:hidden fixed bottom-4 right-4 z-50 bg-pink-500 text-white shadow-lg rounded-full w-14 h-14 flex items-center justify-center" id="mobile-cart-button">
+      <div class="relative">
+          <i class="fas fa-shopping-bag text-xl"></i>
+          <span class="absolute -top-2 -right-2 bg-white text-pink-500 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="mobile-cart-count">0</span>
+      </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile Menu Toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+    });
+    
+    // Search Functionality
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.querySelector('.search-results');
+    
+    // Product database for search
+    const products = [
+        { name: 'Massage Soap', url: 'massage-soap.html', category: 'Soap' },
+        { name: 'Lavender Soap', url: 'massage-soap.html', category: 'Soap' },
+        { name: 'Rose Wax Melts', url: 'massage-soap.html', category: 'Wax Melt' },
+        { name: 'Vanilla Soap', url: 'massage-soap.html', category: 'Soap' },
+        { name: 'Citrus Wax Melts', url: 'massage-soap.html', category: 'Wax Melt' }
+    ];
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            // Clear previous results
+            searchResults.innerHTML = '';
+            
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            // Filter products based on search query
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(query) || 
+                product.category.toLowerCase().includes(query)
+            );
+            
+            // Display results
+            if (filteredProducts.length > 0) {
+                searchResults.style.display = 'block';
+                filteredProducts.forEach(product => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    resultItem.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-${product.category === 'Soap' ? 'soap' : 'fire-alt'} text-pink-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium">${product.name}</p>
+                                <p class="text-xs text-gray-500">${product.category}</p>
+                            </div>
+                        </div>
+                    `;
+                    resultItem.addEventListener('click', function() {
+                        window.location.href = product.url;
+                    });
+                    searchResults.appendChild(resultItem);
+                });
+            } else {
+                searchResults.style.display = 'block';
+                searchResults.innerHTML = `
+                    <div class="p-4 text-center text-gray-500">
+                        No products found for "${query}"
+                    </div>
+                `;
+            }
+        });
+    }
+    
+    // Close search results when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.search-container')) {
+            if (searchResults) {
+                searchResults.style.display = 'none';
+            }
+        }
+    });
+    
+    // Google Sign-In
+    window.handleCredentialResponse = function(response) {
+        // Send the token to your server for verification
+        const token = response.credential;
+        
+        // For demo purposes, decode the JWT to get user info
+        // In production, this should be verified on the server
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        const payload = JSON.parse(jsonPayload);
+        
+        // Create user object
+        const user = {
+            userId: payload.sub,
+            name: payload.name,
+            email: payload.email,
+            picture: payload.picture,
+            points: 0
+        };
+        
+        // Store user info in localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', token);
+        
+        // Update UI
+        updateUserUI(user);
+    };
+
+    // Check if user is logged in
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+        updateUserUI(user);
+    } else {
+        // Initialize Google Sign-In
+        if (typeof google !== 'undefined' && google.accounts) {
+            google.accounts.id.initialize({
+                client_id: '741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com',
+                callback: handleCredentialResponse
+            });
+        }
+    }
+
+    // Update the user icon to navigate to account.html
+    function updateUserUI(user) {
+        // Update user icon
+        const userIcon = document.getElementById('user-icon');
+        const userDropdown = document.getElementById('user-dropdown');
+        
+        if (userIcon && user.picture) {
+            userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
+            userIcon.href = 'account.html';
+            
+            // Add click event to toggle dropdown
+            userIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                userDropdown.classList.toggle('hidden');
+            });
+        } else if (userIcon && user.name) {
+            // If no picture, use first letter of name
+            const initials = user.name.charAt(0).toUpperCase();
+            userIcon.innerHTML = `<div class="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold">${initials}</div>`;
+            userIcon.href = 'account.html';
+            
+            // Add click event to toggle dropdown
+            userIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                userDropdown.classList.toggle('hidden');
+            });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (userIcon && userDropdown && !userIcon.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.add('hidden');
+            }
+        });
+        
+        // Inside the updateUserUI function, after all current code, add:
+        updateMobileUserUI(user);
+    }
+    
+    // Update cart count
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = cartCount;
+    }
+    
+    // Add logout functionality
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            // Clear user data from localStorage
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            
+            // Reset user icon
+            const userIcon = document.getElementById('user-icon');
+            if (userIcon) {
+                userIcon.innerHTML = `<i class="fas fa-user text-lg"></i>`;
+                userIcon.href = 'login.html';
+            }
+            
+            // Hide dropdown
+            document.getElementById('user-dropdown').classList.add('hidden');
+            
+            // Reload page to reset state
+            window.location.reload();
+        });
+    }
+
+    // Mobile Account Management
+    const mobileAccountLink = document.getElementById('mobile-account-link');
+    const mobileLogoutButton = document.getElementById('mobile-logout-button');
+    const mobileGoogleSignin = document.getElementById('mobile-google-signin');
+
+    function updateMobileUserUI(user) {
+        if (user) {
+            // User is logged in
+            if (mobileAccountLink) {
+                mobileAccountLink.classList.remove('hidden');
+                // You could add the user's name or initial here
+                if (user.name) {
+                    mobileAccountLink.innerHTML = `<i class="fas fa-user mr-2"></i> ${user.name.split(' ')[0]}`;
+                }
+            }
+            
+            if (mobileLogoutButton) {
+                mobileLogoutButton.classList.remove('hidden');
+                mobileLogoutButton.addEventListener('click', function() {
+                    // Clear user data from localStorage
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('token');
+                    
+                    // Reload page to reset state
+                    window.location.reload();
+                });
+            }
+            
+            if (mobileGoogleSignin) {
+                mobileGoogleSignin.classList.add('hidden');
+            }
+        } else {
+            // User is not logged in
+            if (mobileAccountLink) {
+                mobileAccountLink.href = 'login.html';
+                mobileAccountLink.innerHTML = `<i class="fas fa-sign-in-alt mr-2"></i> Sign In`;
+            }
+            
+            if (mobileLogoutButton) {
+                mobileLogoutButton.classList.add('hidden');
+            }
+            
+            if (mobileGoogleSignin && typeof google !== 'undefined' && google.accounts) {
+                mobileGoogleSignin.classList.remove('hidden');
+                // Render Google sign-in button for mobile
+                google.accounts.id.renderButton(
+                    mobileGoogleSignin,
+                    { theme: 'outline', size: 'medium', width: 200 }
+                );
+            }
+        }
+    }
+
+    // Check and update mobile UI
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData) {
+        updateMobileUserUI(userData);
+    } else {
+        updateMobileUserUI(null);
+    }
+  
+    // Mobile cart button
+    const mobileCartButton = document.getElementById('mobile-cart-button');
+    const mobileCartCount = document.getElementById('mobile-cart-count');
+    
+    if (mobileCartButton) {
+        mobileCartButton.addEventListener('click', function() {
+            window.location.href = 'cart.html';
+        });
+    }
+    
+    // Sync cart count with mobile count
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) cartCount.textContent = count;
+        
+        if (mobileCartCount) mobileCartCount.textContent = count;
+    }
+    
+    // Call on page load
+    updateCartCount();
+
+    // Heart animation for product likes
+    const heartIcons = document.querySelectorAll('.heart-icon');
+    if (heartIcons) {
+        heartIcons.forEach(heart => {
+            heart.addEventListener('click', function() {
+                this.classList.toggle('text-pink-500');
+                this.classList.toggle('text-gray-400');
+                
+                // Animation effect
+                this.classList.add('scale-125');
+                setTimeout(() => {
+                    this.classList.remove('scale-125');
+                }, 300);
+            });
+        });
+    }
+
+    // Counter animation for statistics
+    function animateCounters() {
+        const counters = document.querySelectorAll('.counter-value');
+        const speed = 200; // The lower the faster
+        
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            
+            const inc = target / speed;
+            
+            if (count < target) {
+                counter.innerText = Math.ceil(count + inc);
+                setTimeout(() => animateCounters(), 1);
+            } else {
+                counter.innerText = target;
+            }
+        });
+    }
+
+    // Initialize counter animation when elements are in viewport
+    const counterSection = document.querySelector('.counter-value');
+    if (counterSection) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                animateCounters();
+                observer.unobserve(entries[0].target);
+            }
+        }, { threshold: 0.5 });
+        
+        observer.observe(counterSection);
+    }
+})
+</script>
+</body>
+</html>
