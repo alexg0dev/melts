@@ -848,6 +848,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         amount: amount,
@@ -861,8 +862,14 @@
                 });
                 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Server error: ${errorData.error || response.statusText}`);
+                    const errorText = await response.text();
+                    console.error('Server response:', errorText);
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        throw new Error(`Server error: ${errorData.error || response.statusText}`);
+                    } catch (e) {
+                        throw new Error(`Server error: ${response.statusText}. Response was not valid JSON.`);
+                    }
                 }
                 
                 const { clientSecret } = await response.json();
@@ -900,6 +907,10 @@
                     }
                 });
                 
+                // Hide loading spinner
+                document.getElementById('payment-element-loading').style.display = 'none';
+                
+                // Mount payment element
                 paymentElement.mount('#payment-element-container');
                 console.log('Payment element mounted successfully');
                 
