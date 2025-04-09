@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Melissa's Melts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: '#FFF5F7',
+                            100: '#FFEAEF',
+                            200: '#FFCBD8',
+                            300: '#FFABC1',
+                            400: '#FF8CAA',
+                            500: '#FF6D93',
+                            600: '#FF4E7D',
+                            700: '#FF2F67',
+                            800: '#FF1051',
+                            900: '#E0003B',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
+                        'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "url('https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-up {
+            animation: fadeUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+        
+        .delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
+        }
+        
+        /* Product Card Effects */
+        .product-card {
+            transition: all 0.4s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .product-card .product-image {
+            transition: transform 0.6s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.08);
+        }
+        
+        .product-card .quick-add {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover .quick-add {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Custom Button Styles */
+        .btn-primary {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, #FF2F67, #FF6D93);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-primary:hover::before {
+            width: 100%;
+        }
+        
+        /* Fancy Underline */
+        .fancy-underline {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .fancy-underline::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 3px;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            border-radius: 3px;
+        }
+        
+        .fancy-underline.left-align::after {
+            left: 0;
+            transform: none;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #FFF5F7;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #FF6D93;
+            border-radius: 5px;
+        }
+        
+        /* Navbar Animation */
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #FF6D93;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Search Results */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 0.5rem 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-container:focus-within .search-results {
+            display: block;
+        }
+        
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .search-result-item:hover {
+            background-color: #FFF5F7;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Spinner for payment processing */
+        .spinner {
+            color: #ffffff;
+            font-size: 22px;
+            text-indent: -99999px;
+            margin: 0px auto;
+            position: relative;
+            width: 20px;
+            height: 20px;
+            box-shadow: inset 0 0 0 2px;
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+        
+        .spinner:before,
+        .spinner:after {
+            position: absolute;
+            content: '';
+        }
+        
+        .spinner:before {
+            width: 10.4px;
+            height: 20.4px;
+            background: #FF6D93;
+            border-radius: 20.4px 0 0 20.4px;
+            top: -0.2px;
+            left: -0.2px;
+            -webkit-transform-origin: 10.4px 10.2px;
+            transform-origin: 10.4px 10.2px;
+            -webkit-animation: loading 2s infinite ease 1.5s;
+            animation: loading 2s infinite ease 1.5s;
+        }
+        
+        .spinner:after {
+            width: 10.4px;
+            height: 10.2px;
+            background: #FF6D93;
+            border-radius: 0 10.2px 10.2px 0;
+            top: -0.1px;
+            left: 10.2px;
+            -webkit-transform-origin: 0px 10.2px;
+            transform-origin: 0px 10.2px;
+            -webkit-animation: loading 2s infinite ease;
+            animation: loading 2s infinite ease;
+        }
+        
+        @keyframes loading {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile menu animation */
+        .mobile-menu-enter {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-menu-enter-active {
+            max-height: 500px;
+        }
+
+        .mobile-menu-exit {
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-menu-exit-active {
+            max-height: 0;
+        }
+    </style>
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="font-sans bg-pink-50 text-gray-800">
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
+        <p>Free shipping on orders over £50</p>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-soft sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-3xl font-serif font-bold gradient-text">Melissa's Melts</a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
+                    <a href="shop.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Shop</a>
+                    <a href="about.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">About</a>
+                    <a href="contact.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <div class="relative search-container">
+                        <input type="text" id="search-input" placeholder="Search products..." class="py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent w-40 md:w-60">
+                        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <div class="search-results">
+                            <!-- Search results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div id="user-container">
+                        <div class="relative">
+                            <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+                                <i class="fas fa-user text-lg"></i>
+                            </a>
+                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                                    My Account
+                                </a>
+                                <button id="logout-button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Google Sign-In Button -->
+                        <div id="g_id_onload"
+                            data-client_id="741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com"
+                            data-context="signin"
+                            data-callback="handleCredentialResponse"
+                            data-auto_prompt="false">
+                        </div>
+                        <div class="g_id_signin"
+                            data-type="standard"
+                            data-size="large"
+                            data-theme="outline"
+                            data-text="sign_in_with"
+                            data-shape="rectangular"
+                            data-logo_alignment="left"
+                            style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+                <div class="flex flex-col space-y-3">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
+                    <a href="shop.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Shop</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
+                    <hr class="border-gray-200 my-1">
+                    <a href="account.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2" id="mobile-account-link">My Account</a>
+                    <button class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2 text-left hidden" id="mobile-logout-button">Logout</button>
+                    <div id="mobile-google-signin" class="py-2"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+                <!-- Checkout Header -->
+                <div class="bg-gradient-to-r from-pink-600 to-pink-500 text-white py-6 px-8">
+                    <h1 class="text-2xl md:text-3xl font-bold">Secure Checkout</h1>
+                    <p class="mt-2 opacity-90">Complete your purchase with our secure payment system</p>
+                </div>
+                
+                <!-- Checkout Content -->
+                <div class="p-6 md:p-8">
+                    <!-- Progress Steps -->
+                    <div class="flex justify-between mb-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <span class="text-xs mt-2 text-gray-600">Cart</span>
+                        </div>
+                        <div class="flex-1 flex items-center justify-center">
+                            <div class="h-1 w-full bg-gray-200">
+                                <div class="h-1 bg-pink-500 w-full"></div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <span class="text-xs mt-2 text-pink-600 font-medium">Payment</span>
+                        </div>
+                        <div class="flex-1 flex items-center justify-center">
+                            <div class="h-1 w-full bg-gray-200"></div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="text-xs mt-2 text-gray-600">Confirmation</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkout Form -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Order Summary -->
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Order Summary</h2>
+                            
+                            <div id="order-items" class="space-y-3 mb-6">
+                                <!-- Order items will be populated by JavaScript -->
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4 space-y-2">
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Subtotal</span>
+                                    <span id="subtotal">£0.00</span>
+                                </div>
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Shipping</span>
+                                    <span id="shipping">£0.00</span>
+                                </div>
+                                <div class="flex justify-between text-gray-600">
+                                    <span>Discount</span>
+                                    <span id="discount">-£0.00</span>
+                                </div>
+                                <div class="flex justify-between font-semibold text-lg text-gray-800 pt-2 border-t border-gray-200">
+                                    <span>Total</span>
+                                    <span id="total">£0.00</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Customer Information -->
+                            <div class="mt-6">
+                                <h3 class="text-lg font-medium text-gray-800 mb-3">Customer Information</h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <input type="text" id="name" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                    </div>
+                                    <div>
+                                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                        <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                    </div>
+                                    <div>
+                                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                        <input type="tel" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                    </div>
+                                    <div>
+                                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                        <input type="text" id="address" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                            <input type="text" id="city" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                        </div>
+                                        <div>
+                                            <label for="postcode" class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+                                            <input type="text" id="postcode" placeholder="e.g. AB12 3CD" pattern="[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][A-Za-z]{2}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                            <p class="text-xs text-gray-500 mt-1">Enter a valid UK postcode</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Details -->
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Payment Details</h2>
+                            
+                            <form id="payment-form">
+                                <div id="card-element" class="mb-6 p-4 border border-gray-300 rounded-md">
+                                    <!-- Stripe Card Element will be inserted here -->
+                                </div>
+                                
+                                <button id="submit" class="w-full bg-gradient-to-r from-pink-600 to-pink-500 text-white py-3 px-4 rounded-md font-medium hover:opacity-90 transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2">
+                                    <div class="spinner hidden" id="spinner"></div>
+                                    <span id="button-text">Pay Now</span>
+                                </button>
+                                
+                                <div id="payment-message" class="hidden mt-4 text-center text-sm"></div>
+                                
+                                <div class="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-600">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Payments are secure and encrypted</span>
+                                </div>
+                                
+                                <div class="mt-6 flex justify-center space-x-4">
+                                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-20 pb-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6 gradient-text">Melissa's Melts</h3>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Handcrafted soaps and wax melts made with love and natural ingredients for your home and body.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-pinterest-p text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-tiktok text-pink-400"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Shop Links -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Shop</h3>
+                    <ul class="space-y-3">
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">All Products</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Soaps</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Wax Melts</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Gift Sets</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">New Arrivals</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Best Sellers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Information -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Information</h3>
+                    <ul class="space-y-3">
+                        <li><a href="about.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">123 Soap Street, Meltville, ML 12345</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">hello@melissasmelts.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">(123) 456-7890</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">Mon-Fri: 9am - 5pm EST</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                <div class="flex items-center space-x-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Fixed Cart Button -->
+    <div class="md:hidden fixed bottom-4 right-4 z-50 bg-pink-500 text-white shadow-lg rounded-full w-14 h-14 flex items-center justify-center" id="mobile-cart-button">
+        <div class="relative">
+            <i class="fas fa-shopping-bag text-xl"></i>
+            <span class="absolute -top-2 -right-2 bg-white text-pink-500 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="mobile-cart-count">0</span>
+        </div>
+    </div>
+
+    <script>
+        // Cart functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Search Functionality
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.querySelector('.search-results');
+            
+            // Product database for search
+            const products = [
+                { name: 'Massage Soap', url: 'massage-soap.html', category: 'Soap' },
+                { name: 'Lavender Soap', url: 'massage-soap.html', category: 'Soap' },
+                { name: 'Rose Wax Melts', url: 'massage-soap.html', category: 'Wax Melt' },
+                { name: 'Vanilla Soap', url: 'massage-soap.html', category: 'Soap' },
+                { name: 'Citrus Wax Melts', url: 'massage-soap.html', category: 'Wax Melt' }
+            ];
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                // Clear previous results
+                searchResults.innerHTML = '';
+                
+                if (query.length < 2) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+                
+                // Filter products based on search query
+                const filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(query) || 
+                    product.category.toLowerCase().includes(query)
+                );
+                
+                // Display results
+                if (filteredProducts.length > 0) {
+                    searchResults.style.display = 'block';
+                    filteredProducts.forEach(product => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        resultItem.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-${product.category === 'Soap' ? 'soap' : 'fire-alt'} text-pink-500"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">${product.name}</p>
+                                    <p class="text-xs text-gray-500">${product.category}</p>
+                                </div>
+                            </div>
+                        `;
+                        resultItem.addEventListener('click', function() {
+                            window.location.href = product.url;
+                        });
+                        searchResults.appendChild(resultItem);
+                    });
+                } else {
+                    searchResults.style.display = 'block';
+                    searchResults.innerHTML = `
+                        <div class="p-4 text-center text-gray-500">
+                            No products found for "${query}"
+                        </div>
+                    `;
+                }
+            });
+            
+            // Close search results when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.search-container')) {
+                    searchResults.style.display = 'none';
+                }
+            });
+
+            // Get cart data from localStorage
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            updateCartCount(cart.length);
+            
+            // Load order details from localStorage
+            loadOrderDetails();
+
+            // Initialize Stripe
+            initializeStripe();
+        });
+
+        function updateCartCount(count) {
+            const cartCountElements = document.querySelectorAll('#cart-count, #mobile-cart-count');
+            cartCountElements.forEach(element => {
+                element.textContent = count;
+            });
+        }
+
+        function loadOrderDetails() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const orderItems = document.getElementById('order-items');
+            const subtotalElement = document.getElementById('subtotal');
+            const shippingElement = document.getElementById('shipping');
+            const discountElement = document.getElementById('discount');
+            const totalElement = document.getElementById('total');
+            
+            // Clear existing items
+            orderItems.innerHTML = '';
+            
+            // Calculate totals
+            let subtotal = 0;
+            
+            // Add each item to the order summary
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex justify-between items-center';
+                itemElement.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center mr-3">
+                            <i class="fas fa-soap text-gray-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-800 font-medium">${item.name}</p>
+                            <p class="text-gray-500 text-sm">Qty: ${item.quantity}</p>
+                        </div>
+                    </div>
+                    <span class="font-medium">£${itemTotal.toFixed(2)}</span>
+                `;
+                orderItems.appendChild(itemElement);
+            });
+            
+            // Set shipping cost (free over £50)
+            const shipping = subtotal >= 50 ? 0 : 3.99;
+            
+            // Get discount from localStorage if any
+            const discount = parseFloat(localStorage.getItem('discount') || 0);
+            
+            // Calculate total
+            const total = subtotal + shipping - discount;
+            
+            // Update display
+            subtotalElement.textContent = `£${subtotal.toFixed(2)}`;
+            shippingElement.textContent = shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`;
+            discountElement.textContent = `-£${discount.toFixed(2)}`;
+            totalElement.textContent = `£${total.toFixed(2)}`;
+            
+            // Store order details for payment processing
+            localStorage.setItem('orderTotal', total);
+            localStorage.setItem('orderShipping', shipping);
+            localStorage.setItem('orderDiscount', discount);
+        }
+
+        // Stripe integration
+        let stripe;
+        let card;
+
+        async function initializeStripe() {
+            // Initialize Stripe
+            stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
+            
+            // Get customer email from localStorage if available
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user && user.email) {
+                document.getElementById('email').value = user.email;
+            }
+            
+            // Get order total
+            const amount = parseFloat(localStorage.getItem('orderTotal') || 0);
+            
+            if (amount <= 0) {
+                document.getElementById('payment-message').textContent = 'Your cart is empty. Please add items before checkout.';
+                document.getElementById('payment-message').classList.remove('hidden');
+                document.getElementById('submit').disabled = true;
+                return;
+            }
+            
+            // Create Stripe Elements
+            const elements = stripe.elements({
+                fonts: [
+                    {
+                        cssSrc: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap',
+                    },
+                ],
+            });
+            
+            // Create and mount the Card Element
+            const style = {
+                base: {
+                    color: '#32325d',
+                    fontFamily: '"Montserrat", sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '16px',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    },
+                    ':-webkit-autofill': {
+                        color: '#32325d',
+                    },
+                },
+                invalid: {
+                    color: '#fa755a',
+                    iconColor: '#fa755a',
+                    '::placeholder': {
+                        color: '#FFCCA5',
+                    },
+                },
+            };
+            
+            card = elements.create('card', { 
+                style: style,
+                hidePostalCode: true // We'll collect it separately
+            });
+            
+            card.mount('#card-element');
+            
+            // Handle form submission
+            const form = document.getElementById('payment-form');
+            form.addEventListener('submit', handleSubmit);
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            
+            const submitButton = document.getElementById('submit');
+            const messageElement = document.getElementById('payment-message');
+            const spinner = document.getElementById('spinner');
+            const buttonText = document.getElementById('button-text');
+            
+            // Get customer information
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const city = document.getElementById('city').value;
+            const postcode = document.getElementById('postcode').value;
+            
+            // Validate UK postcode format
+            const postcodeRegex = /^[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][A-Za-z]{2}$/;
+            if (!postcodeRegex.test(postcode)) {
+                messageElement.textContent = 'Please enter a valid UK postcode (e.g. AB12 3CD)';
+                messageElement.classList.remove('hidden');
+                return;
+            }
+            
+            // Validate required fields
+            if (!name || !email || !phone || !address || !city || !postcode) {
+                messageElement.textContent = 'Please fill in all required fields';
+                messageElement.classList.remove('hidden');
+                return;
+            }
+            
+            // Disable the submit button and show spinner
+            submitButton.disabled = true;
+            spinner.classList.remove('hidden');
+            buttonText.classList.add('hidden');
+            messageElement.classList.add('hidden');
+            
+            try {
+                // Create payment intent on the server
+                const response = await fetch('/api/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(localStorage.getItem('orderTotal') || 0),
+                        currency: 'gbp',
+                        customer_email: email,
+                        metadata: {
+                            orderId: Date.now().toString(),
+                            name: name,
+                            phone: phone,
+                            address: address,
+                            city: city,
+                            postcode: postcode,
+                            notificationEmail: 'alexandroghanem1@gmail.com' // Admin notification email
+                        }
+                    }),
+                });
+                
+                const { clientSecret } = await response.json();
+                
+                // Use card to create payment method and confirm payment
+                const result = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: card,
+                        billing_details: {
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            address: {
+                                line1: address,
+                                city: city,
+                                postal_code: postcode,
+                                country: 'GB'
+                            }
+                        }
+                    },
+                    receipt_email: email
+                });
+                
+                if (result.error) {
+                    // Show error message
+                    messageElement.textContent = result.error.message;
+                    messageElement.classList.remove('hidden');
+                    
+                    // Re-enable the submit button
+                    submitButton.disabled = false;
+                    spinner.classList.add('hidden');
+                    buttonText.classList.remove('hidden');
+                } else {
+                    // Payment succeeded
+                    // Save order details to send to server
+                    const orderDetails = {
+                        items: JSON.parse(localStorage.getItem('cart')) || [],
+                        total: parseFloat(localStorage.getItem('orderTotal') || 0),
+                        shipping: parseFloat(localStorage.getItem('orderShipping') || 0),
+                        discount: parseFloat(localStorage.getItem('orderDiscount') || 0),
+                        paymentMethod: {
+                            type: 'card',
+                            lastFour: result.paymentIntent.payment_method.card.last4
+                        },
+                        customerEmail: email,
+                        customerName: name,
+                        customerPhone: phone,
+                        customerAddress: address,
+                        customerCity: city,
+                        customerPostcode: postcode,
+                        paymentId: result.paymentIntent.id
+                    };
+                    
+                    // Store customer info for order confirmation page
+                    localStorage.setItem('customerName', name);
+                    localStorage.setItem('customerAddress', address);
+                    localStorage.setItem('customerCity', city);
+                    localStorage.setItem('customerPostcode', postcode);
+                    
+                    // Send order to server
+                    await fetch('/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+                        },
+                        body: JSON.stringify(orderDetails)
+                    });
+                    
+                    // Redirect to confirmation page
+                    window.location.href = `order-confirmation.html?order_id=${result.paymentIntent.id}`;
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                messageElement.textContent = 'An unexpected error occurred during payment. Please try again.';
+                messageElement.classList.remove('hidden');
+                
+                // Re-enable the submit button
+                submitButton.disabled = false;
+                spinner.classList.add('hidden');
+                buttonText.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

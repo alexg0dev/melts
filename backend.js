@@ -4,6 +4,9 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const path = require("path")
 const fs = require("fs")
+const stripe = require("stripe")(
+  "sk_test_51RC5BvH1VVhTMbD6JEwbrZZpAABwWiFl7hw4lFjt4SdtfqOKKLre0d1A4XtN334RHOQhTv8ZCW19Eenftw4cl5xm00lIjO5S9P",
+)
 let OAuth2Client
 try {
   const googleAuth = require("google-auth-library")
@@ -249,6 +252,89 @@ app.get("/api/orders", authenticate, (req, res) => {
   res.json(userOrders)
 })
 
+// Subscribe to newsletter
+app.post("/api/subscribe", (req, res) => {
+  const { name, email, consent } = req.body
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" })
+  }
+
+  // In a real application, you would store this in a database
+  console.log(`New newsletter subscription: ${name} (${email}), consent: ${consent}`)
+
+  // Send confirmation email
+  sendEmail(email, {
+    subject: "Welcome to Melissa's Melts Newsletter!",
+    body: `
+      Hi ${name},
+
+      Thank you for subscribing to our newsletter! You'll now receive updates on new products, special offers, and skincare tips.
+
+      If you have any questions, feel free to reply to this email.
+
+      Best regards,
+      The Melissa's Melts Team
+    `,
+  })
+
+  // Also send notification to admin
+  sendEmail("alexandroghanem@gmail.com", {
+    subject: "New Newsletter Subscription",
+    body: `
+      New subscriber details:
+      Name: ${name}
+      Email: ${email}
+      Marketing consent: ${consent ? "Yes" : "No"}
+      Date: ${new Date().toLocaleString()}
+    `,
+  })
+
+  res.json({ success: true })
+})
+
+// Workshop request
+app.post("/api/workshop-request", (req, res) => {
+  const { name, email, date, participants } = req.body
+
+  if (!email || !date) {
+    return res.status(400).json({ error: "Email and date are required" })
+  }
+
+  // In a real application, you would store this in a database
+  console.log(`New workshop request: ${name} (${email}), date: ${date}, participants: ${participants}`)
+
+  // Send confirmation email
+  sendEmail(email, {
+    subject: "Your Workshop Request - Melissa's Melts",
+    body: `
+      Hi ${name},
+
+      Thank you for your interest in our virtual workshop! We've received your request for ${date} with ${participants} participant(s).
+
+      We'll review your request and get back to you within 24-48 hours to confirm your booking.
+
+      Best regards,
+      The Melissa's Melts Team
+    `,
+  })
+
+  // Also send notification to admin
+  sendEmail("alexandroghanem@gmail.com", {
+    subject: "New Workshop Request",
+    body: `
+      New workshop request details:
+      Name: ${name}
+      Email: ${email}
+      Requested date: ${date}
+      Number of participants: ${participants}
+      Request date: ${new Date().toLocaleString()}
+    `,
+  })
+
+  res.json({ success: true })
+})
+
 // Use loyalty points
 app.post("/api/use-points", authenticate, (req, res) => {
   const { points, orderId } = req.body
@@ -334,68 +420,190 @@ app.get("/redirect-to-github", (req, res) => {
   res.redirect("https://alexg0dev.github.io/melts/index.html")
 })
 
-// Helper function to send order email
-function sendOrderEmail(email, order) {
+// Enhanced helper function to send email
+function sendEmail(to, { subject, body }) {
   // In a real application, you would use a service like SendGrid, Mailgun, etc.
-  console.log(`Sending order confirmation email to ${email}`)
-  console.log("Order details:", order)
+  console.log(`Sending email to ${to}`)
+  console.log(`Subject: ${subject}`)
+  console.log(`Body: ${body}`)
 
   // For this example, we'll just log the email content
-  const emailContent = `
-      Thank you for your order!
-      
-      Order ID: ${order.orderId}
-      Date: ${new Date(order.createdAt).toLocaleString()}
-      
-      Items:
-      ${order.items.map((item) => `- ${item.name} (${item.quantity}) - £${item.price.toFixed(2)}`).join("\n")}
-      
-      Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
-      Shipping: £${order.shipping.toFixed(2)}
-      ${order.discount ? `Discount: -£${order.discount.toFixed(2)}` : ""}
-      Total: £${order.total.toFixed(2)}
-      
-      Your order is being processed and will be shipped soon.
-      
-      If there are any issues with your order, please contact: Melissa's Melts on Facebook.
-      
-      Thank you for shopping with Melissa's Melts!
+  console.log("Email would be sent with the following content:")
+  console.log("To:", to)
+  console.log("Subject:", subject)
+  console.log("Body:", body)
+
+  // Send email to alexandroghanem@gmail.com for all order notifications
+  if (to !== "alexandroghanem@gmail.com" && subject.includes("Order")) {
+    console.log("Forwarding order notification to alexandroghanem@gmail.com")
+    console.log("Subject: Order Notification - " + subject)
+    console.log("Body: " + body)
+  }
+}
+
+// Modify the existing sendOrderEmail function to use the enhanced sendEmail function
+function sendOrderEmail(email, order) {
+  // Create email content for customer
+  const customerEmailContent = `
+    Thank you for your order!
+    
+    Order ID: ${order.orderId}
+    Date: ${new Date(order.createdAt).toLocaleString()}
+    
+    Items:
+    ${order.items.map((item) => `- ${item.name} (${item.quantity}) - £${item.price.toFixed(2)}`).join("\n")}
+    
+    Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+    Shipping: £${order.shipping.toFixed(2)}
+    ${order.discount ? `-£${order.discount.toFixed(2)}` : ""}
+    Total: £${order.total.toFixed(2)}
+    
+    Your order is being processed and will be shipped soon.
+    
+    If there are any issues with your order, please contact: Melissa's Melts on Facebook.
+    
+    Thank you for shopping with Melissa's Melts!
   `
 
-  console.log("Email content:", emailContent)
+  // Create email content for owner
+  const ownerEmailContent = `
+    New Order Received!
+    
+    Order ID: ${order.orderId}
+    Customer: ${order.customerEmail || "Unknown"}
+    Date: ${new Date(order.createdAt).toLocaleString()}
+    
+    Items:
+    ${order.items.map((item) => `- ${item.name} (${item.quantity}) - £${item.price.toFixed(2)}`).join("\n")}
+    
+    Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+    Shipping: £${order.shipping.toFixed(2)}
+    ${order.discount ? `-£${order.discount.toFixed(2)}` : ""}
+    Total: £${order.total.toFixed(2)}
+    
+    Payment Method: ${order.paymentMethod ? `${order.paymentMethod.type.toUpperCase()} (ending in ${order.paymentMethod.lastFour})` : "Unknown"}
+    
+    Please process this order as soon as possible.
+  `
 
   // Send email to customer
-  console.log(`Sending order confirmation email to customer: ${email}`)
+  sendEmail(email, {
+    subject: `Order Confirmation #${order.orderId}`,
+    body: customerEmailContent,
+  })
 
-  // Send email to alexandroghanem@gmail.com as requested
-  console.log("Sending order notification to alexandroghanem@gmail.com")
-  const ownerEmailContent = `
-      New Order Received!
-      
-      Order ID: ${order.orderId}
-      Customer: ${order.customerEmail || "Unknown"}
-      Date: ${new Date(order.createdAt).toLocaleString()}
-      
-      Items:
-      ${order.items.map((item) => `- ${item.name} (${item.quantity}) - £${item.price.toFixed(2)}`).join("\n")}
-      
-      Subtotal: £${order.items.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
-      Shipping: £${order.shipping.toFixed(2)}
-      ${order.discount ? `Discount: -£${order.discount.toFixed(2)}` : ""}
-      Total: £${order.total.toFixed(2)}
-      
-      Payment Method: ${order.paymentMethod ? `${order.paymentMethod.type.toUpperCase()} (ending in ${order.paymentMethod.lastFour})` : "Unknown"}
-      
-      Please process this order as soon as possible.
-  `
-
-  console.log("Owner email content:", ownerEmailContent)
+  // Send email to owner
+  sendEmail("alexandroghanem@gmail.com", {
+    subject: `New Order #${order.orderId}`,
+    body: ownerEmailContent,
+  })
 }
 
 // Serve shop.html when products.html is requested
 app.get("/products.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "shop.html"))
 })
+
+// STRIPE PAYMENT ROUTES
+
+// Create a payment intent
+app.post("/api/create-payment-intent", async (req, res) => {
+  try {
+    const { amount, currency = "usd", customer_email, metadata = {} } = req.body
+
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      receipt_email: customer_email,
+      metadata,
+    })
+
+    // Send the client secret to the client
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      id: paymentIntent.id,
+    })
+  } catch (error) {
+    console.error("Error creating payment intent:", error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Webhook to handle Stripe events
+app.post("/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+  const sig = req.headers["stripe-signature"]
+  const endpointSecret = "whsec_your_webhook_signing_secret" // Replace with your webhook signing secret
+
+  let event
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret)
+  } catch (err) {
+    console.error(`Webhook Error: ${err.message}`)
+    return res.status(400).send(`Webhook Error: ${err.message}`)
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case "payment_intent.succeeded":
+      const paymentIntent = event.data.object
+      console.log(`PaymentIntent for ${paymentIntent.amount} was successful!`)
+      // Update order status in your database
+      handleSuccessfulPayment(paymentIntent)
+      break
+    case "payment_intent.payment_failed":
+      const failedPayment = event.data.object
+      console.log(`Payment failed: ${failedPayment.last_payment_error?.message}`)
+      break
+    default:
+      console.log(`Unhandled event type ${event.type}`)
+  }
+
+  // Return a 200 response to acknowledge receipt of the event
+  res.send()
+})
+
+// Helper function to handle successful payments
+async function handleSuccessfulPayment(paymentIntent) {
+  try {
+    // Extract order ID from metadata
+    const orderId = paymentIntent.metadata.orderId
+    if (!orderId) return
+
+    // Update order status in database
+    const orders = readData(ORDERS_FILE)
+    const orderIndex = orders.findIndex((o) => o.orderId === orderId)
+
+    if (orderIndex !== -1) {
+      orders[orderIndex].status = "paid"
+      orders[orderIndex].paymentId = paymentIntent.id
+      orders[orderIndex].paidAt = new Date().toISOString()
+      writeData(ORDERS_FILE, orders)
+
+      // Send confirmation email
+      if (orders[orderIndex].customerEmail) {
+        sendEmail(orders[orderIndex].customerEmail, {
+          subject: `Payment Confirmed for Order #${orderId}`,
+          body: `
+            Dear Customer,
+            
+            We're happy to confirm that your payment for order #${orderId} has been successfully processed.
+            
+            Your order is now being prepared for shipping.
+            
+            Thank you for shopping with Melissa's Melts!
+          `,
+        })
+      }
+    }
+  } catch (error) {
+    console.error("Error handling successful payment:", error)
+  }
+}
 
 // Serve static files
 app.get("*", (req, res) => {
@@ -415,4 +623,3 @@ app.listen(PORT, () => {
 })
 
 module.exports = app
-
