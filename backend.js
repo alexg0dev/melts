@@ -21,19 +21,18 @@ app.use((req, res, next) => {
 })
 
 // CORS configuration - CRITICAL FIX for Railway
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-    credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  }),
-)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
 
-// Handle OPTIONS requests explicitly for CORS preflight
-app.options("*", cors())
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.status(200).end()
+  }
+
+  next()
+})
 
 // Parse JSON bodies - IMPORTANT: Place before routes
 app.use(express.json())

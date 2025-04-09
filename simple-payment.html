@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Checkout - Melissa's Melts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: '#FFF5F7',
+                            100: '#FFEAEF',
+                            200: '#FFCBD8',
+                            300: '#FFABC1',
+                            400: '#FF8CAA',
+                            500: '#FF6D93',
+                            600: '#FF4E7D',
+                            700: '#FF2F67',
+                            800: '#FF1051',
+                            900: '#E0003B',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="font-sans bg-pink-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.html" class="text-3xl font-serif font-bold text-pink-600">Melissa's Melts</a>
+                <a href="cart.html" class="text-gray-600 hover:text-pink-500">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Cart
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="bg-gradient-to-r from-pink-600 to-pink-500 text-white py-6 px-8">
+                    <h1 class="text-2xl md:text-3xl font-bold">Simple Checkout</h1>
+                    <p class="mt-2 opacity-90">Complete your purchase with our simplified checkout</p>
+                </div>
+                
+                <div class="p-6 md:p-8">
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Order Summary</h2>
+                        <div id="order-items" class="space-y-3 mb-6">
+                            <!-- Order items will be populated by JavaScript -->
+                        </div>
+                        
+                        <div class="border-t border-gray-200 pt-4 space-y-2">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span id="subtotal">£0.00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Shipping</span>
+                                <span id="shipping">£0.00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Discount</span>
+                                <span id="discount">-£0.00</span>
+                            </div>
+                            <div class="flex justify-between font-semibold text-lg text-gray-800 pt-2 border-t border-gray-200">
+                                <span>Total</span>
+                                <span id="total">£0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form id="checkout-form" class="space-y-6">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Customer Information</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <input type="text" id="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                    <input type="email" id="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <input type="tel" id="phone" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <input type="text" id="address" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                    <input type="text" id="city" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div>
+                                    <label for="postcode" class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+                                    <input type="text" id="postcode" required placeholder="e.g. AB12 3CD" pattern="[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][A-Za-z]{2}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Payment Method</h2>
+                            <div class="space-y-4">
+                                <div class="border border-gray-300 rounded-md p-4">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="payment-method" value="cash" checked class="h-4 w-4 text-pink-600 focus:ring-pink-500">
+                                        <span class="ml-2">Cash on Delivery</span>
+                                    </label>
+                                </div>
+                                <div class="border border-gray-300 rounded-md p-4">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="payment-method" value="bank" class="h-4 w-4 text-pink-600 focus:ring-pink-500">
+                                        <span class="ml-2">Bank Transfer</span>
+                                    </label>
+                                    <div class="mt-2 pl-6 text-sm text-gray-600 hidden" id="bank-details">
+                                        <p>Please transfer the total amount to:</p>
+                                        <p class="mt-1">Bank: Example Bank</p>
+                                        <p>Account Name: Melissa's Melts</p>
+                                        <p>Account Number: 12345678</p>
+                                        <p>Sort Code: 12-34-56</p>
+                                        <p class="mt-2 text-xs">Please include your order number as reference</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4">
+                            <button type="submit" id="place-order" class="w-full bg-gradient-to-r from-pink-600 to-pink-500 text-white py-3 px-4 rounded-md font-medium hover:opacity-90 transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2">
+                                Place Order
+                            </button>
+                            
+                            <div id="order-message" class="hidden mt-4 text-center text-sm"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load order details
+            loadOrderDetails();
+            
+            // Toggle bank details
+            const bankRadio = document.querySelector('input[value="bank"]');
+            const bankDetails = document.getElementById('bank-details');
+            
+            bankRadio.addEventListener('change', function() {
+                bankDetails.classList.remove('hidden');
+            });
+            
+            document.querySelector('input[value="cash"]').addEventListener('change', function() {
+                bankDetails.classList.add('hidden');
+            });
+            
+            // Handle form submission
+            document.getElementById('checkout-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const orderMessage = document.getElementById('order-message');
+                const placeOrderButton = document.getElementById('place-order');
+                
+                // Get form data
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const address = document.getElementById('address').value;
+                const city = document.getElementById('city').value;
+                const postcode = document.getElementById('postcode').value;
+                const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+                
+                // Disable button and show processing message
+                placeOrderButton.disabled = true;
+                placeOrderButton.textContent = 'Processing...';
+                
+                // Generate order ID
+                const orderId = 'ORD-' + Date.now().toString().slice(-6);
+                
+                // Get cart and order details
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const total = parseFloat(localStorage.getItem('orderTotal') || 0);
+                const shipping = parseFloat(localStorage.getItem('orderShipping') || 0);
+                const discount = parseFloat(localStorage.getItem('orderDiscount') || 0);
+                
+                // Create order object
+                const order = {
+                    orderId,
+                    items: cart,
+                    total,
+                    shipping,
+                    discount,
+                    customerName: name,
+                    customerEmail: email,
+                    customerPhone: phone,
+                    customerAddress: address,
+                    customerCity: city,
+                    customerPostcode: postcode,
+                    paymentMethod,
+                    status: paymentMethod === 'cash' ? 'pending' : 'awaiting_payment',
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Store order details for confirmation page
+                localStorage.setItem('customerName', name);
+                localStorage.setItem('customerEmail', email);
+                localStorage.setItem('customerPhone', phone);
+                localStorage.setItem('customerAddress', address);
+                localStorage.setItem('customerCity', city);
+                localStorage.setItem('customerPostcode', postcode);
+                localStorage.setItem('orderId', orderId);
+                localStorage.setItem('paymentMethod', paymentMethod);
+                
+                // Send order to server (if available)
+                fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(order)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to create order');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear cart
+                    localStorage.removeItem('cart');
+                    
+                    // Redirect to confirmation page
+                    window.location.href = `order-confirmation.html?order_id=${orderId}`;
+                })
+                .catch(error => {
+                    console.error('Error creating order:', error);
+                    
+                    // Still proceed to confirmation page even if server request fails
+                    // This ensures the user can complete their order even if the backend is having issues
+                    localStorage.removeItem('cart');
+                    window.location.href = `order-confirmation.html?order_id=${orderId}`;
+                });
+            });
+        });
+        
+        function loadOrderDetails() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const orderItems = document.getElementById('order-items');
+            const subtotalElement = document.getElementById('subtotal');
+            const shippingElement = document.getElementById('shipping');
+            const discountElement = document.getElementById('discount');
+            const totalElement = document.getElementById('total');
+            
+            // Clear existing items
+            orderItems.innerHTML = '';
+            
+            // If cart is empty, redirect back to cart page
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add items before checkout.');
+                window.location.href = 'cart.html';
+                return;
+            }
+            
+            // Calculate totals
+            let subtotal = parseFloat(localStorage.getItem('orderSubtotal') || 0);
+            if (subtotal === 0) {
+                // Calculate from cart if not stored
+                subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            }
+            
+            // Add each item to the order summary
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex justify-between items-center mb-3';
+                itemElement.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center mr-3 overflow-hidden">
+                            ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
+                            `<i class="fas fa-soap text-gray-500"></i>`}
+                        </div>
+                        <div>
+                            <p class="text-gray-800 font-medium">${item.name}</p>
+                            <p class="text-gray-500 text-sm">Qty: ${item.quantity} × £${item.price.toFixed(2)}</p>
+                            ${item.scent ? `<p class="text-gray-500 text-xs">Scent: ${item.scent}</p>` : ''}
+                        </div>
+                    </div>
+                    <span class="font-medium">£${itemTotal.toFixed(2)}</span>
+                `;
+                orderItems.appendChild(itemElement);
+            });
+            
+            // Get shipping cost from localStorage or calculate (free over £50)
+            let shipping = parseFloat(localStorage.getItem('orderShipping') || 0);
+            if (shipping === 0 && subtotal < 50) {
+                shipping = 3.99;
+            }
+            
+            // Get discount from localStorage if any
+            const discount = parseFloat(localStorage.getItem('orderDiscount') || 0);
+            
+            // Calculate total
+            const total = subtotal + shipping - discount;
+            
+            // Update display
+            subtotalElement.textContent = `£${subtotal.toFixed(2)}`;
+            shippingElement.textContent = shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`;
+            discountElement.textContent = `-£${discount.toFixed(2)}`;
+            totalElement.textContent = `£${total.toFixed(2)}`;
+            
+            // Store order details for payment processing
+            localStorage.setItem('orderTotal', total);
+            localStorage.setItem('orderShipping', shipping);
+            localStorage.setItem('orderDiscount', discount);
+        }
+    </script>
+</body>
+</html>

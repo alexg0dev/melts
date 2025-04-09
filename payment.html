@@ -821,135 +821,113 @@
 
         // FIXED: Updated initializeStripe function to handle Railway deployment issues
         async function initializeStripe() {
-            try {
-                // First, check if the API is available by making a test request
-                try {
-                    console.log('Testing API connection...');
-                    const testResponse = await fetch('/api/test', {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    if (testResponse.ok) {
-                        console.log('API test successful, server is responding');
-                    } else {
-                        console.warn('API test failed, server may not be available');
-                    }
-                } catch (testError) {
-                    console.warn('API test failed:', testError);
-                }
-                
-                // Initialize Stripe
-                stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
-                
-                // Get customer email from localStorage if available
-                const user = JSON.parse(localStorage.getItem('user'));
-                if (user && user.email) {
-                    document.getElementById('email').value = user.email;
-                }
-                
-                // Get order total
-                const amount = parseFloat(localStorage.getItem('orderTotal') || 0);
-                
-                if (amount <= 0) {
-                    document.getElementById('payment-message').textContent = 'Your cart is empty. Please add items before checkout.';
-                    document.getElementById('payment-message').classList.remove('hidden');
-                    document.getElementById('submit').disabled = true;
-                    return;
-                }
-                
-                // Show debug info
-                console.log('Creating payment intent for amount:', amount);
-                
-                // FIXED: Simplified payment intent request with better error handling
-                const response = await fetch('/api/create-payment-intent', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        amount: amount
-                    }),
-                });
-                
-                // Log the raw response for debugging
-                const responseText = await response.text();
-                console.log('Raw server response:', responseText);
-                
-                // Parse the response
-                let responseData;
-                try {
-                    responseData = JSON.parse(responseText);
-                } catch (e) {
-                    console.error('Failed to parse response as JSON:', e);
-                    throw new Error(`Server returned invalid JSON: ${responseText.substring(0, 100)}...`);
-                }
-                
-                if (!response.ok) {
-                    throw new Error(`Server error: ${responseData.error || response.statusText}`);
-                }
-                
-                if (!responseData.clientSecret) {
-                    throw new Error('No client secret received from server');
-                }
-                
-                console.log('Received client secret from server');
-                
-                // Create Elements instance
-                elements = stripe.elements({
-                    clientSecret: responseData.clientSecret,
-                    appearance: {
-                        theme: 'stripe',
-                        variables: {
-                            colorPrimary: '#FF6D93',
-                            colorBackground: '#ffffff',
-                            colorText: '#32325d',
-                            colorDanger: '#ff5252',
-                            fontFamily: 'Montserrat, sans-serif',
-                            spacingUnit: '4px',
-                            borderRadius: '4px'
-                        }
-                    }
-                });
-                
-                // Create and mount the Payment Element
-                paymentElement = elements.create('payment', {
-                    layout: {
-                        type: 'tabs',
-                        defaultCollapsed: false
-                    },
-                    business: {
-                        name: "Melissa's Melts"
-                    }
-                });
-                
-                // Hide loading spinner
-                document.getElementById('payment-element-loading').style.display = 'none';
-                
-                // Mount payment element
-                paymentElement.mount('#payment-element-container');
-                console.log('Payment element mounted successfully');
-                
-                // Handle form submission
-                const form = document.getElementById('payment-form');
-                form.addEventListener('submit', handleSubmit);
-                
-            } catch (error) {
-                console.error('Error initializing Stripe:', error);
-                const messageElement = document.getElementById('payment-message');
-                messageElement.textContent = `Error initializing payment system: ${error.message}`;
-                messageElement.classList.remove('hidden');
-                
-                // Hide loading spinner
-                document.getElementById('payment-element-loading').style.display = 'none';
-                
-                // Re-enable the submit button
-                document.getElementById('submit').disabled = false;
-            }
+    try {
+        // Initialize Stripe
+        stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
+        
+        // Get customer email from localStorage if available
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.email) {
+            document.getElementById('email').value = user.email;
         }
+        
+        // Get order total
+        const amount = parseFloat(localStorage.getItem('orderTotal') || 0);
+        
+        if (amount <= 0) {
+            document.getElementById('payment-message').textContent = 'Your cart is empty. Please add items before checkout.';
+            document.getElementById('payment-message').classList.remove('hidden');
+            document.getElementById('submit').disabled = true;
+            return;
+        }
+        
+        // Show debug info
+        console.log('Creating payment intent for amount:', amount);
+        
+        // CRITICAL FIX: Use fetch with a simple payload and proper error handling
+        try {
+            const response = await fetch('/api/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: amount
+                })
+            });
+            
+            // Check if response is ok
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error (${response.status}): ${errorText}`);
+            }
+            
+            // Parse response as JSON
+            const data = await response.json();
+            
+            if (!data.clientSecret) {
+                throw new Error('No client secret received from server');
+            }
+            
+            console.log('Received client secret from server');
+            
+            // Create Elements instance
+            elements = stripe.elements({
+                clientSecret: data.clientSecret,
+                appearance: {
+                    theme: 'stripe',
+                    variables: {
+                        colorPrimary: '#FF6D93',
+                        colorBackground: '#ffffff',
+                        colorText: '#32325d',
+                        colorDanger: '#ff5252',
+                        fontFamily: 'Montserrat, sans-serif',
+                        spacingUnit: '4px',
+                        borderRadius: '4px'
+                    }
+                }
+            });
+            
+            // Create and mount the Payment Element
+            paymentElement = elements.create('payment', {
+                layout: {
+                    type: 'tabs',
+                    defaultCollapsed: false
+                },
+                business: {
+                    name: "Melissa's Melts"
+                }
+            });
+            
+            // Hide loading spinner
+            document.getElementById('payment-element-loading').style.display = 'none';
+            
+            // Mount payment element
+            paymentElement.mount('#payment-element-container');
+            console.log('Payment element mounted successfully');
+            
+            // Handle form submission
+            const form = document.getElementById('payment-form');
+            form.addEventListener('submit', handleSubmit);
+            
+        } catch (fetchError) {
+            console.error('Error fetching payment intent:', fetchError);
+            throw new Error(`Payment setup failed: ${fetchError.message}`);
+        }
+        
+    } catch (error) {
+        console.error('Error initializing Stripe:', error);
+        const messageElement = document.getElementById('payment-message');
+        messageElement.textContent = `Error initializing payment system: ${error.message}`;
+        messageElement.classList.remove('hidden');
+        
+        // Hide loading spinner
+        document.getElementById('payment-element-loading').style.display = 'none';
+        
+        // Re-enable the submit button
+        document.getElementById('submit').disabled = false;
+    }
+}
 
         async function handleSubmit(e) {
             e.preventDefault();
