@@ -44,9 +44,16 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // Initialize Stripe with your key
-const stripe = require("stripe")(
-  "sk_test_51RC5BvH1VVhTMbD6JEwbrZZpAABwWiFl7hw4lFjt4SdtfqOKKLre0d1A4XtN334RHOQhTv8ZCW19Eenftw4cl5xm00lIjO5S9P",
-)
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
+
+// Setup email transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+})
 
 // In-memory data store
 const store = {
@@ -115,6 +122,82 @@ app.options("/api/create-payment-intent", (req, res) => {
   console.log("OPTIONS request for payment intent endpoint")
   res.status(204).end()
 })
+
+// Send order confirmation email
+async function sendOrderConfirmationEmail(order) {
+  try {
+    // Format items for email
+    const itemsList = order.items
+      .map((item) => `${item.name} - Qty: ${item.quantity} - £${(item.price * item.quantity).toFixed(2)}`)
+      .join("\n")
+
+    // Email to customer
+    const customerMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: order.customerEmail,
+      subject: `Order Confirmation #${order.orderId} - Melissa's Melts`,
+      text: `
+        Thank you for your order!
+        
+        Order #${order.orderId}
+        Date: ${new Date(order.createdAt).toLocaleDateString()}
+        
+        Items:
+        ${itemsList}
+        
+        Subtotal: £${order.subtotal.toFixed(2)}
+        Shipping: ${order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)}
+        Total: £${order.total.toFixed(2)}
+        
+        Shipping Address:
+        ${order.customerName}
+        ${order.customerAddress}
+        ${order.customerCity}, ${order.customerPostcode}
+        
+        Thank you for shopping with Melissa's Melts!
+      `,
+    }
+
+    // Email to shop owner
+    const ownerMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER, // Send to yourself
+      subject: `New Order #${order.orderId} - Melissa's Melts`,
+      text: `
+        A new order has been placed!
+        
+        Order #${order.orderId}
+        Date: ${new Date(order.createdAt).toLocaleDateString()}
+        
+        Customer:
+        Name: ${order.customerName}
+        Email: ${order.customerEmail}
+        Phone: ${order.customerPhone || "Not provided"}
+        
+        Items:
+        ${itemsList}
+        
+        Subtotal: £${order.subtotal.toFixed(2)}
+        Shipping: ${order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)}
+        Total: £${order.total.toFixed(2)}
+        
+        Shipping Address:
+        ${order.customerAddress}
+        ${order.customerCity}, ${order.customerPostcode}
+      `,
+    }
+
+    // Send emails
+    await transporter.sendMail(customerMailOptions)
+    await transporter.sendMail(ownerMailOptions)
+
+    console.log(`Order confirmation emails sent for order ${order.orderId}`)
+    return true
+  } catch (error) {
+    console.error("Error sending order confirmation email:", error)
+    return false
+  }
+}
 
 // Data directory and file paths
 const DATA_DIR = path.join(__dirname, "data")
@@ -457,10 +540,22 @@ app.put("/api/user", authenticate, (req, res) => {
 
 // Create order endpoint
 app.post("/api/orders", (req, res) => {
-  console.log("Create order request received")
+  console.log("Create order request received with body:", JSON.stringify(req.body))
 
   try {
-    const { items, total, shipping, discount, customerEmail, customerName, paymentId } = req.body
+    const {
+      items,
+      total,
+      shipping,
+      discount,
+      customerEmail,
+      customerName,
+      customerPhone,
+      customerAddress,
+      customerCity,
+      customerPostcode,
+      paymentId,
+    } = req.body
 
     // Basic validation
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -475,17 +570,26 @@ app.post("/api/orders", (req, res) => {
       orderId,
       items,
       total: Number.parseFloat(total) || 0,
+      subtotal: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
       shipping: Number.parseFloat(shipping) || 0,
       discount: Number.parseFloat(discount) || 0,
       status: paymentId ? "paid" : "pending",
       createdAt: new Date().toISOString(),
       customerEmail,
       customerName,
+      customerPhone,
+      customerAddress,
+      customerCity,
+      customerPostcode,
       paymentId,
     }
 
     // Save order in memory
     store.orders.push(order)
+    saveData("orders", store.orders)
+
+    // Send email notification
+    sendOrderConfirmationEmail(order)
 
     // Return success response
     return res.json({
@@ -686,21 +790,6 @@ app.post("/api/workshop-request", (req, res) => {
     return res.status(500).json({
       error: "Failed to submit workshop request",
     })
-  }
-})
-
-// CRITICAL FIX: Add a direct route for the payment intent endpoint
-app.all("/api/create-payment-intent", (req, res, next) => {
-  console.log(`Received ${req.method} request to /api/create-payment-intent`)
-  if (req.method === "POST") {
-    // This will be handled by the POST handler above
-    next()
-  } else if (req.method === "OPTIONS") {
-    // Handle OPTIONS request
-    res.status(204).end()
-  } else {
-    // Handle other methods
-    res.status(405).json({ error: "Method not allowed" })
   }
 })
 

@@ -637,6 +637,7 @@
             
             <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                
                 <div class="flex items-center space-x-6">
                     <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
                     <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
@@ -828,30 +829,9 @@
         let elements;
         let paymentElement;
 
-        // FIXED: Updated initializeStripe function to handle Railway deployment issues
         async function initializeStripe() {
             try {
                 console.log('Starting Stripe initialization...');
-                
-                // First, check if the API is available by making a test request
-                try {
-                    console.log('Testing API connection...');
-                    const testResponse = await fetch('/api/test', {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    if (testResponse.ok) {
-                        const testData = await testResponse.json();
-                        console.log('API test successful, server is responding:', testData);
-                    } else {
-                        console.warn('API test failed, server may not be available');
-                    }
-                } catch (testError) {
-                    console.warn('API test failed:', testError);
-                }
                 
                 // Initialize Stripe
                 stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
@@ -875,15 +855,11 @@
                 // Show debug info
                 console.log('Creating payment intent for amount:', amount);
                 
-                // CRITICAL FIX: Use absolute URL and improved error handling
-                const apiUrl = '/api/create-payment-intent';
-                console.log('Using API URL:', apiUrl);
-                
                 try {
                     // Make the request with detailed logging
                     console.log('Sending payment intent request with payload:', JSON.stringify({ amount }));
                     
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch('/api/create-payment-intent', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -893,24 +869,14 @@
                     });
                     
                     console.log('Response status:', response.status);
-                    console.log('Response headers:', response.headers);
-                    
-                    // Get the raw response text first for debugging
-                    const responseText = await response.text();
-                    console.log('Raw response:', responseText);
-                    
-                    // Try to parse as JSON
-                    let data;
-                    try {
-                        data = JSON.parse(responseText);
-                    } catch (parseError) {
-                        console.error('Failed to parse response as JSON:', parseError);
-                        throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}...`);
-                    }
                     
                     if (!response.ok) {
-                        throw new Error(`Server error (${response.status}): ${data.error || 'Unknown error'}`);
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        throw new Error(`Server error (${response.status}): ${errorText}`);
                     }
+                    
+                    const data = await response.json();
                     
                     if (!data.clientSecret) {
                         throw new Error('No client secret received from server');
@@ -1023,15 +989,6 @@
                 }
                 
                 console.log('Confirming payment...');
-                console.log('Payment details:', {
-                    name,
-                    email,
-                    phone,
-                    address,
-                    city,
-                    postcode,
-                    amount
-                });
                 
                 // Confirm payment with Stripe
                 const { error, paymentIntent } = await stripe.confirmPayment({
