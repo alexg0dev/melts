@@ -9,7 +9,6 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-require("dotenv").config(); // If you use dotenv to load env vars locally
 
 // ------------------------------
 //  Initialize Express
@@ -56,19 +55,19 @@ app.use(express.urlencoded({ extended: true }));
 // ------------------------------
 //  Stripe Initialization
 // ------------------------------
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.warn("Warning: STRIPE_SECRET_KEY is not set in environment!");
-}
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY || "");
+// WARNING: Hardcoding your secret key is insecure for production use.
+const stripe = require("stripe")("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");
 
 // ------------------------------
 //  Nodemailer Setup
 // ------------------------------
+// Replace these with your Gmail credentials if you wish to hardcode them too.
+// (Again: hardcoding credentials is not secure)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: "your-email@example.com",
+    pass: "your-email-password",
   },
 });
 
@@ -95,29 +94,24 @@ app.get("/api/test", (req, res) => {
 app.post("/api/create-payment-intent", async (req, res) => {
   try {
     console.log("POST /api/create-payment-intent =>", req.body);
-
     const { amount } = req.body;
     if (!amount) {
       console.log("Error: 'amount' is required");
       return res.status(400).json({ error: "Amount is required" });
     }
-
     const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
       console.log(`Error: Invalid amount -> ${amount}`);
       return res.status(400).json({ error: "Amount must be a positive number" });
     }
-
     // Convert to pence
     const amountInPennies = Math.round(numericAmount * 100);
     console.log(`Creating PaymentIntent for ${amountInPennies} pence (i.e. £${numericAmount})`);
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInPennies,
       currency: "gbp",
       automatic_payment_methods: { enabled: true },
     });
-
     console.log("Payment intent created:", paymentIntent.id);
     return res.json({
       clientSecret: paymentIntent.client_secret,
@@ -147,7 +141,7 @@ async function sendOrderConfirmationEmail(order) {
 
     // Customer email
     const customerMailOptions = {
-      from: process.env.EMAIL_USER,
+      from: "your-email@example.com",
       to: order.customerEmail,
       subject: `Order Confirmation #${order.orderId} - Melissa's Melts`,
       text: `
@@ -160,9 +154,7 @@ Items:
 ${itemsList}
 
 Subtotal: £${order.subtotal.toFixed(2)}
-Shipping: ${
-        order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)
-      }
+Shipping: ${order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)}
 Total: £${order.total.toFixed(2)}
 
 Shipping Address:
@@ -176,8 +168,8 @@ Thank you for shopping with Melissa's Melts!
 
     // Owner email
     const ownerMailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
+      from: "your-email@example.com",
+      to: "your-email@example.com", // Send to yourself
       subject: `New Order #${order.orderId} - Melissa's Melts`,
       text: `
 A new order has been placed!
@@ -194,9 +186,7 @@ Items:
 ${itemsList}
 
 Subtotal: £${order.subtotal.toFixed(2)}
-Shipping: ${
-        order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)
-      }
+Shipping: ${order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)}
 Total: £${order.total.toFixed(2)}
 
 Shipping Address:
@@ -207,7 +197,6 @@ ${order.customerCity}, ${order.customerPostcode}
 
     await transporter.sendMail(customerMailOptions);
     await transporter.sendMail(ownerMailOptions);
-
     console.log(`Order confirmation emails sent for order ${order.orderId}`);
     return true;
   } catch (error) {
@@ -226,15 +215,11 @@ const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 function initializeDataStorage() {
   console.log("Initializing data storage...");
   let usingFileSystem = true;
-
   try {
-    // Create data directory if needed
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
       console.log("Created data directory:", DATA_DIR);
     }
-
-    // Load users
     if (fs.existsSync(USERS_FILE)) {
       try {
         const data = fs.readFileSync(USERS_FILE, "utf8");
@@ -247,8 +232,6 @@ function initializeDataStorage() {
       fs.writeFileSync(USERS_FILE, JSON.stringify([]));
       console.log("Created empty users file");
     }
-
-    // Load orders
     if (fs.existsSync(ORDERS_FILE)) {
       try {
         const data = fs.readFileSync(ORDERS_FILE, "utf8");
@@ -266,7 +249,6 @@ function initializeDataStorage() {
     console.log("Will use in-memory storage only.");
     usingFileSystem = false;
   }
-
   return usingFileSystem;
 }
 
@@ -290,22 +272,17 @@ function saveData(type, data) {
 function authenticate(req, res, next) {
   const tokenHeader = req.headers.authorization || "";
   const token = tokenHeader.startsWith("Bearer ") ? tokenHeader.split(" ")[1] : null;
-
   if (!token) {
     return res.status(401).json({ error: "Authentication required" });
   }
-
   const session = store.sessions[token];
   if (!session) {
     return res.status(401).json({ error: "Invalid or expired session" });
   }
-
-  // Check expiration (24 hours)
   if (Date.now() - session.createdAt > 24 * 60 * 60 * 1000) {
     delete store.sessions[token];
     return res.status(401).json({ error: "Session expired" });
   }
-
   req.user = session.user;
   next();
 }
@@ -321,15 +298,12 @@ app.post("/api/auth/register", (req, res) => {
     if (!email || !password || !name) {
       return res.status(400).json({ error: "Email, password, and name are required" });
     }
-
     const existingUser = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (existingUser) {
       return res.status(400).json({ error: "Email already registered" });
     }
-
     const salt = crypto.randomBytes(16).toString("hex");
     const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
-
     const userId = crypto.randomBytes(16).toString("hex");
     const newUser = {
       userId,
@@ -341,10 +315,8 @@ app.post("/api/auth/register", (req, res) => {
       points: 0,
       orders: [],
     };
-
     store.users.push(newUser);
     saveData("users", store.users);
-
     const token = crypto.randomBytes(32).toString("hex");
     store.sessions[token] = {
       user: {
@@ -355,7 +327,6 @@ app.post("/api/auth/register", (req, res) => {
       },
       createdAt: Date.now(),
     };
-
     return res.json({
       user: {
         userId: newUser.userId,
@@ -378,17 +349,14 @@ app.post("/api/auth/login", (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
-
     const user = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
-
     const hash = crypto.pbkdf2Sync(password, user.passwordSalt, 1000, 64, "sha512").toString("hex");
     if (hash !== user.passwordHash) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
-
     const token = crypto.randomBytes(32).toString("hex");
     store.sessions[token] = {
       user: {
@@ -399,7 +367,6 @@ app.post("/api/auth/login", (req, res) => {
       },
       createdAt: Date.now(),
     };
-
     return res.json({
       user: {
         userId: user.userId,
@@ -422,7 +389,6 @@ app.post("/api/auth/google", (req, res) => {
     if (!token || !email || !name) {
       return res.status(400).json({ error: "Token, email, and name are required" });
     }
-
     let user = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (!user) {
       const userId = crypto.randomBytes(16).toString("hex");
@@ -431,7 +397,7 @@ app.post("/api/auth/google", (req, res) => {
         email,
         name,
         picture,
-        googleId: token.substring(0, 20), // mock
+        googleId: token.substring(0, 20),
         createdAt: new Date().toISOString(),
         points: 0,
         orders: [],
@@ -439,7 +405,6 @@ app.post("/api/auth/google", (req, res) => {
       store.users.push(user);
       saveData("users", store.users);
     }
-
     const sessionToken = crypto.randomBytes(32).toString("hex");
     store.sessions[sessionToken] = {
       user: {
@@ -451,7 +416,6 @@ app.post("/api/auth/google", (req, res) => {
       },
       createdAt: Date.now(),
     };
-
     return res.json({
       user: {
         userId: user.userId,
@@ -487,20 +451,16 @@ app.get("/api/user", authenticate, (req, res) => {
 app.put("/api/user", authenticate, (req, res) => {
   try {
     const { name, address, city, postcode, phone } = req.body;
-
     const userIndex = store.users.findIndex((u) => u.userId === req.user.userId);
     if (userIndex === -1) {
       return res.status(404).json({ error: "User not found" });
     }
-
     if (name) store.users[userIndex].name = name;
     if (address) store.users[userIndex].address = address;
     if (city) store.users[userIndex].city = city;
     if (postcode) store.users[userIndex].postcode = postcode;
     if (phone) store.users[userIndex].phone = phone;
-
     saveData("users", store.users);
-
     const tokenHeader = req.headers.authorization || "";
     const token = tokenHeader.startsWith("Bearer ") ? tokenHeader.split(" ")[1] : null;
     if (token && store.sessions[token]) {
@@ -512,7 +472,6 @@ app.put("/api/user", authenticate, (req, res) => {
         picture: store.users[userIndex].picture,
       };
     }
-
     return res.json(store.users[userIndex]);
   } catch (error) {
     console.error("Error updating user:", error);
@@ -539,14 +498,10 @@ app.post("/api/orders", (req, res) => {
       customerPostcode,
       paymentId,
     } = req.body;
-
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: "Items are required" });
     }
-
-    // Generate a simple unique order ID
     const orderId = `ORD-${Date.now().toString().slice(-6)}`;
-
     const order = {
       orderId,
       items,
@@ -564,13 +519,9 @@ app.post("/api/orders", (req, res) => {
       customerPostcode,
       paymentId,
     };
-
     store.orders.push(order);
     saveData("orders", store.orders);
-
-    // Fire off confirmation email (async, don't block)
     sendOrderConfirmationEmail(order);
-
     return res.json({
       success: true,
       order: {
@@ -584,7 +535,6 @@ app.post("/api/orders", (req, res) => {
   }
 });
 
-// Single order
 app.get("/api/orders/:orderId", (req, res) => {
   try {
     const { orderId } = req.params;
@@ -592,10 +542,6 @@ app.get("/api/orders/:orderId", (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
-    // Optionally enforce that the user must match
-    // if (req.user && order.userId !== "guest" && order.userId !== req.user.userId) {
-    //   return res.status(403).json({ error: "Not authorized to view this order" });
-    // }
     return res.json(order);
   } catch (error) {
     console.error("Error fetching order:", error);
@@ -603,7 +549,6 @@ app.get("/api/orders/:orderId", (req, res) => {
   }
 });
 
-// All orders for authenticated user
 app.get("/api/orders", authenticate, (req, res) => {
   try {
     const userOrders = store.orders.filter((o) => o.userId === req.user.userId);
@@ -614,7 +559,6 @@ app.get("/api/orders", authenticate, (req, res) => {
   }
 });
 
-// Apply coupon
 app.post("/api/apply-coupon", (req, res) => {
   try {
     const { code } = req.body;
@@ -625,11 +569,9 @@ app.post("/api/apply-coupon", (req, res) => {
       FREESHIP: { discount: 5.99, type: "fixed", description: "Free shipping" },
       SUMMER15: { discount: 0.15, type: "percentage", description: "15% summer discount" },
     };
-
     if (!code || !validCoupons[code.toUpperCase()]) {
       return res.status(400).json({ error: "Invalid coupon code" });
     }
-
     const coupon = validCoupons[code.toUpperCase()];
     return res.json({
       success: true,
@@ -644,7 +586,6 @@ app.post("/api/apply-coupon", (req, res) => {
   }
 });
 
-// Use points
 app.post("/api/use-points", authenticate, (req, res) => {
   try {
     const { points } = req.body;
@@ -652,26 +593,20 @@ app.post("/api/use-points", authenticate, (req, res) => {
     if (!points || isNaN(pointsToUse) || pointsToUse <= 0) {
       return res.status(400).json({ error: "Valid points amount is required" });
     }
-
     const userIndex = store.users.findIndex((u) => u.userId === req.user.userId);
     if (userIndex === -1) {
       return res.status(404).json({ error: "User not found" });
     }
-
     if (store.users[userIndex].points < pointsToUse) {
       return res.status(400).json({ error: "Not enough points" });
     }
-
     store.users[userIndex].points -= pointsToUse;
     saveData("users", store.users);
-
-    // Update session
     const tokenHeader = req.headers.authorization || "";
     const token = tokenHeader.startsWith("Bearer ") ? tokenHeader.split(" ")[1] : null;
     if (token && store.sessions[token]) {
       store.sessions[token].user.points = store.users[userIndex].points;
     }
-
     return res.json({
       success: true,
       points: store.users[userIndex].points,
@@ -734,7 +669,6 @@ app.post("/api/workshop-request", (req, res) => {
 // ------------------------------
 app.use(express.static(path.join(__dirname, "public")));
 
-// Catch-all for front-end routes
 app.get("*", (req, res) => {
   const filePath = path.join(__dirname, "public", req.path === "/" ? "index.html" : req.path);
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {

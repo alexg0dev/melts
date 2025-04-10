@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Checkout - Melissa's Melts</title>
 
   <!-- Tailwind -->
@@ -41,21 +41,31 @@
       }
     }
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Custom Styles -->
-  <style>
-    /* ... (your existing CSS unchanged) ... */
-  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
 
   <!-- Google Sign-In API -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <!-- Stripe.js -->
   <script src="https://js.stripe.com/v3/"></script>
+
+  <style>
+    /* =========================
+       Your existing CSS
+       (animations, custom classes, etc.)
+       left as-is
+    ========================== */
+  </style>
 </head>
 
 <body class="font-sans bg-pink-50 text-gray-800">
+
   <!-- Announcement Bar -->
   <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
     <p>Free shipping on orders over £50</p>
@@ -65,48 +75,69 @@
   <header class="bg-white shadow-soft sticky top-0 z-50">
     <div class="container mx-auto px-4 py-4">
       <div class="flex justify-between items-center">
+        <!-- Logo -->
         <div class="flex items-center">
           <a href="index.html" class="text-3xl font-serif font-bold gradient-text">Melissa's Melts</a>
         </div>
-        
+
+        <!-- Desktop Nav -->
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
           <a href="shop.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Shop</a>
           <a href="about.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">About</a>
           <a href="contact.html" class="nav-link font-medium text-gray-600 hover:text-pink-500 transition-colors">Contact</a>
         </div>
-        
+
+        <!-- Right side icons -->
         <div class="flex items-center space-x-6">
+          <!-- Search -->
           <div class="relative search-container">
             <input
               type="text"
               id="search-input"
               placeholder="Search products..."
               class="py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent w-40 md:w-60"
+            />
+            <button
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
             >
-            <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
               <i class="fas fa-search"></i>
             </button>
             <div class="search-results">
-              <!-- Search results will be dynamically inserted here -->
+              <!-- Populated by JS -->
             </div>
           </div>
-          
+
+          <!-- User -->
           <div id="user-container">
             <div class="relative">
-              <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+              <a
+                href="account.html"
+                class="text-gray-600 hover:text-pink-500 transition-colors"
+                id="user-icon"
+              >
                 <i class="fas fa-user text-lg"></i>
               </a>
-              <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <a href="account.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+              <div
+                id="user-dropdown"
+                class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+              >
+                <a
+                  href="account.html"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50"
+                >
                   My Account
                 </a>
-                <button id="logout-button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
+                <button
+                  id="logout-button"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50"
+                >
                   Logout
                 </button>
               </div>
             </div>
-            <!-- Google Sign-In Button -->
+
+            <!-- Google Sign-In -->
             <div
               id="g_id_onload"
               data-client_id="741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com"
@@ -125,29 +156,69 @@
               style="display: none;"
             ></div>
           </div>
-          
-          <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+
+          <!-- Cart -->
+          <a
+            href="cart.html"
+            class="text-gray-600 hover:text-pink-500 transition-colors relative"
+            id="cart-icon"
+          >
             <i class="fas fa-shopping-bag text-lg"></i>
-            <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+            <span
+              class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold"
+              id="cart-count"
+            >0</span>
           </a>
-          
+
           <!-- Mobile Menu Button -->
-          <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+          <button
+            class="md:hidden text-gray-600 hover:text-pink-500 transition-colors"
+            id="mobile-menu-button"
+          >
             <i class="fas fa-bars text-xl"></i>
           </button>
         </div>
       </div>
-      
-      <!-- Mobile Menu (Hidden by default) -->
-      <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+
+      <!-- Mobile Menu (hidden by default) -->
+      <div
+        class="md:hidden hidden mt-4 pb-2"
+        id="mobile-menu"
+      >
         <div class="flex flex-col space-y-3">
-          <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
-          <a href="shop.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Shop</a>
-          <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
-          <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
-          <hr class="border-gray-200 my-1">
-          <a href="account.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2" id="mobile-account-link">My Account</a>
-          <button class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2 text-left hidden" id="mobile-logout-button">Logout</button>
+          <a
+            href="index.html"
+            class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2"
+            >Home</a
+          >
+          <a
+            href="shop.html"
+            class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2"
+            >Shop</a
+          >
+          <a
+            href="about.html"
+            class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2"
+            >About</a
+          >
+          <a
+            href="contact.html"
+            class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2"
+            >Contact</a
+          >
+          <hr class="border-gray-200 my-1" />
+          <a
+            href="account.html"
+            class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2"
+            id="mobile-account-link"
+            >My Account</a
+          >
+          <button
+            class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2 text-left hidden"
+            id="mobile-logout-button"
+          >
+            Logout
+          </button>
           <div id="mobile-google-signin" class="py-2"></div>
         </div>
       </div>
@@ -160,15 +231,19 @@
         <!-- Checkout Header -->
         <div class="bg-gradient-to-r from-pink-600 to-pink-500 text-white py-6 px-8">
           <h1 class="text-2xl md:text-3xl font-bold">Secure Checkout</h1>
-          <p class="mt-2 opacity-90">Complete your purchase with our secure payment system</p>
+          <p class="mt-2 opacity-90">
+            Complete your purchase with our secure payment system
+          </p>
         </div>
-        
+
         <!-- Checkout Content -->
         <div class="p-6 md:p-8">
           <!-- Progress Steps -->
           <div class="flex justify-between mb-8">
             <div class="flex flex-col items-center">
-              <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center">
+              <div
+                class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center"
+              >
                 <i class="fas fa-shopping-cart"></i>
               </div>
               <span class="text-xs mt-2 text-gray-600">Cart</span>
@@ -179,32 +254,40 @@
               </div>
             </div>
             <div class="flex flex-col items-center">
-              <div class="w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center">
+              <div
+                class="w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center"
+              >
                 <i class="fas fa-credit-card"></i>
               </div>
-              <span class="text-xs mt-2 text-pink-600 font-medium">Payment</span>
+              <span class="text-xs mt-2 text-pink-600 font-medium"
+                >Payment</span
+              >
             </div>
             <div class="flex-1 flex items-center justify-center">
               <div class="h-1 w-full bg-gray-200"></div>
             </div>
             <div class="flex flex-col items-center">
-              <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center">
+              <div
+                class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center"
+              >
                 <i class="fas fa-check"></i>
               </div>
               <span class="text-xs mt-2 text-gray-600">Confirmation</span>
             </div>
           </div>
-          
+
           <!-- Checkout Form -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Order Summary -->
             <div class="bg-gray-50 rounded-lg p-6">
-              <h2 class="text-xl font-semibold text-gray-800 mb-4">Order Summary</h2>
-              
+              <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                Order Summary
+              </h2>
+
               <div id="order-items" class="space-y-3 mb-6">
-                <!-- Order items will be populated by JavaScript -->
+                <!-- JS populates cart items here -->
               </div>
-              
+
               <div class="border-t border-gray-200 pt-4 space-y-2">
                 <div class="flex justify-between text-gray-600">
                   <span>Subtotal</span>
@@ -218,88 +301,123 @@
                   <span>Discount</span>
                   <span id="discount">-£0.00</span>
                 </div>
-                <div class="flex justify-between font-semibold text-lg text-gray-800 pt-2 border-t border-gray-200">
+                <div
+                  class="flex justify-between font-semibold text-lg text-gray-800 pt-2 border-t border-gray-200"
+                >
                   <span>Total</span>
                   <span id="total">£0.00</span>
                 </div>
               </div>
-              
+
               <!-- Customer Information -->
               <div class="mt-6">
-                <h3 class="text-lg font-medium text-gray-800 mb-3">Customer Information</h3>
+                <h3 class="text-lg font-medium text-gray-800 mb-3">
+                  Customer Information
+                </h3>
                 <div class="space-y-3">
                   <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                    <label
+                      for="name"
+                      class="block text-sm font-medium text-gray-700 mb-1"
+                      >Full Name</label
+                    >
                     <input
                       type="text"
                       id="name"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                    >
+                    />
                   </div>
                   <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <label
+                      for="email"
+                      class="block text-sm font-medium text-gray-700 mb-1"
+                      >Email Address</label
+                    >
                     <input
                       type="email"
                       id="email"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                    >
+                    />
                   </div>
                   <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <label
+                      for="phone"
+                      class="block text-sm font-medium text-gray-700 mb-1"
+                      >Phone Number</label
+                    >
                     <input
                       type="tel"
                       id="phone"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                    >
+                    />
                   </div>
                   <div>
-                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <label
+                      for="address"
+                      class="block text-sm font-medium text-gray-700 mb-1"
+                      >Address</label
+                    >
                     <input
                       type="text"
                       id="address"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                    >
+                    />
                   </div>
                   <div class="grid grid-cols-2 gap-3">
                     <div>
-                      <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                      <label
+                        for="city"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >City</label
+                      >
                       <input
                         type="text"
                         id="city"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                      >
+                      />
                     </div>
                     <div>
-                      <label for="postcode" class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+                      <label
+                        for="postcode"
+                        class="block text-sm font-medium text-gray-700 mb-1"
+                        >Postcode</label
+                      >
                       <input
                         type="text"
                         id="postcode"
                         placeholder="e.g. AB12 3CD"
                         pattern="[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][A-Za-z]{2}"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                      >
-                      <p class="text-xs text-gray-500 mt-1">Enter a valid UK postcode</p>
+                      />
+                      <p class="text-xs text-gray-500 mt-1">
+                        Enter a valid UK postcode
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <!-- Payment Details -->
             <div>
-              <h2 class="text-xl font-semibold text-gray-800 mb-4">Payment Details</h2>
-              
+              <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                Payment Details
+              </h2>
+
               <form id="payment-form">
                 <div
                   id="payment-element-container"
                   class="mb-6 p-4 border border-gray-300 rounded-md min-h-[200px]"
                 >
-                  <!-- Stripe Payment Element will be inserted here -->
-                  <div class="flex items-center justify-center h-full">
-                    <div class="spinner" id="payment-element-loading"></div>
+                  <!-- Stripe Payment Element -->
+                  <div
+                    class="flex items-center justify-center h-full"
+                    id="payment-element-loading"
+                  >
+                    <div class="spinner"></div>
                   </div>
                 </div>
-                
+
                 <button
                   id="submit"
                   class="w-full bg-gradient-to-r from-pink-600 to-pink-500 text-white py-3 px-4 rounded-md font-medium hover:opacity-90 transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
@@ -307,35 +425,47 @@
                   <div class="spinner hidden" id="spinner"></div>
                   <span id="button-text">Pay Now</span>
                 </button>
-                
-                <div id="payment-message" class="hidden mt-4 text-center text-sm"></div>
-                
-                <div class="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-600">
+
+                <div
+                  id="payment-message"
+                  class="hidden mt-4 text-center text-sm"
+                ></div>
+
+                <div
+                  class="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-600"
+                >
                   <i class="fas fa-lock"></i>
                   <span>Payments are secure and encrypted</span>
                 </div>
-                
+
                 <div class="mt-6 flex justify-center space-x-4">
                   <img
                     src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png"
                     alt="Visa"
                     class="h-6"
-                  >
+                  />
                   <img
                     src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png"
                     alt="Mastercard"
                     class="h-6"
-                  >
+                  />
                 </div>
               </form>
-              
+
               <!-- Alternative Payment Option -->
               <div class="mt-8 pt-6 border-t border-gray-200">
-                <h3 class="text-lg font-medium text-gray-800 mb-3">Having trouble with payment?</h3>
-                <p class="text-sm text-gray-600 mb-4">If you're experiencing issues with our payment system, you can use our alternative checkout option.</p>
-                <a href="simple-payment.html" class="inline-block text-pink-600 hover:text-pink-700 font-medium">
-                  Use Alternative Checkout →
-                </a>
+                <h3 class="text-lg font-medium text-gray-800 mb-3">
+                  Having trouble with payment?
+                </h3>
+                <p class="text-sm text-gray-600 mb-4">
+                  If you're experiencing issues with our payment system, you can
+                  use our alternative checkout option.
+                </p>
+                <a
+                  href="simple-payment.html"
+                  class="inline-block text-pink-600 hover:text-pink-700 font-medium"
+                  >Use Alternative Checkout →</a
+                >
               </div>
             </div>
           </div>
@@ -347,14 +477,25 @@
   <!-- Footer -->
   <footer class="bg-gray-900 text-white pt-20 pb-10">
     <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
-        <!-- ... your footer content ... -->
-      </div>
-      <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
-        <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+      <!-- ... your existing footer content ... -->
+
+      <div
+        class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center"
+      >
+        <p class="text-gray-500 text-sm mb-4 md:mb-0">
+          &copy; 2023 Melissa's Melts. All rights reserved.
+        </p>
         <div class="flex items-center space-x-6">
-          <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
-          <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+          <img
+            src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png"
+            alt="Visa"
+            class="h-6"
+          />
+          <img
+            src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png"
+            alt="Mastercard"
+            class="h-6"
+          />
         </div>
       </div>
     </div>
@@ -370,23 +511,22 @@
       <span
         class="absolute -top-2 -right-2 bg-white text-pink-500 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold"
         id="mobile-cart-count"
-      >0</span>
+        >0</span
+      >
     </div>
   </div>
 
+  <!-- Main Payment JS -->
   <script>
-    // -----------------------------------------------------
-    //  Payment.js logic
-    // -----------------------------------------------------
-    document.addEventListener('DOMContentLoaded', function() {
-      // Toggle mobile menu
-      const mobileMenuButton = document.getElementById('mobile-menu-button');
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1) Mobile menu toggle
+      const mobileMenuBtn = document.getElementById('mobile-menu-button');
       const mobileMenu = document.getElementById('mobile-menu');
-      mobileMenuButton.addEventListener('click', function() {
+      mobileMenuBtn.addEventListener('click', () => {
         mobileMenu.classList.toggle('hidden');
       });
 
-      // Search functionality
+      // 2) Search
       const searchInput = document.getElementById('search-input');
       const searchResults = document.querySelector('.search-results');
       const products = [
@@ -396,7 +536,6 @@
         { name: 'Vanilla Soap', url: 'massage-soap.html', category: 'Soap' },
         { name: 'Citrus Wax Melts', url: 'massage-soap.html', category: 'Wax Melt' },
       ];
-
       searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         searchResults.innerHTML = '';
@@ -404,28 +543,27 @@
           searchResults.style.display = 'none';
           return;
         }
-
         const filtered = products.filter(
           p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)
         );
         if (filtered.length > 0) {
           searchResults.style.display = 'block';
-          filtered.forEach(prod => {
+          filtered.forEach(item => {
             const div = document.createElement('div');
             div.className = 'search-result-item';
             div.innerHTML = `
               <div class="flex items-center">
                 <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
-                  <i class="fas fa-${prod.category === 'Soap' ? 'soap' : 'fire-alt'} text-pink-500"></i>
+                  <i class="fas fa-${item.category === 'Soap' ? 'soap' : 'fire-alt'} text-pink-500"></i>
                 </div>
                 <div>
-                  <p class="font-medium">${prod.name}</p>
-                  <p class="text-xs text-gray-500">${prod.category}</p>
+                  <p class="font-medium">${item.name}</p>
+                  <p class="text-xs text-gray-500">${item.category}</p>
                 </div>
               </div>
             `;
             div.addEventListener('click', () => {
-              window.location.href = prod.url;
+              window.location.href = item.url;
             });
             searchResults.appendChild(div);
           });
@@ -438,27 +576,24 @@
           `;
         }
       });
-
-      document.addEventListener('click', function(e) {
+      document.addEventListener('click', e => {
         if (!e.target.closest('.search-container')) {
           searchResults.style.display = 'none';
         }
       });
 
-      // Load cart from localStorage
+      // 3) Cart
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
       updateCartCount(cart.length);
-
-      // Load order details
       loadOrderDetails();
 
-      // Initialize Stripe
+      // 4) Initialize Stripe
       initializeStripe();
     });
 
     function updateCartCount(count) {
-      const cartCountEls = document.querySelectorAll('#cart-count, #mobile-cart-count');
-      cartCountEls.forEach(el => (el.textContent = count));
+      const cartEls = document.querySelectorAll('#cart-count, #mobile-cart-count');
+      cartEls.forEach(el => (el.textContent = count));
     }
 
     function loadOrderDetails() {
@@ -469,55 +604,56 @@
         return;
       }
 
-      const orderItems = document.getElementById('order-items');
+      const orderItemsEl = document.getElementById('order-items');
       const subtotalEl = document.getElementById('subtotal');
       const shippingEl = document.getElementById('shipping');
       const discountEl = document.getElementById('discount');
       const totalEl = document.getElementById('total');
 
-      orderItems.innerHTML = '';
+      orderItemsEl.innerHTML = '';
 
       let subtotal = parseFloat(localStorage.getItem('orderSubtotal')) || 0;
       if (!subtotal) {
-        // If not stored, recalc
-        subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
       }
 
-      // Populate the items
       cart.forEach(item => {
         const itemTotal = item.price * item.quantity;
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center mb-3';
-        div.innerHTML = `
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'flex justify-between items-center mb-3';
+        itemDiv.innerHTML = `
           <div class="flex items-center">
             <div class="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center mr-3 overflow-hidden">
               ${
                 item.image
-                  ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">`
+                  ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover" />`
                   : `<i class="fas fa-soap text-gray-500"></i>`
               }
             </div>
             <div>
               <p class="text-gray-800 font-medium">${item.name}</p>
-              <p class="text-gray-500 text-sm">Qty: ${item.quantity} × £${item.price.toFixed(2)}</p>
-              ${item.scent ? `<p class="text-gray-500 text-xs">Scent: ${item.scent}</p>` : ''}
+              <p class="text-gray-500 text-sm">
+                Qty: ${item.quantity} × £${item.price.toFixed(2)}
+              </p>
+              ${
+                item.scent
+                  ? `<p class="text-gray-500 text-xs">Scent: ${item.scent}</p>`
+                  : ''
+              }
             </div>
           </div>
           <span class="font-medium">£${itemTotal.toFixed(2)}</span>
         `;
-        orderItems.appendChild(div);
+        orderItemsEl.appendChild(itemDiv);
       });
 
-      // Shipping (free if >= 50, else 3.99)
+      // Shipping logic (if free over 50, else 3.99)
       let shipping = parseFloat(localStorage.getItem('orderShipping')) || 0;
       if (!shipping && subtotal < 50) {
         shipping = 3.99;
       }
 
-      // Discount
       const discount = parseFloat(localStorage.getItem('orderDiscount')) || 0;
-
-      // Final total
       const total = subtotal + shipping - discount;
 
       subtotalEl.textContent = `£${subtotal.toFixed(2)}`;
@@ -525,7 +661,6 @@
       discountEl.textContent = `-£${discount.toFixed(2)}`;
       totalEl.textContent = `£${total.toFixed(2)}`;
 
-      // Store for payment
       localStorage.setItem('orderTotal', total);
       localStorage.setItem('orderShipping', shipping);
       localStorage.setItem('orderDiscount', discount);
@@ -537,7 +672,6 @@
       try {
         stripe = Stripe('pk_test_51RC5BvH1VVhTMbD6v4TNtBZgjSZKfgigUkICwwG4goOk4snzvPjokrTC9S7ko3RZf4SdRNPzyApPVvXUF00BPdgT001xh5H0ee');
 
-        // Possibly grab user email from localStorage
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.email) {
           document.getElementById('email').value = user.email;
@@ -545,39 +679,35 @@
 
         const amount = parseFloat(localStorage.getItem('orderTotal')) || 0;
         if (amount <= 0) {
-          const msg = document.getElementById('payment-message');
-          msg.textContent = 'Your cart is empty. Please add items before checkout.';
-          msg.classList.remove('hidden');
+          const msgEl = document.getElementById('payment-message');
+          msgEl.textContent = 'Your cart is empty. Please add items before checkout.';
+          msgEl.classList.remove('hidden');
           document.getElementById('submit').disabled = true;
           return;
         }
 
-        const serverUrl = window.location.origin; // or your explicit domain
-        console.log('Creating payment intent at:', `${serverUrl}/api/create-payment-intent`);
+        // Use same origin as your Node server:
+        const serverUrl = window.location.origin;
 
-        // Request PaymentIntent
-        const response = await fetch(`${serverUrl}/api/create-payment-intent`, {
+        console.log('Creating PaymentIntent at:', `${serverUrl}/api/create-payment-intent`);
+        const resp = await fetch(`${serverUrl}/api/create-payment-intent`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({ amount })
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ amount }),
         });
 
-        console.log('Payment intent response status:', response.status);
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Error from server:', errorText);
-          throw new Error(`Server error (${response.status}): ${errorText}`);
+        console.log('Payment intent response status:', resp.status);
+        if (!resp.ok) {
+          const errText = await resp.text();
+          console.error('Error from server:', errText);
+          throw new Error(`Server error (${resp.status}): ${errText}`);
         }
 
-        const data = await response.json();
+        const data = await resp.json();
         if (!data.clientSecret) {
           throw new Error('No clientSecret received from server');
         }
 
-        // Create Stripe Elements with your client secret
         elements = stripe.elements({
           clientSecret: data.clientSecret,
           appearance: {
@@ -599,37 +729,28 @@
           business: { name: "Melissa's Melts" },
         });
 
-        // Hide spinner
         document.getElementById('payment-element-loading').style.display = 'none';
-
-        // Mount Payment Element
         paymentElement.mount('#payment-element-container');
 
-        // Handle form submission
         document.getElementById('payment-form').addEventListener('submit', handleSubmit);
+      } catch (err) {
+        console.error('Error initializing Stripe:', err);
+        const msgEl = document.getElementById('payment-message');
+        msgEl.textContent = `Error initializing payment system: ${err.message}`;
+        msgEl.classList.remove('hidden');
 
-      } catch (error) {
-        console.error('Error initializing Stripe:', error);
-        const msg = document.getElementById('payment-message');
-        msg.textContent = `Error initializing payment system: ${error.message}`;
-        msg.classList.remove('hidden');
-
-        // Hide spinner
         document.getElementById('payment-element-loading').style.display = 'none';
-        
-        // Re-enable button
         document.getElementById('submit').disabled = false;
       }
     }
 
     async function handleSubmit(e) {
       e.preventDefault();
-      const submitButton = document.getElementById('submit');
-      const msg = document.getElementById('payment-message');
-      const spinner = document.getElementById('spinner');
-      const btnText = document.getElementById('button-text');
+      const submitBtn = document.getElementById('submit');
+      const msgEl = document.getElementById('payment-message');
+      const spin = document.getElementById('spinner');
+      const btnTxt = document.getElementById('button-text');
 
-      // Basic validations
       const name = document.getElementById('name').value;
       const email = document.getElementById('email').value;
       const phone = document.getElementById('phone').value;
@@ -639,21 +760,20 @@
 
       const postcodeRegex = /^[A-Za-z]{1,2}[0-9Rr][0-9A-Za-z]? [0-9][A-Za-z]{2}$/;
       if (!postcodeRegex.test(postcode)) {
-        msg.textContent = 'Please enter a valid UK postcode (e.g. AB12 3CD)';
-        msg.classList.remove('hidden');
+        msgEl.textContent = 'Please enter a valid UK postcode (e.g. AB12 3CD)';
+        msgEl.classList.remove('hidden');
         return;
       }
       if (!name || !email || !phone || !address || !city || !postcode) {
-        msg.textContent = 'Please fill in all required fields';
-        msg.classList.remove('hidden');
+        msgEl.textContent = 'Please fill in all required fields';
+        msgEl.classList.remove('hidden');
         return;
       }
 
-      // Disable UI
-      submitButton.disabled = true;
-      spinner.classList.remove('hidden');
-      btnText.classList.add('hidden');
-      msg.classList.add('hidden');
+      submitBtn.disabled = true;
+      spin.classList.remove('hidden');
+      btnTxt.classList.add('hidden');
+      msgEl.classList.add('hidden');
 
       try {
         const amount = parseFloat(localStorage.getItem('orderTotal')) || 0;
@@ -662,7 +782,7 @@
           throw new Error('Invalid order details');
         }
 
-        console.log('Confirming payment via stripe...');
+        console.log('Confirming payment...');
         const { error, paymentIntent } = await stripe.confirmPayment({
           elements,
           confirmParams: {
@@ -687,16 +807,17 @@
 
         if (error) {
           console.error('Payment error:', error);
-          msg.textContent = error.message || 'An error occurred during payment. Please try again.';
-          msg.classList.remove('hidden');
-          submitButton.disabled = false;
-          spinner.classList.add('hidden');
-          btnText.classList.remove('hidden');
+          msgEl.textContent = error.message || 'An error occurred during payment. Please try again.';
+          msgEl.classList.remove('hidden');
+          submitBtn.disabled = false;
+          spin.classList.add('hidden');
+          btnTxt.classList.remove('hidden');
           return;
         }
 
         if (paymentIntent && paymentIntent.status === 'succeeded') {
           console.log('Payment succeeded:', paymentIntent);
+
           // Build order object
           const orderDetails = {
             items: cart,
@@ -705,7 +826,9 @@
             discount: parseFloat(localStorage.getItem('orderDiscount') || 0),
             paymentMethod: {
               type: 'card',
-              lastFour: paymentIntent.payment_method ? paymentIntent.payment_method.card.last4 : '????'
+              lastFour: paymentIntent.payment_method
+                ? paymentIntent.payment_method.card.last4
+                : '????',
             },
             customerEmail: email,
             customerName: name,
@@ -729,7 +852,7 @@
           localStorage.setItem('orderId', orderDetails.orderId);
           localStorage.setItem('paymentId', paymentIntent.id);
 
-          // Send to backend /api/orders
+          // Send order to /api/orders
           await fetch('/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -744,11 +867,11 @@
         }
       } catch (err) {
         console.error('Payment error:', err);
-        msg.textContent = `An unexpected error occurred: ${err.message}. Please try again.`;
-        msg.classList.remove('hidden');
-        submitButton.disabled = false;
-        spinner.classList.add('hidden');
-        btnText.classList.remove('hidden');
+        msgEl.textContent = `An unexpected error occurred: ${err.message}. Please try again.`;
+        msgEl.classList.remove('hidden');
+        submitBtn.disabled = false;
+        spin.classList.add('hidden');
+        btnTxt.classList.remove('hidden');
       }
     }
   </script>

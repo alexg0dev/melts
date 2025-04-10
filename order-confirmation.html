@@ -32,9 +32,6 @@
                         'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
                         'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
                     },
-                    backgroundImage: {
-                        'hero-pattern': "url('https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
-                    }
                 }
             }
         }
@@ -42,56 +39,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Custom Animations */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .animate-fade-up {
-            animation: fadeUp 0.8s ease forwards;
-            opacity: 0;
-        }
-        
-        .delay-100 {
-            animation-delay: 0.1s;
-        }
-        
-        .delay-200 {
-            animation-delay: 0.2s;
-        }
-        
-        .delay-300 {
-            animation-delay: 0.3s;
-        }
-        
-        .delay-400 {
-            animation-delay: 0.4s;
-        }
-        
-        /* Hover Effects */
-        .hover-lift {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .hover-lift:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
-        }
-        
         /* Gradient Text */
         .gradient-text {
             background: linear-gradient(to right, #FF4E7D, #FF8CAA);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
+        
         /* Navbar Animation */
         .nav-link {
             position: relative;
@@ -112,38 +66,61 @@
             width: 100%;
         }
 
-        /* Print styles */
-        @media print {
-            .no-print {
-                display: none !important;
+        /* Success animation */
+        @keyframes checkmark {
+            0% {
+                stroke-dashoffset: 100;
             }
-            .print-only {
-                display: block !important;
-            }
-            body {
-                font-size: 12pt;
-                color: #000;
-                background: #fff;
-            }
-            .container {
-                width: 100%;
-                max-width: 100%;
+            100% {
+                stroke-dashoffset: 0;
             }
         }
         
-        .print-only {
-            display: none;
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 6;
+            stroke: #4BB543;
+            stroke-miterlimit: 10;
+            box-shadow: 0 0 20px rgba(75, 181, 67, 0.3);
+            animation: scale .3s ease-in-out .9s both;
+            margin: 0 auto;
+        }
+        
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 6;
+            stroke-miterlimit: 10;
+            stroke: #4BB543;
+            fill: white;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: checkmark 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
         }
     </style>
 </head>
 <body class="font-sans bg-pink-50 text-gray-800">
     <!-- Announcement Bar -->
-    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide no-print">
+    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
         <p>Free shipping on orders over £50</p>
     </div>
 
     <!-- Header/Navigation -->
-    <header class="bg-white shadow-soft sticky top-0 z-50 no-print">
+    <header class="bg-white shadow-soft sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
@@ -189,16 +166,16 @@
     <main class="py-12">
         <div class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-                <!-- Order Confirmation Header -->
-                <div class="bg-gradient-to-r from-green-600 to-green-500 text-white py-6 px-8">
-                    <h1 class="text-2xl md:text-3xl font-bold">Order Confirmed!</h1>
-                    <p class="mt-2 opacity-90">Thank you for your purchase</p>
+                <!-- Confirmation Header -->
+                <div class="bg-gradient-to-r from-pink-600 to-pink-500 text-white py-6 px-8">
+                    <h1 class="text-2xl md:text-3xl font-bold">Order Confirmation</h1>
+                    <p class="mt-2 opacity-90">Thank you for your purchase!</p>
                 </div>
                 
-                <!-- Order Confirmation Content -->
+                <!-- Confirmation Content -->
                 <div class="p-6 md:p-8">
                     <!-- Progress Steps -->
-                    <div class="flex justify-between mb-8 no-print">
+                    <div class="flex justify-between mb-8">
                         <div class="flex flex-col items-center">
                             <div class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center">
                                 <i class="fas fa-shopping-cart"></i>
@@ -207,7 +184,7 @@
                         </div>
                         <div class="flex-1 flex items-center justify-center">
                             <div class="h-1 w-full bg-gray-200">
-                                <div class="h-1 bg-green-500 w-full"></div>
+                                <div class="h-1 bg-pink-500 w-full"></div>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
@@ -218,91 +195,123 @@
                         </div>
                         <div class="flex-1 flex items-center justify-center">
                             <div class="h-1 w-full bg-gray-200">
-                                <div class="h-1 bg-green-500 w-full"></div>
+                                <div class="h-1 bg-pink-500 w-full"></div>
                             </div>
                         </div>
                         <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center">
                                 <i class="fas fa-check"></i>
                             </div>
-                            <span class="text-xs mt-2 text-green-600 font-medium">Confirmation</span>
+                            <span class="text-xs mt-2 text-pink-600 font-medium">Confirmation</span>
                         </div>
                     </div>
                     
-                    <!-- Success Message -->
-                    <div class="text-center mb-8">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-check text-2xl text-green-600"></i>
-                        </div>
-                        <h2 class="text-xl font-semibold text-gray-800 mb-2">Your order has been placed successfully!</h2>
-                        <p class="text-gray-600">We've sent a confirmation email to <span id="customer-email" class="font-medium">your email</span></p>
+                    <!-- Success Animation -->
+                    <div class="text-center mb-10">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                        <h2 class="text-2xl font-bold text-gray-800 mt-8">Your order has been placed!</h2>
+                        <p class="text-gray-600 mt-2">We've sent a confirmation email to your inbox.</p>
                     </div>
                     
                     <!-- Order Details -->
-                    <div class="border border-gray-200 rounded-lg overflow-hidden mb-8">
-                        <div class="bg-gray-50 py-3 px-4 border-b border-gray-200">
-                            <div class="flex justify-between items-center">
-                                <h3 class="font-medium text-gray-800">Order Details</h3>
-                                <span class="text-sm text-gray-600">Order #<span id="order-id">123456</span></span>
-                            </div>
+                    <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Order Details</h3>
+                        
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Order Number:</span>
+                            <span id="order-number" class="font-medium">...</span>
                         </div>
                         
-                        <div class="p-4">
-                            <div id="order-items" class="space-y-3 mb-6">
-                                <!-- Order items will be populated by JavaScript -->
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Date:</span>
+                            <span id="order-date" class="font-medium">...</span>
+                        </div>
+                        
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">Total Amount:</span>
+                            <span id="order-total" class="font-medium">...</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Payment Method:</span>
+                            <span id="payment-method" class="font-medium">Credit Card</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Customer Information -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Shipping Information</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-gray-600 mb-1">Name:</p>
+                                <p id="customer-name" class="font-medium">...</p>
                             </div>
                             
-                            <div class="border-t border-gray-200 pt-4 space-y-2">
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
-                                    <span id="subtotal">£0.00</span>
-                                </div>
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Shipping</span>
-                                    <span id="shipping">£0.00</span>
-                                </div>
-                                <div class="flex justify-between text-gray-600">
-                                    <span>Discount</span>
-                                    <span id="discount">-£0.00</span>
-                                </div>
-                                <div class="flex justify-between font-semibold text-lg text-gray-800 pt-2 border-t border-gray-200">
-                                    <span>Total</span>
-                                    <span id="total">£0.00</span>
-                                </div>
+                            <div>
+                                <p class="text-gray-600 mb-1">Email:</p>
+                                <p id="customer-email" class="font-medium">...</p>
+                            </div>
+                            
+                            <div>
+                                <p class="text-gray-600 mb-1">Phone:</p>
+                                <p id="customer-phone" class="font-medium">...</p>
+                            </div>
+                            
+                            <div>
+                                <p class="text-gray-600 mb-1">Address:</p>
+                                <p id="customer-address" class="font-medium">...</p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Shipping Information -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <h3 class="font-medium text-gray-800 mb-3">Shipping Information</h3>
-                            <div class="space-y-1 text-gray-600">
-                                <p id="customer-name">John Doe</p>
-                                <p id="customer-address">123 Main Street</p>
-                                <p><span id="customer-city">London</span>, <span id="customer-postcode">SW1A 1AA</span></p>
-                                <p id="customer-phone">+44 123 456 7890</p>
+                    <!-- Order Summary -->
+                    <div id="order-items-container">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Order Summary</h3>
+                        
+                        <div id="order-items" class="divide-y divide-gray-200">
+                            <!-- Order items will be populated by JavaScript -->
+                            <div class="py-4 flex justify-center">
+                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-pink-500"></div>
                             </div>
                         </div>
                         
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <h3 class="font-medium text-gray-800 mb-3">Payment Information</h3>
-                            <div class="space-y-1 text-gray-600">
-                                <p>Payment Method: <span id="payment-method">Credit Card</span></p>
-                                <p>Status: <span class="text-green-600 font-medium">Paid</span></p>
-                                <p>Date: <span id="order-date">April 10, 2023</span></p>
+                        <div class="border-t border-gray-200 pt-4 mt-4">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span id="subtotal">...</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600 mt-2">
+                                <span>Shipping</span>
+                                <span id="shipping">...</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600 mt-2">
+                                <span>Discount</span>
+                                <span id="discount">...</span>
+                            </div>
+                            <div class="flex justify-between font-semibold text-lg text-gray-800 pt-2 mt-2 border-t border-gray-200">
+                                <span>Total</span>
+                                <span id="total">...</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4 no-print">
-                        <button id="print-button" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                            <i class="fas fa-print mr-2"></i> Print Receipt
-                        </button>
-                        <a href="shop.html" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-md font-medium text-center transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2">
-                            <i class="fas fa-shopping-bag mr-2"></i> Continue Shopping
-                        </a>
+                    <!-- Next Steps -->
+                    <div class="mt-10 text-center">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">What's Next?</h3>
+                        <p class="text-gray-600 mb-6">You'll receive a confirmation email with your order details. We'll send another email when your items ship.</p>
+                        
+                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                            <a href="shop.html" class="bg-pink-500 hover:bg-pink-600 text-white py-3 px-6 rounded-md font-medium transition">
+                                Continue Shopping
+                            </a>
+                            <a href="account.html" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 px-6 rounded-md font-medium transition">
+                                View Account
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -310,7 +319,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white pt-20 pb-10 mt-20 no-print">
+    <footer class="bg-gray-900 text-white pt-20 pb-10 mt-20">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <!-- Company Info -->
@@ -385,6 +394,7 @@
             
             <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                
                 <div class="flex items-center space-x-6">
                     <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
                     <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
@@ -392,9 +402,11 @@
             </div>
         </div>
     </footer>
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Order confirmation page loaded');
+            
             // Mobile menu toggle
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -402,180 +414,82 @@
             mobileMenuButton.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');
             });
-
-            // Print functionality
-            document.getElementById('print-button').addEventListener('click', function() {
-                window.print();
-            });
-
-            // Get order ID or session ID from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const orderId = urlParams.get('order_id');
-            const sessionId = urlParams.get('session_id');
             
-            // Make sure it can handle both payment intent and session IDs
-            // Get order ID from URL query parameter or localStorage
-            const urlParams2 = new URLSearchParams(window.location.search);
-            const orderId2 = urlParams2.get('order_id') || localStorage.getItem('orderId');
-            const paymentId = urlParams2.get('payment_intent') || localStorage.getItem('paymentId');
-
-            // If we have a payment intent ID but no order ID, use the payment intent ID
-            if (paymentId && !orderId2) {
-                localStorage.setItem('orderId', paymentId);
-            }
-
-            console.log('Order ID:', orderId2);
-            console.log('Payment ID:', paymentId);
-            
-            if (sessionId) {
-                // If we have a session ID, use it to load order details
-                loadOrderDetails(sessionId);
-            } else if (orderId) {
-                // If we have an order ID, use it
-                loadOrderDetails(orderId);
-            } else {
-                // If no order ID in URL, try to get from localStorage
-                const storedOrderId = localStorage.getItem('orderId');
-                if (storedOrderId) {
-                    loadOrderDetails(storedOrderId);
-                } else {
-                    // If no order ID found, display sample data
-                    displaySampleOrderData();
-                }
-            }
-        });
-
-        async function loadOrderDetails(orderId) {
-            try {
-                // Check if this is a Stripe session ID
-                if (orderId.startsWith('cs_')) {
-                    // Fetch session details from our server
-                    const response = await fetch(`/checkout-session?session_id=${orderId}`);
-                    
-                    if (response.ok) {
-                        const order = await response.json();
-                        displayOrderDetails(order);
-                        
-                        // Clear cart after successful order
-                        localStorage.removeItem('cart');
-                        localStorage.removeItem('appliedCoupon');
-                        localStorage.removeItem('orderSubtotal');
-                        localStorage.removeItem('orderShipping');
-                        localStorage.removeItem('orderDiscount');
-                        localStorage.removeItem('orderTotal');
-                        
-                        // Update cart count
-                        document.getElementById('cart-count').textContent = '0';
-                        
-                        return;
-                    }
-                }
-                
-                // If not a Stripe session or if fetching session fails, try the original method
-                const response = await fetch(`/api/orders/${orderId}`);
-                
-                if (response.ok) {
-                    const order = await response.json();
-                    displayOrderDetails(order);
-                } else {
-                    // If server fetch fails, use localStorage data
-                    displayOrderFromLocalStorage();
-                }
-            } catch (error) {
-                console.error('Error fetching order details:', error);
-                // Fallback to localStorage if API call fails
-                displayOrderFromLocalStorage();
-            }
-        }
-
-        function displayOrderFromLocalStorage() {
-            // Get customer info from localStorage
-            const customerName = localStorage.getItem('customerName');
-            const customerEmail = localStorage.getItem('customerEmail');
-            const customerPhone = localStorage.getItem('customerPhone');
-            const customerAddress = localStorage.getItem('customerAddress');
-            const customerCity = localStorage.getItem('customerCity');
-            const customerPostcode = localStorage.getItem('customerPostcode');
-            const orderId = localStorage.getItem('orderId');
-            const paymentId = localStorage.getItem('paymentId');
-            
-            // Get cart items
+            // Update cart count
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0) || 0;
             
-            // Get order totals
-            const subtotal = parseFloat(localStorage.getItem('orderSubtotal') || 0);
-            const shipping = parseFloat(localStorage.getItem('orderShipping') || 0);
-            const discount = parseFloat(localStorage.getItem('orderDiscount') || 0);
-            const total = parseFloat(localStorage.getItem('orderTotal') || 0);
-            
-            // Create order object from localStorage data
-            const order = {
-                orderId: orderId || 'ORD-' + Date.now().toString().slice(-6),
-                items: cart,
-                total: total,
-                subtotal: subtotal,
-                shipping: shipping,
-                discount: discount,
-                customerName: customerName,
-                customerEmail: customerEmail,
-                customerPhone: customerPhone,
-                customerAddress: customerAddress,
-                customerCity: customerCity,
-                customerPostcode: customerPostcode,
-                paymentId: paymentId,
-                createdAt: new Date().toISOString(),
-                paymentMethod: { type: 'card' }
-            };
-            
-            displayOrderDetails(order);
-            
-            // Clear cart after displaying order
-            localStorage.removeItem('cart');
-        }
-
-        function displayOrderDetails(order) {
-            // Set order ID
-            document.getElementById('order-id').textContent = order.orderId;
-            
-            // Set customer details
-            if (order.customerName) document.getElementById('customer-name').textContent = order.customerName;
-            if (order.customerEmail) document.getElementById('customer-email').textContent = order.customerEmail;
-            if (order.customerAddress) document.getElementById('customer-address').textContent = order.customerAddress;
-            if (order.customerCity) document.getElementById('customer-city').textContent = order.customerCity;
-            if (order.customerPostcode) document.getElementById('customer-postcode').textContent = order.customerPostcode;
-            if (order.customerPhone) document.getElementById('customer-phone').textContent = order.customerPhone;
-            
-            // Set payment details
-            document.getElementById('payment-method').textContent = order.paymentMethod?.type === 'card' ? 'Credit Card' : 'Online Payment';
-            document.getElementById('order-date').textContent = new Date(order.createdAt).toLocaleDateString('en-GB', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+            const cartCountElements = document.querySelectorAll('#cart-count');
+            cartCountElements.forEach(element => {
+                element.textContent = cartCount;
             });
             
-            // Display order items
-            const orderItemsContainer = document.getElementById('order-items');
-            orderItemsContainer.innerHTML = '';
+            // Get order details from URL parameters and localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order_id') || localStorage.getItem('orderId') || 'Order ID not found';
             
-            let calculatedSubtotal = 0;
+            // Format current date
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
             
-            if (order.items && order.items.length > 0) {
-                order.items.forEach(item => {
+            // Get order details from localStorage
+            const orderTotal = parseFloat(localStorage.getItem('orderTotal') || 0);
+            const orderSubtotal = parseFloat(localStorage.getItem('orderSubtotal') || 0);
+            const orderShipping = parseFloat(localStorage.getItem('orderShipping') || 0);
+            const orderDiscount = parseFloat(localStorage.getItem('orderDiscount') || 0);
+            
+            // Get customer details from localStorage
+            const customerName = localStorage.getItem('customerName') || '...';
+            const customerEmail = localStorage.getItem('customerEmail') || '...';
+            const customerPhone = localStorage.getItem('customerPhone') || '...';
+            const customerAddress = localStorage.getItem('customerAddress') || '...';
+            const customerCity = localStorage.getItem('customerCity') || '...';
+            const customerPostcode = localStorage.getItem('customerPostcode') || '...';
+            
+            // Update order details in the UI
+            document.getElementById('order-number').textContent = orderId;
+            document.getElementById('order-date').textContent = formattedDate;
+            document.getElementById('order-total').textContent = `£${orderTotal.toFixed(2)}`;
+            
+            // Update customer details in the UI
+            document.getElementById('customer-name').textContent = customerName;
+            document.getElementById('customer-email').textContent = customerEmail;
+            document.getElementById('customer-phone').textContent = customerPhone;
+            document.getElementById('customer-address').textContent = `${customerAddress}, ${customerCity}, ${customerPostcode}`;
+            
+            // Update order summary in the UI
+            document.getElementById('subtotal').textContent = `£${orderSubtotal.toFixed(2)}`;
+            document.getElementById('shipping').textContent = orderShipping === 0 ? 'Free' : `£${orderShipping.toFixed(2)}`;
+            document.getElementById('discount').textContent = `-£${orderDiscount.toFixed(2)}`;
+            document.getElementById('total').textContent = `£${orderTotal.toFixed(2)}`;
+            
+            // Get ordered items from localStorage
+            const orderedItems = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            // Display ordered items
+            if (orderedItems.length > 0) {
+                const orderItemsContainer = document.getElementById('order-items');
+                orderItemsContainer.innerHTML = '';
+                
+                orderedItems.forEach(item => {
                     const itemTotal = item.price * item.quantity;
-                    calculatedSubtotal += itemTotal;
                     
                     const itemElement = document.createElement('div');
-                    itemElement.className = 'flex justify-between items-center mb-3';
+                    itemElement.className = 'py-4 flex justify-between items-center';
                     itemElement.innerHTML = `
                         <div class="flex items-center">
-                            <div class="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center mr-3 overflow-hidden">
+                            <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center mr-4 overflow-hidden">
                                 ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
                                 `<i class="fas fa-soap text-gray-500"></i>`}
                             </div>
                             <div>
-                                <p class="text-gray-800 font-medium">${item.name}</p>
-                                <p class="text-gray-500 text-sm">Qty: ${item.quantity} × £${item.price.toFixed(2)}</p>
-                                ${item.scent ? `<p class="text-gray-500 text-xs">Scent: ${item.scent}</p>` : ''}
+                                <p class="font-medium">${item.name}</p>
+                                <p class="text-sm text-gray-500">Qty: ${item.quantity} × £${item.price.toFixed(2)}</p>
+                                ${item.scent ? `<p class="text-xs text-gray-500">Scent: ${item.scent}</p>` : ''}
                             </div>
                         </div>
                         <span class="font-medium">£${itemTotal.toFixed(2)}</span>
@@ -583,45 +497,17 @@
                     orderItemsContainer.appendChild(itemElement);
                 });
             } else {
-                orderItemsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No items in this order</p>';
+                // If no items found, hide the container
+                document.getElementById('order-items-container').innerHTML = `
+                    <div class="text-center p-8 bg-gray-50 rounded-lg">
+                        <p class="text-gray-500">Order details could not be loaded.</p>
+                    </div>
+                `;
             }
             
-            // Set order totals
-            const subtotal = order.subtotal || calculatedSubtotal;
-            const shipping = order.shipping || 0;
-            const discount = order.discount || 0;
-            const total = order.total || (subtotal + shipping - discount);
-            
-            document.getElementById('subtotal').textContent = `£${subtotal.toFixed(2)}`;
-            document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`;
-            document.getElementById('discount').textContent = `-£${discount.toFixed(2)}`;
-            document.getElementById('total').textContent = `£${total.toFixed(2)}`;
-        }
-
-        function displaySampleOrderData() {
-            // Sample order data for demonstration
-            const sampleOrder = {
-                orderId: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
-                items: [
-                    { name: 'Lavender Soap', price: 5.99, quantity: 2, scent: 'Lavender' },
-                    { name: 'Rose Wax Melts', price: 7.99, quantity: 1, scent: 'Rose' }
-                ],
-                subtotal: 19.97,
-                shipping: 3.99,
-                discount: 0,
-                total: 23.96,
-                customerName: 'John Doe',
-                customerEmail: 'john.doe@example.com',
-                customerAddress: '123 Main Street',
-                customerCity: 'London',
-                customerPostcode: 'SW1A 1AA',
-                customerPhone: '+44 123 456 7890',
-                createdAt: new Date().toISOString(),
-                paymentMethod: { type: 'card' }
-            };
-            
-            displayOrderDetails(sampleOrder);
-        }
+            // Clear cart after successful order
+            localStorage.removeItem('cart');
+        });
     </script>
 </body>
 </html>
