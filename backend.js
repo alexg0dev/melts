@@ -1,25 +1,35 @@
-// Comprehensive Express server with account functionality
-const express = require("express")
-const cors = require("cors")
-const path = require("path")
-const fs = require("fs")
-const crypto = require("crypto")
-const nodemailer = require("nodemailer")
+// BACKEND.JS
 
-// Initialize Express app
-const app = express()
-const PORT = process.env.PORT || 3000
+// ------------------------------
+//  Load dependencies
+// ------------------------------
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+require("dotenv").config(); // If you use dotenv to load env vars locally
 
-// Basic request logging middleware with more details for debugging
+// ------------------------------
+//  Initialize Express
+// ------------------------------
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// ------------------------------
+//  Basic logging middleware
+// ------------------------------
 app.use((req, res, next) => {
   console.log(
-    `${new Date().toISOString()} ${req.method} ${req.url} - Headers: ${JSON.stringify(req.headers["content-type"])}`,
-  )
-  next()
-})
+    `[${new Date().toISOString()}] ${req.method} ${req.url} - Content-Type: ${req.headers["content-type"]}`
+  );
+  next();
+});
 
-// CRITICAL FIX: Explicit CORS configuration for Railway
-// Place this BEFORE any route definitions
+// ------------------------------
+//  CORS Configuration
+// ------------------------------
 app.use(
   cors({
     origin: "*",
@@ -28,296 +38,300 @@ app.use(
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
-  }),
-)
+  })
+);
 
-// Handle OPTIONS requests explicitly for CORS preflight
+// Explicit handler for all OPTIONS requests
 app.options("*", (req, res) => {
-  console.log("Handling OPTIONS request for CORS preflight")
-  res.status(204).end()
-})
+  console.log("CORS preflight (OPTIONS) request on:", req.path);
+  return res.status(204).end();
+});
 
-// Parse JSON bodies - IMPORTANT: Place before routes
-app.use(express.json())
+// ------------------------------
+//  Body Parsers
+// ------------------------------
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Parse URL-encoded bodies
-app.use(express.urlencoded({ extended: true }))
+// ------------------------------
+//  Stripe Initialization
+// ------------------------------
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.warn("Warning: STRIPE_SECRET_KEY is not set in environment!");
+}
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY || "");
 
-// Initialize Stripe with your key
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
-
-// Setup email transporter
+// ------------------------------
+//  Nodemailer Setup
+// ------------------------------
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-})
+});
 
-// In-memory data store
+// ------------------------------
+//  In-memory store
+// ------------------------------
 const store = {
   users: [],
   orders: [],
   sessions: {},
-}
+};
 
-// CRITICAL FIX: Test endpoint to verify server is running
+// ------------------------------
+//  Test Endpoint
+// ------------------------------
 app.get("/api/test", (req, res) => {
-  console.log("Test endpoint called successfully")
-  res.json({ status: "ok", timestamp: new Date().toISOString() })
-})
+  console.log("Test endpoint called successfully");
+  return res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
-// CRITICAL FIX: Create payment intent endpoint - Moved to top of routes for priority
+// ------------------------------
+//  Payment Intent Endpoint
+// ------------------------------
 app.post("/api/create-payment-intent", async (req, res) => {
-  console.log("Payment intent request received with body:", JSON.stringify(req.body))
-
   try {
-    // Extract amount from request body
-    const { amount } = req.body
+    console.log("POST /api/create-payment-intent =>", req.body);
 
+    const { amount } = req.body;
     if (!amount) {
-      console.log("Payment intent error: Amount is required")
-      return res.status(400).json({ error: "Amount is required" })
+      console.log("Error: 'amount' is required");
+      return res.status(400).json({ error: "Amount is required" });
     }
 
-    const numericAmount = Number.parseFloat(amount)
-
+    const numericAmount = parseFloat(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) {
-      console.log(`Payment intent error: Invalid amount ${amount}`)
-      return res.status(400).json({ error: "Amount must be a positive number" })
+      console.log(`Error: Invalid amount -> ${amount}`);
+      return res.status(400).json({ error: "Amount must be a positive number" });
     }
 
-    // Convert amount to pennies
-    const amountInPennies = Math.round(numericAmount * 100)
-    console.log(`Creating payment intent for ${amountInPennies} pennies (£${numericAmount.toFixed(2)})`)
+    // Convert to pence
+    const amountInPennies = Math.round(numericAmount * 100);
+    console.log(`Creating PaymentIntent for ${amountInPennies} pence (i.e. £${numericAmount})`);
 
-    // Create payment intent with minimal parameters
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInPennies,
       currency: "gbp",
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    })
+      automatic_payment_methods: { enabled: true },
+    });
 
-    console.log("Payment intent created:", paymentIntent.id)
-
-    // Return client secret
+    console.log("Payment intent created:", paymentIntent.id);
     return res.json({
       clientSecret: paymentIntent.client_secret,
       id: paymentIntent.id,
-    })
+    });
   } catch (error) {
-    console.error("Error creating payment intent:", error)
+    console.error("Error in POST /api/create-payment-intent:", error);
     return res.status(500).json({
       error: "Failed to create payment intent",
       message: error.message,
-    })
+    });
   }
-})
+});
 
-// CRITICAL FIX: Add explicit OPTIONS handler for the payment intent endpoint
-app.options("/api/create-payment-intent", (req, res) => {
-  console.log("OPTIONS request for payment intent endpoint")
-  res.status(204).end()
-})
-
-// Send order confirmation email
+// ------------------------------
+//  Helper - Send order confirmation email
+// ------------------------------
 async function sendOrderConfirmationEmail(order) {
   try {
-    // Format items for email
+    // Format items
     const itemsList = order.items
-      .map((item) => `${item.name} - Qty: ${item.quantity} - £${(item.price * item.quantity).toFixed(2)}`)
-      .join("\n")
+      .map(
+        (item) =>
+          `${item.name} - Qty: ${item.quantity} - £${(item.price * item.quantity).toFixed(2)}`
+      )
+      .join("\n");
 
-    // Email to customer
+    // Customer email
     const customerMailOptions = {
       from: process.env.EMAIL_USER,
       to: order.customerEmail,
       subject: `Order Confirmation #${order.orderId} - Melissa's Melts`,
       text: `
-        Thank you for your order!
-        
-        Order #${order.orderId}
-        Date: ${new Date(order.createdAt).toLocaleDateString()}
-        
-        Items:
-        ${itemsList}
-        
-        Subtotal: £${order.subtotal.toFixed(2)}
-        Shipping: ${order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)}
-        Total: £${order.total.toFixed(2)}
-        
-        Shipping Address:
-        ${order.customerName}
-        ${order.customerAddress}
-        ${order.customerCity}, ${order.customerPostcode}
-        
-        Thank you for shopping with Melissa's Melts!
-      `,
-    }
+Thank you for your order!
 
-    // Email to shop owner
+Order #${order.orderId}
+Date: ${new Date(order.createdAt).toLocaleDateString()}
+
+Items:
+${itemsList}
+
+Subtotal: £${order.subtotal.toFixed(2)}
+Shipping: ${
+        order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)
+      }
+Total: £${order.total.toFixed(2)}
+
+Shipping Address:
+${order.customerName}
+${order.customerAddress}
+${order.customerCity}, ${order.customerPostcode}
+
+Thank you for shopping with Melissa's Melts!
+      `,
+    };
+
+    // Owner email
     const ownerMailOptions = {
       from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // Send to yourself
+      to: process.env.EMAIL_USER,
       subject: `New Order #${order.orderId} - Melissa's Melts`,
       text: `
-        A new order has been placed!
-        
-        Order #${order.orderId}
-        Date: ${new Date(order.createdAt).toLocaleDateString()}
-        
-        Customer:
-        Name: ${order.customerName}
-        Email: ${order.customerEmail}
-        Phone: ${order.customerPhone || "Not provided"}
-        
-        Items:
-        ${itemsList}
-        
-        Subtotal: £${order.subtotal.toFixed(2)}
-        Shipping: ${order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)}
-        Total: £${order.total.toFixed(2)}
-        
-        Shipping Address:
-        ${order.customerAddress}
-        ${order.customerCity}, ${order.customerPostcode}
+A new order has been placed!
+
+Order #${order.orderId}
+Date: ${new Date(order.createdAt).toLocaleDateString()}
+
+Customer:
+Name: ${order.customerName}
+Email: ${order.customerEmail}
+Phone: ${order.customerPhone || "Not provided"}
+
+Items:
+${itemsList}
+
+Subtotal: £${order.subtotal.toFixed(2)}
+Shipping: ${
+        order.shipping === 0 ? "Free" : "£" + order.shipping.toFixed(2)
+      }
+Total: £${order.total.toFixed(2)}
+
+Shipping Address:
+${order.customerAddress}
+${order.customerCity}, ${order.customerPostcode}
       `,
-    }
+    };
 
-    // Send emails
-    await transporter.sendMail(customerMailOptions)
-    await transporter.sendMail(ownerMailOptions)
+    await transporter.sendMail(customerMailOptions);
+    await transporter.sendMail(ownerMailOptions);
 
-    console.log(`Order confirmation emails sent for order ${order.orderId}`)
-    return true
+    console.log(`Order confirmation emails sent for order ${order.orderId}`);
+    return true;
   } catch (error) {
-    console.error("Error sending order confirmation email:", error)
-    return false
+    console.error("Error sending order confirmation email:", error);
+    return false;
   }
 }
 
-// Data directory and file paths
-const DATA_DIR = path.join(__dirname, "data")
-const USERS_FILE = path.join(DATA_DIR, "users.json")
-const ORDERS_FILE = path.join(DATA_DIR, "orders.json")
+// ------------------------------
+//  File-based storage (optional)
+// ------------------------------
+const DATA_DIR = path.join(__dirname, "data");
+const USERS_FILE = path.join(DATA_DIR, "users.json");
+const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 
-// Initialize data storage
 function initializeDataStorage() {
-  console.log("Initializing data storage...")
+  console.log("Initializing data storage...");
+  let usingFileSystem = true;
 
   try {
-    // Create data directory if it doesn't exist
+    // Create data directory if needed
     if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true })
-      console.log("Created data directory:", DATA_DIR)
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+      console.log("Created data directory:", DATA_DIR);
     }
 
-    // Load users from file if it exists
+    // Load users
     if (fs.existsSync(USERS_FILE)) {
       try {
-        const data = fs.readFileSync(USERS_FILE, "utf8")
-        store.users = JSON.parse(data)
-        console.log(`Loaded ${store.users.length} users from file`)
-      } catch (error) {
-        console.error("Error loading users from file:", error.message)
+        const data = fs.readFileSync(USERS_FILE, "utf8");
+        store.users = JSON.parse(data);
+        console.log(`Loaded ${store.users.length} users from file`);
+      } catch (err) {
+        console.error("Error loading users file:", err.message);
       }
     } else {
-      // Create empty users file
-      fs.writeFileSync(USERS_FILE, JSON.stringify([]))
-      console.log("Created empty users file")
+      fs.writeFileSync(USERS_FILE, JSON.stringify([]));
+      console.log("Created empty users file");
     }
 
-    // Load orders from file if it exists
+    // Load orders
     if (fs.existsSync(ORDERS_FILE)) {
       try {
-        const data = fs.readFileSync(ORDERS_FILE, "utf8")
-        store.orders = JSON.parse(data)
-        console.log(`Loaded ${store.orders.length} orders from file`)
-      } catch (error) {
-        console.error("Error loading orders from file:", error.message)
+        const data = fs.readFileSync(ORDERS_FILE, "utf8");
+        store.orders = JSON.parse(data);
+        console.log(`Loaded ${store.orders.length} orders from file`);
+      } catch (err) {
+        console.error("Error loading orders file:", err.message);
       }
     } else {
-      // Create empty orders file
-      fs.writeFileSync(ORDERS_FILE, JSON.stringify([]))
-      console.log("Created empty orders file")
+      fs.writeFileSync(ORDERS_FILE, JSON.stringify([]));
+      console.log("Created empty orders file");
     }
-
-    return true
   } catch (error) {
-    console.error("Error initializing data storage:", error.message)
-    console.log("Will use in-memory storage only")
-    return false
+    console.error("Error initializing data storage:", error.message);
+    console.log("Will use in-memory storage only.");
+    usingFileSystem = false;
   }
+
+  return usingFileSystem;
 }
 
-// Initialize data storage
-const useFileSystem = initializeDataStorage()
+const useFileSystem = initializeDataStorage();
 
-// Helper function to save data to file
 function saveData(type, data) {
-  if (!useFileSystem) return false
-
+  if (!useFileSystem) return false;
   try {
-    const filePath = type === "users" ? USERS_FILE : ORDERS_FILE
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-    return true
+    const filePath = type === "users" ? USERS_FILE : ORDERS_FILE;
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    return true;
   } catch (error) {
-    console.error(`Error saving ${type} to file:`, error.message)
-    return false
+    console.error(`Error saving ${type}:`, error.message);
+    return false;
   }
 }
 
-// Authentication middleware
+// ------------------------------
+//  Auth Middleware
+// ------------------------------
 function authenticate(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1]
+  const tokenHeader = req.headers.authorization || "";
+  const token = tokenHeader.startsWith("Bearer ") ? tokenHeader.split(" ")[1] : null;
 
   if (!token) {
-    return res.status(401).json({ error: "Authentication required" })
+    return res.status(401).json({ error: "Authentication required" });
   }
 
-  const session = store.sessions[token]
+  const session = store.sessions[token];
   if (!session) {
-    return res.status(401).json({ error: "Invalid or expired session" })
+    return res.status(401).json({ error: "Invalid or expired session" });
   }
 
-  // Check if session is expired (24 hours)
+  // Check expiration (24 hours)
   if (Date.now() - session.createdAt > 24 * 60 * 60 * 1000) {
-    delete store.sessions[token]
-    return res.status(401).json({ error: "Session expired" })
+    delete store.sessions[token];
+    return res.status(401).json({ error: "Session expired" });
   }
 
-  // Set user on request object
-  req.user = session.user
-  next()
+  req.user = session.user;
+  next();
 }
 
-// ACCOUNT MANAGEMENT ENDPOINTS
+// ------------------------------
+//  Auth Routes
+// ------------------------------
 
-// Register new user
-app.post("/api/auth/register", async (req, res) => {
+// Register
+app.post("/api/auth/register", (req, res) => {
   try {
-    const { email, password, name } = req.body
-
+    const { email, password, name } = req.body;
     if (!email || !password || !name) {
-      return res.status(400).json({ error: "Email, password, and name are required" })
+      return res.status(400).json({ error: "Email, password, and name are required" });
     }
 
-    // Check if user already exists
-    const existingUser = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase())
+    const existingUser = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (existingUser) {
-      return res.status(400).json({ error: "Email already registered" })
+      return res.status(400).json({ error: "Email already registered" });
     }
 
-    // Create salt and hash password
-    const salt = crypto.randomBytes(16).toString("hex")
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex")
+    const salt = crypto.randomBytes(16).toString("hex");
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
 
-    // Create new user
-    const userId = crypto.randomBytes(16).toString("hex")
-    const user = {
+    const userId = crypto.randomBytes(16).toString("hex");
+    const newUser = {
       userId,
       email,
       name,
@@ -326,63 +340,56 @@ app.post("/api/auth/register", async (req, res) => {
       createdAt: new Date().toISOString(),
       points: 0,
       orders: [],
-    }
+    };
 
-    // Save user
-    store.users.push(user)
-    saveData("users", store.users)
+    store.users.push(newUser);
+    saveData("users", store.users);
 
-    // Create session token
-    const token = crypto.randomBytes(32).toString("hex")
+    const token = crypto.randomBytes(32).toString("hex");
     store.sessions[token] = {
       user: {
-        userId: user.userId,
-        email: user.email,
-        name: user.name,
-        points: user.points,
+        userId: newUser.userId,
+        email: newUser.email,
+        name: newUser.name,
+        points: newUser.points,
       },
       createdAt: Date.now(),
-    }
+    };
 
-    // Return user data and token
     return res.json({
       user: {
-        userId: user.userId,
-        email: user.email,
-        name: user.name,
-        points: user.points,
+        userId: newUser.userId,
+        email: newUser.email,
+        name: newUser.name,
+        points: newUser.points,
       },
       token,
-    })
+    });
   } catch (error) {
-    console.error("Error registering user:", error)
-    return res.status(500).json({ error: "Failed to register user" })
+    console.error("Error registering user:", error);
+    return res.status(500).json({ error: "Failed to register user" });
   }
-})
+});
 
 // Login
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/auth/login", (req, res) => {
   try {
-    const { email, password } = req.body
-
+    const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" })
+      return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Find user
-    const user = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase())
+    const user = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (!user) {
-      return res.status(401).json({ error: "Invalid email or password" })
+      return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Verify password
-    const hash = crypto.pbkdf2Sync(password, user.passwordSalt, 1000, 64, "sha512").toString("hex")
+    const hash = crypto.pbkdf2Sync(password, user.passwordSalt, 1000, 64, "sha512").toString("hex");
     if (hash !== user.passwordHash) {
-      return res.status(401).json({ error: "Invalid email or password" })
+      return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Create session token
-    const token = crypto.randomBytes(32).toString("hex")
+    const token = crypto.randomBytes(32).toString("hex");
     store.sessions[token] = {
       user: {
         userId: user.userId,
@@ -391,9 +398,8 @@ app.post("/api/auth/login", async (req, res) => {
         points: user.points,
       },
       createdAt: Date.now(),
-    }
+    };
 
-    // Return user data and token
     return res.json({
       user: {
         userId: user.userId,
@@ -402,46 +408,39 @@ app.post("/api/auth/login", async (req, res) => {
         points: user.points,
       },
       token,
-    })
+    });
   } catch (error) {
-    console.error("Error logging in:", error)
-    return res.status(500).json({ error: "Failed to log in" })
+    console.error("Error logging in:", error);
+    return res.status(500).json({ error: "Failed to log in" });
   }
-})
+});
 
-// Google Sign-in (simplified mock version)
-app.post("/api/auth/google", async (req, res) => {
+// Google sign-in (mock)
+app.post("/api/auth/google", (req, res) => {
   try {
-    const { token, email, name, picture } = req.body
-
+    const { token, email, name, picture } = req.body;
     if (!token || !email || !name) {
-      return res.status(400).json({ error: "Token, email, and name are required" })
+      return res.status(400).json({ error: "Token, email, and name are required" });
     }
 
-    // Find or create user
-    let user = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase())
-
+    let user = store.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (!user) {
-      // Create new user
-      const userId = crypto.randomBytes(16).toString("hex")
+      const userId = crypto.randomBytes(16).toString("hex");
       user = {
         userId,
         email,
         name,
         picture,
-        googleId: token.substring(0, 20), // Mock Google ID
+        googleId: token.substring(0, 20), // mock
         createdAt: new Date().toISOString(),
         points: 0,
         orders: [],
-      }
-
-      // Save user
-      store.users.push(user)
-      saveData("users", store.users)
+      };
+      store.users.push(user);
+      saveData("users", store.users);
     }
 
-    // Create session token
-    const sessionToken = crypto.randomBytes(32).toString("hex")
+    const sessionToken = crypto.randomBytes(32).toString("hex");
     store.sessions[sessionToken] = {
       user: {
         userId: user.userId,
@@ -451,9 +450,8 @@ app.post("/api/auth/google", async (req, res) => {
         points: user.points,
       },
       createdAt: Date.now(),
-    }
+    };
 
-    // Return user data and token
     return res.json({
       user: {
         userId: user.userId,
@@ -463,52 +461,48 @@ app.post("/api/auth/google", async (req, res) => {
         points: user.points,
       },
       token: sessionToken,
-    })
+    });
   } catch (error) {
-    console.error("Error with Google sign-in:", error)
-    return res.status(500).json({ error: "Failed to authenticate with Google" })
+    console.error("Error with Google sign-in:", error);
+    return res.status(500).json({ error: "Failed to authenticate with Google" });
   }
-})
+});
 
 // Logout
 app.post("/api/auth/logout", (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]
-
+  const header = req.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.split(" ")[1] : null;
   if (token && store.sessions[token]) {
-    delete store.sessions[token]
+    delete store.sessions[token];
   }
+  return res.json({ success: true });
+});
 
-  return res.json({ success: true })
-})
-
-// Get user profile
+// Get user
 app.get("/api/user", authenticate, (req, res) => {
-  return res.json(req.user)
-})
+  return res.json(req.user);
+});
 
-// Update user profile
+// Update user
 app.put("/api/user", authenticate, (req, res) => {
   try {
-    const { name, address, city, postcode, phone } = req.body
+    const { name, address, city, postcode, phone } = req.body;
 
-    // Find user
-    const userIndex = store.users.findIndex((u) => u.userId === req.user.userId)
+    const userIndex = store.users.findIndex((u) => u.userId === req.user.userId);
     if (userIndex === -1) {
-      return res.status(404).json({ error: "User not found" })
+      return res.status(404).json({ error: "User not found" });
     }
 
-    // Update user
-    if (name) store.users[userIndex].name = name
-    if (address) store.users[userIndex].address = address
-    if (city) store.users[userIndex].city = city
-    if (postcode) store.users[userIndex].postcode = postcode
-    if (phone) store.users[userIndex].phone = phone
+    if (name) store.users[userIndex].name = name;
+    if (address) store.users[userIndex].address = address;
+    if (city) store.users[userIndex].city = city;
+    if (postcode) store.users[userIndex].postcode = postcode;
+    if (phone) store.users[userIndex].phone = phone;
 
-    // Save changes
-    saveData("users", store.users)
+    saveData("users", store.users);
 
-    // Update session
-    const token = req.headers.authorization?.split(" ")[1]
+    const tokenHeader = req.headers.authorization || "";
+    const token = tokenHeader.startsWith("Bearer ") ? tokenHeader.split(" ")[1] : null;
     if (token && store.sessions[token]) {
       store.sessions[token].user = {
         userId: store.users[userIndex].userId,
@@ -516,33 +510,22 @@ app.put("/api/user", authenticate, (req, res) => {
         name: store.users[userIndex].name,
         points: store.users[userIndex].points,
         picture: store.users[userIndex].picture,
-      }
+      };
     }
 
-    return res.json({
-      userId: store.users[userIndex].userId,
-      email: store.users[userIndex].email,
-      name: store.users[userIndex].name,
-      address: store.users[userIndex].address,
-      city: store.users[userIndex].city,
-      postcode: store.users[userIndex].postcode,
-      phone: store.users[userIndex].phone,
-      points: store.users[userIndex].points,
-      picture: store.users[userIndex].picture,
-    })
+    return res.json(store.users[userIndex]);
   } catch (error) {
-    console.error("Error updating user:", error)
-    return res.status(500).json({ error: "Failed to update user" })
+    console.error("Error updating user:", error);
+    return res.status(500).json({ error: "Failed to update user" });
   }
-})
+});
 
-// PAYMENT AND ORDER ENDPOINTS
-
-// Create order endpoint
+// ------------------------------
+//  Orders & Payment
+// ------------------------------
 app.post("/api/orders", (req, res) => {
-  console.log("Create order request received with body:", JSON.stringify(req.body))
-
   try {
+    console.log("POST /api/orders =>", req.body);
     const {
       items,
       total,
@@ -555,24 +538,22 @@ app.post("/api/orders", (req, res) => {
       customerCity,
       customerPostcode,
       paymentId,
-    } = req.body
+    } = req.body;
 
-    // Basic validation
     if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "Items are required" })
+      return res.status(400).json({ error: "Items are required" });
     }
 
-    // Generate order ID
-    const orderId = `ORD-${Date.now().toString().slice(-6)}`
+    // Generate a simple unique order ID
+    const orderId = `ORD-${Date.now().toString().slice(-6)}`;
 
-    // Create order object
     const order = {
       orderId,
       items,
-      total: Number.parseFloat(total) || 0,
-      subtotal: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-      shipping: Number.parseFloat(shipping) || 0,
-      discount: Number.parseFloat(discount) || 0,
+      total: parseFloat(total) || 0,
+      subtotal: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+      shipping: parseFloat(shipping) || 0,
+      discount: parseFloat(discount) || 0,
       status: paymentId ? "paid" : "pending",
       createdAt: new Date().toISOString(),
       customerEmail,
@@ -582,250 +563,203 @@ app.post("/api/orders", (req, res) => {
       customerCity,
       customerPostcode,
       paymentId,
-    }
+    };
 
-    // Save order in memory
-    store.orders.push(order)
-    saveData("orders", store.orders)
+    store.orders.push(order);
+    saveData("orders", store.orders);
 
-    // Send email notification
-    sendOrderConfirmationEmail(order)
+    // Fire off confirmation email (async, don't block)
+    sendOrderConfirmationEmail(order);
 
-    // Return success response
     return res.json({
       success: true,
       order: {
         orderId,
         status: order.status,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error creating order:", error)
-    return res.status(500).json({
-      error: "Failed to create order",
-    })
+    console.error("Error creating order:", error);
+    return res.status(500).json({ error: "Failed to create order" });
   }
-})
+});
 
-// Get order by ID
+// Single order
 app.get("/api/orders/:orderId", (req, res) => {
   try {
-    const { orderId } = req.params
-
-    // Find order
-    const order = store.orders.find((o) => o.orderId === orderId)
-
+    const { orderId } = req.params;
+    const order = store.orders.find((o) => o.orderId === orderId);
     if (!order) {
-      return res.status(404).json({ error: "Order not found" })
+      return res.status(404).json({ error: "Order not found" });
     }
-
-    // Check if user is authorized to view this order
-    if (req.user && order.userId !== "guest" && order.userId !== req.user.userId) {
-      return res.status(403).json({ error: "Not authorized to view this order" })
-    }
-
-    return res.json(order)
+    // Optionally enforce that the user must match
+    // if (req.user && order.userId !== "guest" && order.userId !== req.user.userId) {
+    //   return res.status(403).json({ error: "Not authorized to view this order" });
+    // }
+    return res.json(order);
   } catch (error) {
-    console.error("Error fetching order:", error)
-    return res.status(500).json({
-      error: "Failed to fetch order",
-    })
+    console.error("Error fetching order:", error);
+    return res.status(500).json({ error: "Failed to fetch order" });
   }
-})
+});
 
-// Get user orders
+// All orders for authenticated user
 app.get("/api/orders", authenticate, (req, res) => {
   try {
-    // Find user's orders
-    const userOrders = store.orders.filter((o) => o.userId === req.user.userId)
-    return res.json(userOrders)
+    const userOrders = store.orders.filter((o) => o.userId === req.user.userId);
+    return res.json(userOrders);
   } catch (error) {
-    console.error("Error fetching user orders:", error)
-    return res.status(500).json({
-      error: "Failed to fetch orders",
-    })
+    console.error("Error fetching user orders:", error);
+    return res.status(500).json({ error: "Failed to fetch orders" });
   }
-})
+});
 
-// Apply coupon endpoint
+// Apply coupon
 app.post("/api/apply-coupon", (req, res) => {
   try {
-    const { code } = req.body
-
+    const { code } = req.body;
     const validCoupons = {
       WELCOME10: { discount: 0.1, type: "percentage", description: "10% off your order" },
       MELTS5: { discount: 0.05, type: "percentage", description: "5% off your order" },
       SOAP20: { discount: 0.2, type: "percentage", description: "20% off your order" },
       FREESHIP: { discount: 5.99, type: "fixed", description: "Free shipping" },
       SUMMER15: { discount: 0.15, type: "percentage", description: "15% summer discount" },
-    }
+    };
 
     if (!code || !validCoupons[code.toUpperCase()]) {
-      return res.status(400).json({ error: "Invalid coupon code" })
+      return res.status(400).json({ error: "Invalid coupon code" });
     }
 
-    const coupon = validCoupons[code.toUpperCase()]
-
+    const coupon = validCoupons[code.toUpperCase()];
     return res.json({
       success: true,
       coupon: {
         code: code.toUpperCase(),
         ...coupon,
       },
-    })
+    });
   } catch (error) {
-    console.error("Error applying coupon:", error)
-    return res.status(500).json({
-      error: "Failed to apply coupon",
-    })
+    console.error("Error applying coupon:", error);
+    return res.status(500).json({ error: "Failed to apply coupon" });
   }
-})
+});
 
-// Use loyalty points
+// Use points
 app.post("/api/use-points", authenticate, (req, res) => {
   try {
-    const { points } = req.body
-
-    if (!points || isNaN(Number.parseInt(points)) || Number.parseInt(points) <= 0) {
-      return res.status(400).json({ error: "Valid points amount is required" })
+    const { points } = req.body;
+    const pointsToUse = parseInt(points, 10);
+    if (!points || isNaN(pointsToUse) || pointsToUse <= 0) {
+      return res.status(400).json({ error: "Valid points amount is required" });
     }
 
-    const pointsToUse = Number.parseInt(points)
-
-    // Find user
-    const userIndex = store.users.findIndex((u) => u.userId === req.user.userId)
+    const userIndex = store.users.findIndex((u) => u.userId === req.user.userId);
     if (userIndex === -1) {
-      return res.status(404).json({ error: "User not found" })
+      return res.status(404).json({ error: "User not found" });
     }
 
-    // Check if user has enough points
     if (store.users[userIndex].points < pointsToUse) {
-      return res.status(400).json({ error: "Not enough points" })
+      return res.status(400).json({ error: "Not enough points" });
     }
 
-    // Deduct points
-    store.users[userIndex].points -= pointsToUse
-
-    // Save changes
-    saveData("users", store.users)
+    store.users[userIndex].points -= pointsToUse;
+    saveData("users", store.users);
 
     // Update session
-    const token = req.headers.authorization?.split(" ")[1]
+    const tokenHeader = req.headers.authorization || "";
+    const token = tokenHeader.startsWith("Bearer ") ? tokenHeader.split(" ")[1] : null;
     if (token && store.sessions[token]) {
-      store.sessions[token].user.points = store.users[userIndex].points
+      store.sessions[token].user.points = store.users[userIndex].points;
     }
 
     return res.json({
       success: true,
       points: store.users[userIndex].points,
       pointsUsed: pointsToUse,
-      discount: pointsToUse * 0.01, // Each point is worth £0.01
-    })
+      discount: pointsToUse * 0.01,
+    });
   } catch (error) {
-    console.error("Error using points:", error)
-    return res.status(500).json({
-      error: "Failed to use points",
-    })
+    console.error("Error using points:", error);
+    return res.status(500).json({ error: "Failed to use points" });
   }
-})
+});
 
-// NEWSLETTER AND CONTACT ENDPOINTS
-
-// Subscribe to newsletter
+// ------------------------------
+//  Newsletter & Contact
+// ------------------------------
 app.post("/api/subscribe", (req, res) => {
   try {
-    const { email, name } = req.body
-
+    const { email, name } = req.body;
     if (!email) {
-      return res.status(400).json({ error: "Email is required" })
+      return res.status(400).json({ error: "Email is required" });
     }
-
-    console.log(`Newsletter subscription: ${name || "Unknown"} (${email})`)
-
-    return res.json({ success: true })
+    console.log(`Newsletter subscription from: ${name || "Unknown"} <${email}>`);
+    return res.json({ success: true });
   } catch (error) {
-    console.error("Error subscribing to newsletter:", error)
-    return res.status(500).json({
-      error: "Failed to subscribe to newsletter",
-    })
+    console.error("Error subscribing to newsletter:", error);
+    return res.status(500).json({ error: "Failed to subscribe" });
   }
-})
+});
 
-// Contact form
 app.post("/api/contact", (req, res) => {
   try {
-    const { name, email, message } = req.body
-
+    const { name, email, message } = req.body;
     if (!email || !message) {
-      return res.status(400).json({ error: "Email and message are required" })
+      return res.status(400).json({ error: "Email and message are required" });
     }
-
-    console.log(`Contact form submission: ${name || "Unknown"} (${email})`)
-    console.log(`Message: ${message}`)
-
-    return res.json({ success: true })
+    console.log(`Contact form: ${name || "Unknown"} <${email}> => ${message}`);
+    return res.json({ success: true });
   } catch (error) {
-    console.error("Error submitting contact form:", error)
-    return res.status(500).json({
-      error: "Failed to submit contact form",
-    })
+    console.error("Error with contact form:", error);
+    return res.status(500).json({ error: "Failed to submit contact form" });
   }
-})
+});
 
-// Workshop request
 app.post("/api/workshop-request", (req, res) => {
   try {
-    const { name, email, date, participants } = req.body
-
+    const { name, email, date, participants } = req.body;
     if (!email || !date) {
-      return res.status(400).json({ error: "Email and date are required" })
+      return res.status(400).json({ error: "Email and date are required" });
     }
-
-    console.log(`Workshop request: ${name || "Unknown"} (${email})`)
-    console.log(`Date: ${date}, Participants: ${participants || 1}`)
-
-    return res.json({ success: true })
+    console.log(`Workshop request from: ${name || "Unknown"} <${email}> => Date: ${date}, Participants: ${participants || 1}`);
+    return res.json({ success: true });
   } catch (error) {
-    console.error("Error submitting workshop request:", error)
-    return res.status(500).json({
-      error: "Failed to submit workshop request",
-    })
+    console.error("Error with workshop request:", error);
+    return res.status(500).json({ error: "Failed to submit workshop request" });
   }
-})
+});
 
-// Serve static files - IMPORTANT: Place after all API routes
-app.use(express.static(path.join(__dirname, "public")))
+// ------------------------------
+//  Serve static files
+// ------------------------------
+app.use(express.static(path.join(__dirname, "public")));
 
-// Catch-all route for static files - IMPORTANT: Place after all API routes
+// Catch-all for front-end routes
 app.get("*", (req, res) => {
-  const filePath = path.join(__dirname, "public", req.path === "/" ? "index.html" : req.path)
-
+  const filePath = path.join(__dirname, "public", req.path === "/" ? "index.html" : req.path);
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-    res.sendFile(filePath)
+    res.sendFile(filePath);
   } else {
-    // Fall back to index.html
-    res.sendFile(path.join(__dirname, "public", "index.html"))
+    res.sendFile(path.join(__dirname, "public", "index.html"));
   }
-})
+});
 
-// Start server
+// ------------------------------
+//  Start server
+// ------------------------------
 const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  console.log(`Server running on port ${PORT}`);
+});
 
-// Error handling for the server
 server.on("error", (error) => {
-  console.error("Server error:", error.message)
-})
+  console.error("Server error:", error.message);
+});
 
-// Global error handlers
+// Global error handling
 process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection:", reason)
-})
-
+  console.error("Unhandled Rejection:", reason);
+});
 process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error.message)
-  console.error(error.stack)
-})
-
-module.exports = app
+  console.error("Uncaught Exception:", error.message);
+  console.error(error.stack);
+});
