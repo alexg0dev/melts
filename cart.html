@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart | Melissa's Melts</title>
+    <title>Shopping Cart - Melissa's Melts</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -31,6 +31,9 @@
                         'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
                         'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
                         'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                    },
+                    backgroundImage: {
+                        'hero-pattern': "url('https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
                     }
                 }
             }
@@ -68,31 +71,27 @@
             animation-delay: 0.3s;
         }
         
+        .delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        /* Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
+        }
+        
         /* Gradient Text */
         .gradient-text {
             background: linear-gradient(to right, #FF4E7D, #FF8CAA);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
-        /* Fancy Underline */
-        .fancy-underline {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .fancy-underline::after {
-            content: '';
-            position: absolute;
-            width: 70px;
-            height: 3px;
-            bottom: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
-            border-radius: 3px;
-        }
-        
+
         /* Navbar Animation */
         .nav-link {
             position: relative;
@@ -112,71 +111,12 @@
         .nav-link:hover::after {
             width: 100%;
         }
-        
-        /* Search Results */
-        .search-results {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 0 0 0.5rem 0.5rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .search-container:focus-within .search-results {
-            display: block;
-        }
-        
-        .search-result-item {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .search-result-item:hover {
-            background-color: #FFF5F7;
-        }
-        
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-        
-        /* Custom Button Styles */
-        .btn-primary {
-            background: linear-gradient(to right, #FF4E7D, #FF8CAA);
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-        
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(to right, #FF2F67, #FF6D93);
-            transition: all 0.3s ease;
-            z-index: -1;
-        }
-        
-        .btn-primary:hover::before {
-            width: 100%;
-        }
     </style>
 </head>
 <body class="font-sans bg-pink-50 text-gray-800">
     <!-- Announcement Bar -->
     <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
-        <p>Free shipping on orders over £50!</p>
+        <p>Free shipping on orders over £50</p>
     </div>
 
     <!-- Header/Navigation -->
@@ -195,47 +135,11 @@
                 </div>
                 
                 <div class="flex items-center space-x-6">
-                    <div class="relative search-container">
-                        <input type="text" id="search-input" placeholder="Search products..." class="py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent w-40 md:w-60">
-                        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        <div class="search-results">
-                            <!-- Search results will be populated here -->
-                        </div>
-                    </div>
+                    <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
+                        <i class="fas fa-user text-lg"></i>
+                    </a>
                     
-                    <div id="user-container">
-                        <div class="relative">
-                            <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors" id="user-icon">
-                                <i class="fas fa-user text-lg"></i>
-                            </a>
-                            <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                                <button id="logout-button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50">
-                                    Logout
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Google Sign-In Button (hidden by default) -->
-                        <div id="g_id_onload"
-                            data-client_id="741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com"
-                            data-context="signin"
-                            data-callback="handleCredentialResponse"
-                            data-auto_prompt="false"
-                            style="display: none;">
-                        </div>
-                        <div class="g_id_signin"
-                            data-type="standard"
-                            data-size="large"
-                            data-theme="outline"
-                            data-text="sign_in_with"
-                            data-shape="rectangular"
-                            data-logo_alignment="left"
-                            style="display: none;">
-                        </div>
-                    </div>
-                    
-                    <a href="cart.html" class="text-pink-600 relative" id="cart-icon">
+                    <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
                         <i class="fas fa-shopping-bag text-lg"></i>
                         <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
                     </a>
@@ -259,116 +163,149 @@
         </div>
     </header>
 
-    <!-- Page Title -->
-    <section class="bg-white py-8">
+    <main class="py-12">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-serif font-bold text-center">Shopping Cart</h1>
-        </div>
-    </section>
-
-    <!-- Cart Content -->
-    <section class="py-12 bg-pink-50">
-        <div class="container mx-auto px-4">
-            <!-- Login Required Message (shown when not logged in) -->
-            <div id="login-required" class="hidden bg-white rounded-xl shadow-card p-8 text-center max-w-2xl mx-auto animate-fade-up">
-                <div class="mb-6 text-pink-500 text-6xl">
-                    <i class="fas fa-lock"></i>
-                </div>
-                <h2 class="text-2xl font-serif font-bold mb-4">Login Required</h2>
-                <p class="text-gray-600 mb-8">Please sign in to view your shopping cart and complete your purchase.</p>
-                <div id="googleSignInButton" class="flex justify-center">
-                    <!-- Google Sign-In Button will be rendered here -->
-                </div>
-            </div>
+            <h1 class="text-3xl md:text-4xl font-serif font-bold mb-8 text-center">Your Shopping Cart</h1>
             
-            <!-- Cart Items (shown when logged in) -->
-            <div id="cart-content" class="hidden">
-                <div class="flex flex-col lg:flex-row gap-8">
-                    <!-- Cart Items -->
-                    <div class="lg:w-2/3 animate-fade-up">
-                        <div class="bg-white rounded-xl shadow-card overflow-hidden">
-                            <div class="p-6 border-b border-gray-100">
-                                <h2 class="text-xl font-medium">Your Cart (<span id="cart-items-count">0</span> items)</h2>
-                            </div>
-                            
-                            <!-- Cart Items List -->
-                            <div id="cart-items" class="divide-y divide-gray-100">
-                                <!-- Cart items will be populated here -->
-                            </div>
-                            
-                            <!-- Empty Cart Message -->
-                            <div id="empty-cart-message" class="hidden p-8 text-center">
-                                <div class="mb-4 text-gray-400 text-5xl">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </div>
-                                <h3 class="text-xl font-medium mb-2">Your cart is empty</h3>
-                                <p class="text-gray-500 mb-6">Looks like you haven't added any products to your cart yet.</p>
-                                <a href="shop.html" class="btn-primary text-white font-medium py-2 px-6 rounded-full inline-block shadow-glow">Start Shopping</a>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Cart Items (2/3 width on large screens) -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-soft p-6">
+                        <div id="cart-items" class="space-y-6">
+                            <!-- Cart items will be populated by JavaScript -->
+                            <div class="text-center py-12 text-gray-500">
+                                <i class="fas fa-shopping-bag text-5xl mb-4 text-gray-300"></i>
+                                <p>Your cart is empty</p>
+                                <a href="shop.html" class="mt-4 inline-block text-pink-500 hover:text-pink-600 font-medium">Continue Shopping</a>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Order Summary (1/3 width on large screens) -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-soft p-6 sticky top-24">
+                        <h2 class="text-xl font-semibold mb-6">Order Summary</h2>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal</span>
+                                <span id="cart-subtotal" class="font-medium">£0.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping</span>
+                                <span id="cart-shipping" class="font-medium">£0.00</span>
+                            </div>
+                            <div id="discount-row" class="flex justify-between hidden">
+                                <span class="text-gray-600">Discount</span>
+                                <span id="cart-discount" class="font-medium text-green-600">-£0.00</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-3 mt-3">
+                                <div class="flex justify-between">
+                                    <span class="font-semibold">Total</span>
+                                    <span id="cart-total" class="font-semibold">£0.00</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Including VAT</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Coupon Code -->
+                        <div class="mb-6">
+                            <div class="flex space-x-2">
+                                <input type="text" id="coupon-code" placeholder="Coupon code" class="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                                <button id="apply-coupon" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition">Apply</button>
+                            </div>
+                            <p id="coupon-message" class="text-xs mt-2 hidden"></p>
+                        </div>
+                        
+                        <!-- Checkout Buttons -->
+                        <div class="space-y-3">
+                            <form action="/create-checkout-session" method="POST" id="checkout-form">
+                                <input type="hidden" id="cartItemsInput" name="cartItems" value="">
+                                <input type="hidden" id="customerEmailInput" name="customerEmail" value="">
+                                <input type="hidden" id="customerNameInput" name="customerName" value="">
+                                <input type="hidden" id="customerPhoneInput" name="customerPhone" value="">
+                                <input type="hidden" id="customerAddressInput" name="customerAddress" value="">
+                                <input type="hidden" id="customerCityInput" name="customerCity" value="">
+                                <input type="hidden" id="customerPostcodeInput" name="customerPostcode" value="">
+                                
+                                <button type="submit" id="checkout-button" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 flex items-center justify-center">
+                                    <i class="fas fa-lock mr-2"></i> Checkout Securely
+                                </button>
+                            </form>
+                            
+                            <a href="simple-payment.html" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 block text-center">
+                                <i class="fas fa-money-bill-wave mr-2"></i> Simple Payment Options
+                            </a>
+                            
+                            <a href="shop.html" class="w-full text-center block text-pink-500 hover:text-pink-600 font-medium py-2">
+                                Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Customer Information Modal -->
+    <div id="customer-info-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 animate-fade-up">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold">Your Information</h3>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <p class="text-gray-600 mb-4">Please provide your contact information to complete your order.</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="customer-name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
                     </div>
                     
-                    <!-- Order Summary -->
-                    <div class="lg:w-1/3 animate-fade-up delay-100">
-                        <div class="bg-white rounded-xl shadow-card overflow-hidden sticky top-24">
-                            <div class="p-6 border-b border-gray-100">
-                                <h2 class="text-xl font-medium">Order Summary</h2>
-                            </div>
-                            <div class="p-6">
-                                <div class="space-y-4 mb-6">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Subtotal</span>
-                                        <span class="font-medium" id="subtotal">$0.00</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Discount</span>
-                                        <span class="font-medium text-green-600" id="discount">-$0.00</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Shipping</span>
-                                        <span class="font-medium" id="shipping">$0.00</span>
-                                    </div>
-                                    <div class="border-t border-gray-100 pt-4 flex justify-between">
-                                        <span class="font-medium">Total</span>
-                                        <span class="font-bold text-lg" id="total">$0.00</span>
-                                    </div>
-                                </div>
-                                
-                                <!-- Coupon Code -->
-                                <div class="mb-6">
-                                    <label for="coupon-code" class="block text-sm font-medium text-gray-700 mb-2">Coupon Code</label>
-                                    <div class="flex">
-                                        <input type="text" id="coupon-code" placeholder="Enter coupon code" class="flex-1 py-2 px-4 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                                        <button id="apply-coupon" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-r-lg transition-colors">Apply</button>
-                                    </div>
-                                    <p id="coupon-message" class="mt-2 text-sm hidden"></p>
-                                </div>
-                                
-                                <!-- Checkout Button -->
-                                <div class="mb-6 border-t border-gray-100 pt-6 mt-4">
-                                    <a href="payment.html" id="proceed-to-checkout" class="btn-primary text-white font-medium py-3 px-6 rounded-full w-full shadow-glow mb-4 text-center block">
-                                        Proceed to Checkout
-                                    </a>
-                                    <a href="simple-payment.html" id="simple-checkout" class="text-pink-600 hover:text-pink-700 text-center block mb-4">
-                                        Use Simple Checkout (if payment system is down)
-                                    </a>
-                                    
-                                    <p class="text-xs text-gray-500 text-center">Your payment information is processed securely on our checkout page.</p>
-                                    <p class="text-xs text-gray-500 text-center mt-2">If there are any issues with your order, please contact: <a href="https://www.facebook.com/melissasmelts" class="text-pink-500 hover:underline">Melissa's Melts on Facebook</a></p>
-                                </div>
-                                
-                                <!-- Continue Shopping -->
-                                <a href="shop.html" class="text-center block text-pink-600 hover:text-pink-700 transition-colors">Continue Shopping</a>
-                            </div>
+                    <div>
+                        <label for="customer-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="customer-email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="customer-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="customer-phone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="customer-address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <input type="text" id="customer-address" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="customer-city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                            <input type="text" id="customer-city" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="customer-postcode" class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
+                            <input type="text" id="customer-postcode" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
                         </div>
                     </div>
                 </div>
+                
+                <div class="mt-6">
+                    <button id="save-customer-info" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2">
+                        Continue to Checkout
+                    </button>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white pt-20 pb-10">
+    <footer class="bg-gray-900 text-white pt-20 pb-10 mt-20">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <!-- Company Info -->
@@ -446,17 +383,14 @@
                 <div class="flex items-center space-x-6">
                     <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
                     <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
-                    <img src="https://cdn.pixabay.com/photo/2022/01/09/07/23/american-express-6926131_640.png" alt="American Express" class="h-6">
-                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/45/paypal-6850398_640.png" alt="PayPal" class="h-6">
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile Menu Toggle
+            // Mobile menu toggle
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             
@@ -464,586 +398,291 @@
                 mobileMenu.classList.toggle('hidden');
             });
             
-            // Search Functionality
-            const searchInput = document.getElementById('search-input');
-            const searchResults = document.querySelector('.search-results');
-            
-            // Product database for search
-            const products = [
-                { name: 'Massage Soap', url: 'massage-soap.html' },
-                { name: 'Lavender Soap', url: 'massage-soap.html' },
-                { name: 'Rose Wax Melts', url: 'massage-soap.html' },
-                { name: 'Vanilla Soap', url: 'massage-soap.html' },
-                { name: 'Citrus Wax Melts', url: 'massage-soap.html' }
-            ];
-            
-            searchInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase();
-                
-                // Clear previous results
-                searchResults.innerHTML = '';
-                
-                if (query.length < 2) return;
-                
-                // Filter products based on search query
-                const filteredProducts = products.filter(product => 
-                    product.name.toLowerCase().includes(query)
-                );
-                
-                // Display results
-                if (filteredProducts.length > 0) {
-                    filteredProducts.forEach(product => {
-                        const resultItem = document.createElement('div');
-                        resultItem.className = 'search-result-item';
-                        resultItem.innerHTML = `
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center mr-3">
-                                    <i class="fas fa-soap text-pink-500"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">${product.name}</p>
-                                </div>
-                            </div>
-                        `;
-                        resultItem.addEventListener('click', function() {
-                            window.location.href = product.url;
-                        });
-                        searchResults.appendChild(resultItem);
-                    });
-                } else {
-                    searchResults.innerHTML = `
-                        <div class="p-4 text-center text-gray-500">
-                            No products found for "${query}"
-                        </div>
-                    `;
-                }
-            });
-            
-            // Close search results when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.search-container')) {
-                    searchResults.style.display = 'none';
-                }
-            });
-            
-            searchInput.addEventListener('focus', function() {
-                if (searchResults.children.length > 0) {
-                    searchResults.style.display = 'block';
-                }
-            });
-            
-            // Check if user is logged in
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (user) {
-                updateUserUI(user);
-                showCartContent();
-            } else {
-                showLoginRequired();
-            }
-
-            // Google Sign-In
-            window.handleCredentialResponse = function(response) {
-                // Send the token to your server for verification
-                const token = response.credential;
-                
-                // For demo purposes, decode the JWT to get user info
-                // In production, this should be verified on the server
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                
-                const payload = JSON.parse(jsonPayload);
-                
-                // Create user object
-                const user = {
-                    userId: payload.sub,
-                    name: payload.name,
-                    email: payload.email,
-                    picture: payload.picture,
-                    points: 0
-                };
-                
-                // Store user info in localStorage
-                localStorage.setItem('user', JSON.stringify(user));
-                localStorage.setItem('token', token);
-                
-                // Update UI and show cart content
-                updateUserUI(user);
-                showCartContent();
-            };
-
-            function updateUserUI(user) {
-                // Update user icon
-                const userIcon = document.getElementById('user-icon');
-                const userDropdown = document.getElementById('user-dropdown');
-                
-                if (userIcon && user.picture) {
-                    userIcon.innerHTML = `<img src="${user.picture}" alt="${user.name}" class="w-6 h-6 rounded-full">`;
-                    userIcon.href = 'account.html';
-                    
-                    // Add click event to toggle dropdown
-                    userIcon.addEventListener('click', function(e) {
-                        if (window.location.pathname.includes('account.html')) {
-                            e.preventDefault();
-                        }
-                        userDropdown.classList.toggle('hidden');
-                    });
-                } else if (userIcon && user.name) {
-                    // If no picture, use first letter of name
-                    const initials = user.name.charAt(0).toUpperCase();
-                    userIcon.innerHTML = `<div class="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold">${initials}</div>`;
-                    userIcon.href = 'account.html';
-                    
-                    // Add click event to toggle dropdown
-                    userIcon.addEventListener('click', function(e) {
-                        if (window.location.pathname.includes('account.html')) {
-                            e.preventDefault();
-                        }
-                        userDropdown.classList.toggle('hidden');
-                    });
-                }
-                
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!userIcon.contains(e.target) && !userDropdown.contains(e.target)) {
-                        userDropdown.classList.add('hidden');
-                    }
-                });
-            }
-
-            // Update the login required section to show Google Sign-In button
-            function showLoginRequired() {
-                document.getElementById('login-required').classList.remove('hidden');
-                document.getElementById('cart-content').classList.add('hidden');
-
-                // Add Google Sign-In button
-                const googleSignInButton = document.getElementById('googleSignInButton');
-                if (googleSignInButton) {
-                    googleSignInButton.innerHTML = '';
-                    if (typeof google !== 'undefined' && google.accounts) {
-                        google.accounts.id.renderButton(
-                            googleSignInButton,
-                            { theme: 'filled_blue', size: 'large', width: 250 }
-                        );
-                    } else {
-                        // Fallback if Google Sign-In is not available
-                        googleSignInButton.innerHTML = `
-                            <a href="login.html?redirect=cart.html" class="btn-primary text-white font-medium py-3 px-8 rounded-full inline-block shadow-glow">
-                                Sign In with Google
-                            </a>
-                        `;
-                    }
-                }
-            }
-            
-            function showCartContent() {
-                document.getElementById('login-required').classList.add('hidden');
-                document.getElementById('cart-content').classList.remove('hidden');
-                
-                // Load cart items
-                loadCartItems();
-            }
+            // Get cart from localStorage
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             
             // Update cart count
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-            document.getElementById('cart-count').textContent = cartCount;
+            updateCartCount();
             
-            // Load cart items
-            function loadCartItems() {
-                // Get cart from localStorage
-                let cart = JSON.parse(localStorage.getItem('cart')) || [];
-                const token = localStorage.getItem('token');
-                
-                // If user is logged in, sync with backend first
-                if (token) {
-                    fetch('/api/cart', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.cart) {
-                            // Merge server cart with local cart
-                            const serverCart = data.cart;
-                            const mergedCart = mergeCart(cart, serverCart);
-                            
-                            // Update localStorage
-                            localStorage.setItem('cart', JSON.stringify(mergedCart));
-                            
-                            // Now display the merged cart
-                            displayCart(mergedCart);
-                        } else {
-                            // Display local cart if no server cart available
-                            displayCart(cart);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching cart from server:', error);
-                        // Still display local cart if server request fails
-                        displayCart(cart);
-                    });
-                } else {
-                    // Just display local cart if user not logged in
-                    displayCart(cart);
+            // Display cart items
+            displayCart();
+            
+            // Apply coupon button
+            document.getElementById('apply-coupon').addEventListener('click', applyCoupon);
+            
+            // Customer info modal
+            const customerInfoModal = document.getElementById('customer-info-modal');
+            const closeModalButton = document.getElementById('close-modal');
+            const saveCustomerInfoButton = document.getElementById('save-customer-info');
+            
+            // Close modal when clicking the close button
+            closeModalButton.addEventListener('click', function() {
+                customerInfoModal.classList.add('hidden');
+            });
+            
+            // Close modal when clicking outside
+            customerInfoModal.addEventListener('click', function(e) {
+                if (e.target === customerInfoModal) {
+                    customerInfoModal.classList.add('hidden');
                 }
-            }
-
-            // Add the mergeCart helper function
-            function mergeCart(localCart, serverCart) {
-                // Create a map of products by ID and scent for easy lookup
-                const productMap = new Map();
+            });
+            
+            // Save customer info and proceed to checkout
+            saveCustomerInfoButton.addEventListener('click', function() {
+                const customerName = document.getElementById('customer-name').value;
+                const customerEmail = document.getElementById('customer-email').value;
+                const customerPhone = document.getElementById('customer-phone').value;
+                const customerAddress = document.getElementById('customer-address').value;
+                const customerCity = document.getElementById('customer-city').value;
+                const customerPostcode = document.getElementById('customer-postcode').value;
                 
-                // Add local cart items to the map
-                localCart.forEach(item => {
-                    const key = `${item.id}_${item.scent || ''}`;
-                    productMap.set(key, item);
-                });
-                
-                // Merge server cart items
-                serverCart.forEach(item => {
-                    const key = `${item.id}_${item.scent || ''}`;
-                    if (productMap.has(key)) {
-                        // Take the higher quantity if item exists in both carts
-                        const localItem = productMap.get(key);
-                        localItem.quantity = Math.max(localItem.quantity, item.quantity);
-                    } else {
-                        productMap.set(key, item);
-                    }
-                });
-                
-                // Convert map back to array
-                return Array.from(productMap.values());
-            }
-
-            // Create a displayCart function to handle the display logic
-            function displayCart(cart) {
-                const cartItemsContainer = document.getElementById('cart-items');
-                const emptyCartMessage = document.getElementById('empty-cart-message');
-                const cartItemsCount = document.getElementById('cart-items-count');
-                
-                // Update cart items count
-                cartItemsCount.textContent = cart.length;
-                
-                // Show empty cart message if cart is empty
-                if (cart.length === 0) {
-                    emptyCartMessage.classList.remove('hidden');
-                    cartItemsContainer.classList.add('hidden');
-                    
-                    // Update order summary
-                    updateOrderSummary(0, 0, 0);
+                // Basic validation
+                if (!customerName || !customerEmail || !customerAddress || !customerCity || !customerPostcode) {
+                    alert('Please fill in all required fields');
                     return;
                 }
                 
-                // Hide empty cart message and show cart items
-                emptyCartMessage.classList.add('hidden');
-                cartItemsContainer.classList.remove('hidden');
+                // Save customer info to localStorage
+                localStorage.setItem('customerName', customerName);
+                localStorage.setItem('customerEmail', customerEmail);
+                localStorage.setItem('customerPhone', customerPhone);
+                localStorage.setItem('customerAddress', customerAddress);
+                localStorage.setItem('customerCity', customerCity);
+                localStorage.setItem('customerPostcode', customerPostcode);
                 
-                // Clear cart items container
-                cartItemsContainer.innerHTML = '';
+                // Set form input values
+                document.getElementById('customerNameInput').value = customerName;
+                document.getElementById('customerEmailInput').value = customerEmail;
+                document.getElementById('customerPhoneInput').value = customerPhone;
+                document.getElementById('customerAddressInput').value = customerAddress;
+                document.getElementById('customerCityInput').value = customerCity;
+                document.getElementById('customerPostcodeInput').value = customerPostcode;
                 
-                // Calculate subtotal
-                let subtotal = 0;
+                // Close modal
+                customerInfoModal.classList.add('hidden');
                 
-                // Add cart items to container
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.quantity;
-                    subtotal += itemTotal;
-                    
-                    const cartItemElement = document.createElement('div');
-                    cartItemElement.className = 'p-6 flex items-center';
-                    cartItemElement.innerHTML = `
-                        <div class="w-20 h-20 bg-pink-100 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
-                            ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
-                            `<span class="text-pink-500 text-sm">Image</span>`}
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-medium">${item.name}</h3>
-                            <p class="text-gray-500 text-sm">Price: £${item.price.toFixed(2)}</p>
-                            ${item.scent ? `<p class="text-gray-500 text-sm">Scent: ${item.scent}</p>` : ''}
-                        </div>
-                        <div class="flex items-center">
-                            <button class="decrease-quantity bg-gray-100 hover:bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center" data-id="${item.id}" data-scent="${item.scent || ''}">
-                                <i class="fas fa-minus text-xs"></i>
-                            </button>
-                            <span class="mx-3 w-8 text-center">${item.quantity}</span>
-                            <button class="increase-quantity bg-gray-100 hover:bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center" data-id="${item.id}" data-scent="${item.scent || ''}">
-                                <i class="fas fa-plus text-xs"></i>
-                            </button>
-                        </div>
-                        <div class="ml-6 w-24 text-right">
-                            <p class="font-medium">£${itemTotal.toFixed(2)}</p>
-                        </div>
-                        <button class="remove-item ml-4 text-gray-400 hover:text-pink-500" data-id="${item.id}" data-scent="${item.scent || ''}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    `;
-                    
-                    cartItemsContainer.appendChild(cartItemElement);
-                });
-                
-                // Add event listeners to cart item buttons
-                addCartItemEventListeners();
-                
-                // Calculate shipping (free for orders over £50)
-                const shipping = subtotal >= 50 ? 0 : 5.99;
-                
-                // Calculate discount (0 for now)
-                const discount = 0;
-                
-                // Update order summary
-                updateOrderSummary(subtotal, discount, shipping);
-            }
-
-            // Also update updateCartItemQuantity and removeCartItem to sync with backend
-            function updateCartItemQuantity(itemId, itemScent, change) {
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                const itemIndex = cart.findIndex(item => item.id === itemId && (item.scent || '') === (itemScent || ''));
-                
-                if (itemIndex !== -1) {
-                    cart[itemIndex].quantity += change;
-                    
-                    // Remove item if quantity is 0 or less
-                    if (cart[itemIndex].quantity <= 0) {
-                        cart.splice(itemIndex, 1);
-                    }
-                    
-                    // Save cart to localStorage
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    
-                    // Update cart count
-                    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-                    document.getElementById('cart-count').textContent = cartCount;
-                    
-                    // Sync with backend if user is logged in
-                    const token = localStorage.getItem('token');
-                    if (token) {
-                        fetch('/api/cart/update', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: JSON.stringify({ itemId, itemScent, change })
-                        })
-                        .catch(error => console.error('Error syncing cart with server:', error));
-                    }
-                    
-                    // Reload cart items
-                    displayCart(cart);
-                }
-            }
-
-            function removeCartItem(itemId, itemScent) {
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                const itemIndex = cart.findIndex(item => item.id === itemId && (item.scent || '') === (itemScent || ''));
-                
-                if (itemIndex !== -1) {
-                    cart.splice(itemIndex, 1);
-                    
-                    // Save cart to localStorage
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    
-                    // Update cart count
-                    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-                    document.getElementById('cart-count').textContent = cartCount;
-                    
-                    // Sync with backend if user is logged in
-                    const token = localStorage.getItem('token');
-                    if (token) {
-                        fetch('/api/cart/remove', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: JSON.stringify({ itemId, itemScent })
-                        })
-                        .catch(error => console.error('Error syncing cart with server:', error));
-                    }
-                    
-                    // Reload cart items
-                    displayCart(cart);
-                }
-            }
-
-            // Update the checkout flow to redirect to payment page
-            document.getElementById('proceed-to-checkout').addEventListener('click', function(e) {
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                // Submit the form
+                document.getElementById('checkout-form').submit();
+            });
+            
+            // Handle checkout button click
+            document.getElementById('checkout-button').addEventListener('click', function(e) {
+                e.preventDefault();
                 
                 if (cart.length === 0) {
-                    e.preventDefault();
                     alert('Your cart is empty');
                     return;
                 }
                 
-                const token = localStorage.getItem('token');
+                // Set cart items in the hidden input
+                document.getElementById('cartItemsInput').value = JSON.stringify(cart);
                 
-                if (!token) {
-                    e.preventDefault();
-                    alert('Please sign in to checkout');
+                // Check if we already have customer info
+                const customerName = localStorage.getItem('customerName');
+                const customerEmail = localStorage.getItem('customerEmail');
+                
+                if (customerName && customerEmail) {
+                    // Pre-fill the form inputs
+                    document.getElementById('customerNameInput').value = customerName;
+                    document.getElementById('customerEmailInput').value = customerEmail;
+                    document.getElementById('customerPhoneInput').value = localStorage.getItem('customerPhone') || '';
+                    document.getElementById('customerAddressInput').value = localStorage.getItem('customerAddress') || '';
+                    document.getElementById('customerCityInput').value = localStorage.getItem('customerCity') || '';
+                    document.getElementById('customerPostcodeInput').value = localStorage.getItem('customerPostcode') || '';
+                    
+                    // Submit the form directly
+                    document.getElementById('checkout-form').submit();
+                } else {
+                    // Show customer info modal
+                    customerInfoModal.classList.remove('hidden');
+                }
+            });
+            
+            // Functions
+            function updateCartCount() {
+                const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+                document.getElementById('cart-count').textContent = cartCount;
+            }
+            
+            function displayCart() {
+                const cartItemsContainer = document.getElementById('cart-items');
+                
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = `
+                        <div class="text-center py-12 text-gray-500">
+                            <i class="fas fa-shopping-bag text-5xl mb-4 text-gray-300"></i>
+                            <p>Your cart is empty</p>
+                            <a href="shop.html" class="mt-4 inline-block text-pink-500 hover:text-pink-600 font-medium">Continue Shopping</a>
+                        </div>
+                    `;
+                    
+                    // Disable checkout button
+                    document.getElementById('checkout-button').disabled = true;
+                    document.getElementById('checkout-button').classList.add('opacity-50', 'cursor-not-allowed');
+                    
                     return;
                 }
                 
-                // Calculate order details
-                const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('£', ''));
-                const discount = parseFloat(document.getElementById('discount').textContent.replace('-£', ''));
-                const shipping = document.getElementById('shipping').textContent === 'Free' ? 0 : parseFloat(document.getElementById('shipping').textContent.replace('£', ''));
-                const total = subtotal - discount + shipping;
+                // Enable checkout button
+                document.getElementById('checkout-button').disabled = false;
+                document.getElementById('checkout-button').classList.remove('opacity-50', 'cursor-not-allowed');
                 
-                // Store order details in localStorage for the payment page
-                localStorage.setItem('orderTotal', total);
+                // Clear container
+                cartItemsContainer.innerHTML = '';
+                
+                // Add each cart item
+                cart.forEach((item, index) => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 pb-6';
+                    
+                    const itemTotal = (item.price * item.quantity).toFixed(2);
+                    
+                    itemElement.innerHTML = `
+                        <div class="flex items-center mb-4 sm:mb-0">
+                            <div class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center mr-4 overflow-hidden">
+                                ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : 
+                                `<i class="fas fa-soap text-gray-500 text-2xl"></i>`}
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800">${item.name}</h3>
+                                <p class="text-sm text-gray-500">${item.scent ? `Scent: ${item.scent}` : ''}</p>
+                                <p class="text-sm text-gray-500">£${item.price.toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 w-full sm:w-auto">
+                            <div class="flex items-center border border-gray-300 rounded-md">
+                                <button class="decrease-quantity px-3 py-1 text-gray-600 hover:bg-gray-100" data-index="${index}">-</button>
+                                <span class="item-quantity px-3 py-1 border-l border-r border-gray-300">${item.quantity}</span>
+                                <button class="increase-quantity px-3 py-1 text-gray-600 hover:bg-gray-100" data-index="${index}">+</button>
+                            </div>
+                            <span class="font-medium">£${itemTotal}</span>
+                            <button class="remove-item text-gray-400 hover:text-red-500" data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    cartItemsContainer.appendChild(itemElement);
+                });
+                
+                // Add event listeners for quantity buttons and remove buttons
+                document.querySelectorAll('.decrease-quantity').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        if (cart[index].quantity > 1) {
+                            cart[index].quantity--;
+                            updateCart();
+                        }
+                    });
+                });
+                
+                document.querySelectorAll('.increase-quantity').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        cart[index].quantity++;
+                        updateCart();
+                    });
+                });
+                
+                document.querySelectorAll('.remove-item').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        cart.splice(index, 1);
+                        updateCart();
+                    });
+                });
+                
+                // Update order summary
+                updateOrderSummary();
+            }
+            
+            function updateCart() {
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                displayCart();
+            }
+            
+            function updateOrderSummary() {
+                const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+                const shipping = subtotal >= 50 ? 0 : 5.99;
+                
+                // Get applied coupon from localStorage
+                const appliedCoupon = JSON.parse(localStorage.getItem('appliedCoupon') || 'null');
+                let discount = 0;
+                
+                if (appliedCoupon) {
+                    if (appliedCoupon.type === 'percentage') {
+                        discount = subtotal * appliedCoupon.discount;
+                    } else if (appliedCoupon.type === 'fixed') {
+                        discount = appliedCoupon.discount;
+                    }
+                    
+                    // Show discount row
+                    document.getElementById('discount-row').classList.remove('hidden');
+                    document.getElementById('cart-discount').textContent = `-£${discount.toFixed(2)}`;
+                    
+                    // Show applied coupon message
+                    const couponMessage = document.getElementById('coupon-message');
+                    couponMessage.textContent = `${appliedCoupon.description} applied`;
+                    couponMessage.classList.remove('hidden', 'text-red-500');
+                    couponMessage.classList.add('text-green-600');
+                } else {
+                    // Hide discount row
+                    document.getElementById('discount-row').classList.add('hidden');
+                }
+                
+                const total = subtotal + shipping - discount;
+                
+                document.getElementById('cart-subtotal').textContent = `£${subtotal.toFixed(2)}`;
+                document.getElementById('cart-shipping').textContent = shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`;
+                document.getElementById('cart-total').textContent = `£${total.toFixed(2)}`;
+                
+                // Save order totals to localStorage
                 localStorage.setItem('orderSubtotal', subtotal);
                 localStorage.setItem('orderShipping', shipping);
                 localStorage.setItem('orderDiscount', discount);
+                localStorage.setItem('orderTotal', total);
+            }
+            
+            function applyCoupon() {
+                const couponCode = document.getElementById('coupon-code').value.trim().toUpperCase();
+                const couponMessage = document.getElementById('coupon-message');
                 
-                // Continue to payment page
-            });
-
-            // Add logout functionality
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', function() {
-                    // Clear user data from localStorage
-                    localStorage.removeItem('user');
-                    localStorage.removeItem('token');
+                if (!couponCode) {
+                    couponMessage.textContent = 'Please enter a coupon code';
+                    couponMessage.classList.remove('hidden', 'text-green-600');
+                    couponMessage.classList.add('text-red-500');
+                    return;
+                }
+                
+                // Simulate coupon validation (in a real app, this would be an API call)
+                const validCoupons = {
+                    'WELCOME10': { discount: 0.1, type: 'percentage', description: '10% off your order' },
+                    'MELTS5': { discount: 0.05, type: 'percentage', description: '5% off your order' },
+                    'SOAP20': { discount: 0.2, type: 'percentage', description: '20% off your order' },
+                    'FREESHIP': { discount: 5.99, type: 'fixed', description: 'Free shipping' },
+                    'SUMMER15': { discount: 0.15, type: 'percentage', description: '15% summer discount' }
+                };
+                
+                if (validCoupons[couponCode]) {
+                    // Apply coupon
+                    localStorage.setItem('appliedCoupon', JSON.stringify(validCoupons[couponCode]));
                     
-                    // Reset user icon
-                    const userIcon = document.getElementById('user-icon');
-                    if (userIcon) {
-                        userIcon.innerHTML = `<i class="fas fa-user text-lg"></i>`;
-                        userIcon.href = 'login.html';
-                    }
+                    // Update order summary
+                    updateOrderSummary();
                     
-                    // Hide dropdown
-                    document.getElementById('user-dropdown').classList.add('hidden');
-                    
-                    // Reload page to reset state
-                    window.location.reload();
-                });
+                    // Show success message
+                    couponMessage.textContent = `${validCoupons[couponCode].description} applied`;
+                    couponMessage.classList.remove('hidden', 'text-red-500');
+                    couponMessage.classList.add('text-green-600');
+                } else {
+                    // Show error message
+                    couponMessage.textContent = 'Invalid coupon code';
+                    couponMessage.classList.remove('hidden', 'text-green-600');
+                    couponMessage.classList.add('text-red-500');
+                }
             }
         });
-
-        // Initialize Google Sign-In if user is not logged in
-        if (!user && typeof google !== 'undefined' && google.accounts) {
-            google.accounts.id.initialize({
-                client_id: '741864469861-nnf5f1elnr7ld8lhos3rsod8e2o2a8hb.apps.googleusercontent.com',
-                callback: handleCredentialResponse
-            });
-        }
-
-// Add coupon code functionality
-document.getElementById('apply-coupon').addEventListener('click', function() {
-    const couponCode = document.getElementById('coupon-code').value.trim();
-    const couponMessage = document.getElementById('coupon-message');
-    
-    if (!couponCode) {
-        couponMessage.textContent = 'Please enter a coupon code';
-        couponMessage.className = 'mt-2 text-sm text-red-500';
-        couponMessage.classList.remove('hidden');
-        return;
-    }
-    
-    // Call the backend to validate the coupon
-    fetch('/api/apply-coupon', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ code: couponCode })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const coupon = data.coupon;
-            let discountAmount = 0;
-            const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('£', ''));
-            
-            if (coupon.type === 'percentage') {
-                discountAmount = subtotal * coupon.discount;
-                couponMessage.textContent = `${coupon.description} applied!`;
-            } else if (coupon.type === 'fixed') {
-                discountAmount = coupon.discount;
-                couponMessage.textContent = `${coupon.description} applied!`;
-            }
-            
-            // Update the discount display
-            document.getElementById('discount').textContent = `-£${discountAmount.toFixed(2)}`;
-            
-            // Store the discount in localStorage
-            localStorage.setItem('discount', discountAmount);
-            localStorage.setItem('couponCode', couponCode);
-            
-            // Update the total
-            const shipping = document.getElementById('shipping').textContent === 'Free' ? 0 : 
-                parseFloat(document.getElementById('shipping').textContent.replace('£', ''));
-            const total = subtotal + shipping - discountAmount;
-            document.getElementById('total').textContent = `£${total.toFixed(2)}`;
-            
-            couponMessage.className = 'mt-2 text-sm text-green-500';
-        } else {
-            couponMessage.textContent = data.error || 'Invalid coupon code';
-            couponMessage.className = 'mt-2 text-sm text-red-500';
-        }
-        
-        couponMessage.classList.remove('hidden');
-    })
-    .catch(error => {
-        console.error('Error applying coupon:', error);
-        couponMessage.textContent = 'Error applying coupon. Please try again.';
-        couponMessage.className = 'mt-2 text-sm text-red-500';
-        couponMessage.classList.remove('hidden');
-    });
-});
-
-// Update the updateOrderSummary function to handle discounts properly
-function updateOrderSummary(subtotal, discount, shipping) {
-    document.getElementById('subtotal').textContent = `£${subtotal.toFixed(2)}`;
-    document.getElementById('discount').textContent = `-£${discount.toFixed(2)}`;
-    
-    if (shipping === 0) {
-        document.getElementById('shipping').textContent = 'Free';
-    } else {
-        document.getElementById('shipping').textContent = `£${shipping.toFixed(2)}`;
-    }
-    
-    const total = subtotal - discount + shipping;
-    document.getElementById('total').textContent = `£${total.toFixed(2)}`;
-}
-
-// Add this function to handle cart item event listeners
-function addCartItemEventListeners() {
-    // Add event listeners to increase quantity buttons
-    document.querySelectorAll('.increase-quantity').forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = this.getAttribute('data-id');
-            const itemScent = this.getAttribute('data-scent');
-            updateCartItemQuantity(itemId, itemScent, 1);
-        });
-    });
-    
-    // Add event listeners to decrease quantity buttons
-    document.querySelectorAll('.decrease-quantity').forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = this.getAttribute('data-id');
-            const itemScent = this.getAttribute('data-scent');
-            updateCartItemQuantity(itemId, itemScent, -1);
-        });
-    });
-    
-    // Add event listeners to remove item buttons
-    document.querySelectorAll('.remove-item').forEach(button => {
-        button.addEventListener('click', function() {
-            const itemId = this.getAttribute('data-id');
-            const itemScent = this.getAttribute('data-scent');
-            removeCartItem(itemId, itemScent);
-        });
-    });
-}
     </script>
 </body>
 </html>

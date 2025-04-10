@@ -408,11 +408,16 @@
                 window.print();
             });
 
-            // Get order ID from URL parameters
+            // Get order ID or session ID from URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const orderId = urlParams.get('order_id');
+            const sessionId = urlParams.get('session_id');
             
-            if (orderId) {
+            if (sessionId) {
+                // If we have a session ID, use it to load order details
+                loadOrderDetails(sessionId);
+            } else if (orderId) {
+                // If we have an order ID, use it
                 loadOrderDetails(orderId);
             } else {
                 // If no order ID in URL, try to get from localStorage
@@ -428,7 +433,31 @@
 
         async function loadOrderDetails(orderId) {
             try {
-                // Try to fetch order details from the server
+                // Check if this is a Stripe session ID
+                if (orderId.startsWith('cs_')) {
+                    // Fetch session details from our server
+                    const response = await fetch(`/checkout-session?session_id=${orderId}`);
+                    
+                    if (response.ok) {
+                        const order = await response.json();
+                        displayOrderDetails(order);
+                        
+                        // Clear cart after successful order
+                        localStorage.removeItem('cart');
+                        localStorage.removeItem('appliedCoupon');
+                        localStorage.removeItem('orderSubtotal');
+                        localStorage.removeItem('orderShipping');
+                        localStorage.removeItem('orderDiscount');
+                        localStorage.removeItem('orderTotal');
+                        
+                        // Update cart count
+                        document.getElementById('cart-count').textContent = '0';
+                        
+                        return;
+                    }
+                }
+                
+                // If not a Stripe session or if fetching session fails, try the original method
                 const response = await fetch(`/api/orders/${orderId}`);
                 
                 if (response.ok) {

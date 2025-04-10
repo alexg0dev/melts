@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled - Melissa's Melts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: '#FFF5F7',
+                            100: '#FFEAEF',
+                            200: '#FFCBD8',
+                            300: '#FFABC1',
+                            400: '#FF8CAA',
+                            500: '#FF6D93',
+                            600: '#FF4E7D',
+                            700: '#FF2F67',
+                            800: '#FF1051',
+                            900: '#E0003B',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Montserrat', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 30px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 5px 20px rgba(255, 109, 147, 0.25)',
+                        'card': '0 15px 35px rgba(0, 0, 0, 0.07)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="font-sans bg-pink-50 text-gray-800">
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-pink-700 to-pink-500 text-white text-center py-2.5 text-sm font-medium tracking-wide">
+        <p>Free shipping on orders over £50</p>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-soft sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-3xl font-serif font-bold bg-gradient-to-r from-pink-600 to-pink-400 bg-clip-text text-transparent">Melissa's Melts</a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors">Home</a>
+                    <a href="shop.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors">Shop</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors">About</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors">Contact</a>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="account.html" class="text-gray-600 hover:text-pink-500 transition-colors">
+                        <i class="fas fa-user text-lg"></i>
+                    </a>
+                    
+                    <a href="cart.html" class="text-gray-600 hover:text-pink-500 transition-colors relative" id="cart-icon">
+                        <i class="fas fa-shopping-bag text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-gray-600 hover:text-pink-500 transition-colors" id="mobile-menu-button">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div class="md:hidden hidden mt-4 pb-2" id="mobile-menu">
+                <div class="flex flex-col space-y-3">
+                    <a href="index.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Home</a>
+                    <a href="shop.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Shop</a>
+                    <a href="about.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">About</a>
+                    <a href="contact.html" class="font-medium text-gray-600 hover:text-pink-500 transition-colors py-2">Contact</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="max-w-lg mx-auto bg-white rounded-xl shadow-soft p-8 text-center">
+                <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-times text-3xl text-red-500"></i>
+                </div>
+                
+                <h1 class="text-2xl font-semibold mb-4">Payment Cancelled</h1>
+                <p class="text-gray-600 mb-8">Your payment was cancelled and no charges were made. Your items are still in your cart if you'd like to complete your purchase.</p>
+                
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <a href="cart.html" class="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-md font-medium text-center transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2">
+                        Return to Cart
+                    </a>
+                    <a href="shop.html" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-md font-medium text-center transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-20 pb-10 mt-20">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <!-- Company Info -->
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6 bg-gradient-to-r from-pink-500 to-pink-300 bg-clip-text text-transparent">Melissa's Melts</h3>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Handcrafted soaps and wax melts made with love and natural ingredients for your home and body.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-facebook-f text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-instagram text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-pinterest-p text-pink-400"></i>
+                        </a>
+                        <a href="#" class="bg-pink-500/20 hover:bg-pink-500/40 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
+                            <i class="fab fa-tiktok text-pink-400"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Shop Links -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Shop</h3>
+                    <ul class="space-y-3">
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">All Products</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Soaps</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Wax Melts</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Gift Sets</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">New Arrivals</a></li>
+                        <li><a href="shop.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Best Sellers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Information -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Information</h3>
+                    <ul class="space-y-3">
+                        <li><a href="about.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">FAQ</a>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-pink-400 transition-colors inline-block">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact -->
+                <div>
+                    <h3 class="text-lg font-medium mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-0.5 after:bg-pink-500">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">123 Soap Street, Meltville, ML 12345</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">hello@melissasmelts.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">(123) 456-7890</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock mt-1.5 mr-3 text-pink-400"></i>
+                            <span class="text-gray-400">Mon-Fri: 9am - 5pm EST</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2023 Melissa's Melts. All rights reserved.</p>
+                <div class="flex items-center space-x-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_640.png" alt="Visa" class="h-6">
+                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/53/mastercard-6850429_640.png" alt="Mastercard" class="h-6">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Update cart count
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+        });
+    </script>
+</body>
+</html>
