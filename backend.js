@@ -5,33 +5,31 @@ const path = require("path")
 const fs = require("fs")
 const crypto = require("crypto")
 
-// Initialize Stripe with your key
-const stripe = require("stripe")(
-  "sk_test_51RC5BvH1VVhTMbD6JEwbrZZpAABwWiFl7hw4lFjt4SdtfqOKKLre0d1A4XtN334RHOQhTv8ZCW19Eenftw4cl5xm00lIjO5S9P",
-)
-
 // Initialize Express app
 const app = express()
 const PORT = process.env.PORT || 3000
 
-// Basic request logging middleware
+// Basic request logging middleware with more details for debugging
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} ${req.method} ${req.url}`)
+  console.log(`${new Date().toISOString()} ${req.method} ${req.url} - Headers: ${JSON.stringify(req.headers['content-type'])}`)
   next()
 })
 
-// CORS configuration - CRITICAL FIX for Railway
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*")
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+// CRITICAL FIX: Explicit CORS configuration for Railway
+// Place this BEFORE any route definitions
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}))
 
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    return res.status(200).end()
-  }
-
-  next()
+// Handle OPTIONS requests explicitly for CORS preflight
+app.options('*', (req, res) => {
+  console.log('Handling OPTIONS request for CORS preflight')
+  res.status(204).end()
 })
 
 // Parse JSON bodies - IMPORTANT: Place before routes
@@ -39,6 +37,11 @@ app.use(express.json())
 
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }))
+
+// Initialize Stripe with your key
+const stripe = require("stripe")(
+  "sk_test_51RC5BvH1VVhTMbD6JEwbrZZpAABwWiFl7hw4lFjt4SdtfqOKKLre0d1A4XtN334RHOQhTv8ZCW19Eenftw4cl5xm00lIjO5S9P",
+)
 
 // In-memory data store
 const store = {
@@ -49,7 +52,63 @@ const store = {
 
 // CRITICAL FIX: Test endpoint to verify server is running
 app.get("/api/test", (req, res) => {
+  console.log("Test endpoint called successfully")
   res.json({ status: "ok", timestamp: new Date().toISOString() })
+})
+
+// CRITICAL FIX: Create payment intent endpoint - Moved to top of routes for priority
+app.post("/api/create-payment-intent", async (req, res) => {
+  console.log("Payment intent request received with body:", JSON.stringify(req.body))
+
+  try {
+    // Extract amount from request body
+    const { amount } = req.body
+
+    if (!amount) {
+      console.log("Payment intent error: Amount is required")
+      return res.status(400).json({ error: "Amount is required" })
+    }
+
+    const numericAmount = Number.parseFloat(amount)
+
+    if (isNaN(numericAmount) || numericAmount <= 0) {
+      console.log(`Payment intent error: Invalid amount ${amount}`)
+      return res.status(400).json({ error: "Amount must be a positive number" })
+    }
+
+    // Convert amount to pennies
+    const amountInPennies = Math.round(numericAmount * 100)
+    console.log(`Creating payment intent for ${amountInPennies} pennies (£${numericAmount.toFixed(2)})`)
+
+    // Create payment intent with minimal parameters
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountInPennies,
+      currency: "gbp",
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    })
+
+    console.log("Payment intent created:", paymentIntent.id)
+
+    // Return client secret
+    return res.json({
+      clientSecret: paymentIntent.client_secret,
+      id: paymentIntent.id,
+    })
+  } catch (error) {
+    console.error("Error creating payment intent:", error)
+    return res.status(500).json({
+      error: "Failed to create payment intent",
+      message: error.message,
+    })
+  }
+})
+
+// CRITICAL FIX: Add explicit OPTIONS handler for the payment intent endpoint
+app.options("/api/create-payment-intent", (req, res) => {
+  console.log("OPTIONS request for payment intent endpoint")
+  res.status(204).end()
 })
 
 // Data directory and file paths
@@ -391,53 +450,6 @@ app.put("/api/user", authenticate, (req, res) => {
 
 // PAYMENT AND ORDER ENDPOINTS
 
-// CRITICAL FIX: Create payment intent endpoint - Simplified for reliability
-app.post("/api/create-payment-intent", async (req, res) => {
-  console.log("Payment intent request received")
-
-  try {
-    // Extract amount from request body
-    const { amount } = req.body
-
-    if (!amount) {
-      return res.status(400).json({ error: "Amount is required" })
-    }
-
-    const numericAmount = Number.parseFloat(amount)
-
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      return res.status(400).json({ error: "Amount must be a positive number" })
-    }
-
-    // Convert amount to pennies
-    const amountInPennies = Math.round(numericAmount * 100)
-    console.log(`Creating payment intent for ${amountInPennies} pennies (£${numericAmount.toFixed(2)})`)
-
-    // Create payment intent with minimal parameters
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInPennies,
-      currency: "gbp",
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    })
-
-    console.log("Payment intent created:", paymentIntent.id)
-
-    // Return client secret
-    return res.json({
-      clientSecret: paymentIntent.client_secret,
-      id: paymentIntent.id,
-    })
-  } catch (error) {
-    console.error("Error creating payment intent:", error)
-    return res.status(500).json({
-      error: "Failed to create payment intent",
-      message: error.message,
-    })
-  }
-})
-
 // Create order endpoint
 app.post("/api/orders", (req, res) => {
   console.log("Create order request received")
@@ -672,10 +684,25 @@ app.post("/api/workshop-request", (req, res) => {
   }
 })
 
-// Serve static files
+// CRITICAL FIX: Add a direct route for the payment intent endpoint
+app.all("/api/create-payment-intent", (req, res, next) => {
+  console.log(`Received ${req.method} request to /api/create-payment-intent`)
+  if (req.method === 'POST') {
+    // This will be handled by the POST handler above
+    next()
+  } else if (req.method === 'OPTIONS') {
+    // Handle OPTIONS request
+    res.status(204).end()
+  } else {
+    // Handle other methods
+    res.status(405).json({ error: "Method not allowed" })
+  }
+})
+
+// Serve static files - IMPORTANT: Place after all API routes
 app.use(express.static(path.join(__dirname, "public")))
 
-// Catch-all route for static files
+// Catch-all route for static files - IMPORTANT: Place after all API routes
 app.get("*", (req, res) => {
   const filePath = path.join(__dirname, "public", req.path === "/" ? "index.html" : req.path)
 
