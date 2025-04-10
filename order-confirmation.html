@@ -413,6 +413,20 @@
             const orderId = urlParams.get('order_id');
             const sessionId = urlParams.get('session_id');
             
+            // Make sure it can handle both payment intent and session IDs
+            // Get order ID from URL query parameter or localStorage
+            const urlParams2 = new URLSearchParams(window.location.search);
+            const orderId2 = urlParams2.get('order_id') || localStorage.getItem('orderId');
+            const paymentId = urlParams2.get('payment_intent') || localStorage.getItem('paymentId');
+
+            // If we have a payment intent ID but no order ID, use the payment intent ID
+            if (paymentId && !orderId2) {
+                localStorage.setItem('orderId', paymentId);
+            }
+
+            console.log('Order ID:', orderId2);
+            console.log('Payment ID:', paymentId);
+            
             if (sessionId) {
                 // If we have a session ID, use it to load order details
                 loadOrderDetails(sessionId);

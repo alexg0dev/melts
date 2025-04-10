@@ -220,19 +220,9 @@
                         
                         <!-- Checkout Buttons -->
                         <div class="space-y-3">
-                            <form action="/create-checkout-session" method="POST" id="checkout-form">
-                                <input type="hidden" id="cartItemsInput" name="cartItems" value="">
-                                <input type="hidden" id="customerEmailInput" name="customerEmail" value="">
-                                <input type="hidden" id="customerNameInput" name="customerName" value="">
-                                <input type="hidden" id="customerPhoneInput" name="customerPhone" value="">
-                                <input type="hidden" id="customerAddressInput" name="customerAddress" value="">
-                                <input type="hidden" id="customerCityInput" name="customerCity" value="">
-                                <input type="hidden" id="customerPostcodeInput" name="customerPostcode" value="">
-                                
-                                <button type="submit" id="checkout-button" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 flex items-center justify-center">
-                                    <i class="fas fa-lock mr-2"></i> Checkout Securely
-                                </button>
-                            </form>
+                            <a href="payment.html" id="checkout-button" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 flex items-center justify-center">
+                                <i class="fas fa-lock mr-2"></i> Checkout Securely
+                            </a>
                             
                             <a href="simple-payment.html" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 block text-center">
                                 <i class="fas fa-money-bill-wave mr-2"></i> Simple Payment Options
@@ -247,62 +237,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Customer Information Modal -->
-    <div id="customer-info-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 animate-fade-up">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-semibold">Your Information</h3>
-                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <p class="text-gray-600 mb-4">Please provide your contact information to complete your order.</p>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                        <input type="text" id="customer-name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                    </div>
-                    
-                    <div>
-                        <label for="customer-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="customer-email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                    </div>
-                    
-                    <div>
-                        <label for="customer-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                        <input type="tel" id="customer-phone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                    </div>
-                    
-                    <div>
-                        <label for="customer-address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <input type="text" id="customer-address" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="customer-city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                            <input type="text" id="customer-city" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                        </div>
-                        
-                        <div>
-                            <label for="customer-postcode" class="block text-sm font-medium text-gray-700 mb-1">Postcode</label>
-                            <input type="text" id="customer-postcode" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-6">
-                    <button id="save-customer-info" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2">
-                        Continue to Checkout
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white pt-20 pb-10 mt-20">
@@ -409,94 +343,6 @@
             
             // Apply coupon button
             document.getElementById('apply-coupon').addEventListener('click', applyCoupon);
-            
-            // Customer info modal
-            const customerInfoModal = document.getElementById('customer-info-modal');
-            const closeModalButton = document.getElementById('close-modal');
-            const saveCustomerInfoButton = document.getElementById('save-customer-info');
-            
-            // Close modal when clicking the close button
-            closeModalButton.addEventListener('click', function() {
-                customerInfoModal.classList.add('hidden');
-            });
-            
-            // Close modal when clicking outside
-            customerInfoModal.addEventListener('click', function(e) {
-                if (e.target === customerInfoModal) {
-                    customerInfoModal.classList.add('hidden');
-                }
-            });
-            
-            // Save customer info and proceed to checkout
-            saveCustomerInfoButton.addEventListener('click', function() {
-                const customerName = document.getElementById('customer-name').value;
-                const customerEmail = document.getElementById('customer-email').value;
-                const customerPhone = document.getElementById('customer-phone').value;
-                const customerAddress = document.getElementById('customer-address').value;
-                const customerCity = document.getElementById('customer-city').value;
-                const customerPostcode = document.getElementById('customer-postcode').value;
-                
-                // Basic validation
-                if (!customerName || !customerEmail || !customerAddress || !customerCity || !customerPostcode) {
-                    alert('Please fill in all required fields');
-                    return;
-                }
-                
-                // Save customer info to localStorage
-                localStorage.setItem('customerName', customerName);
-                localStorage.setItem('customerEmail', customerEmail);
-                localStorage.setItem('customerPhone', customerPhone);
-                localStorage.setItem('customerAddress', customerAddress);
-                localStorage.setItem('customerCity', customerCity);
-                localStorage.setItem('customerPostcode', customerPostcode);
-                
-                // Set form input values
-                document.getElementById('customerNameInput').value = customerName;
-                document.getElementById('customerEmailInput').value = customerEmail;
-                document.getElementById('customerPhoneInput').value = customerPhone;
-                document.getElementById('customerAddressInput').value = customerAddress;
-                document.getElementById('customerCityInput').value = customerCity;
-                document.getElementById('customerPostcodeInput').value = customerPostcode;
-                
-                // Close modal
-                customerInfoModal.classList.add('hidden');
-                
-                // Submit the form
-                document.getElementById('checkout-form').submit();
-            });
-            
-            // Handle checkout button click
-            document.getElementById('checkout-button').addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                if (cart.length === 0) {
-                    alert('Your cart is empty');
-                    return;
-                }
-                
-                // Set cart items in the hidden input
-                document.getElementById('cartItemsInput').value = JSON.stringify(cart);
-                
-                // Check if we already have customer info
-                const customerName = localStorage.getItem('customerName');
-                const customerEmail = localStorage.getItem('customerEmail');
-                
-                if (customerName && customerEmail) {
-                    // Pre-fill the form inputs
-                    document.getElementById('customerNameInput').value = customerName;
-                    document.getElementById('customerEmailInput').value = customerEmail;
-                    document.getElementById('customerPhoneInput').value = localStorage.getItem('customerPhone') || '';
-                    document.getElementById('customerAddressInput').value = localStorage.getItem('customerAddress') || '';
-                    document.getElementById('customerCityInput').value = localStorage.getItem('customerCity') || '';
-                    document.getElementById('customerPostcodeInput').value = localStorage.getItem('customerPostcode') || '';
-                    
-                    // Submit the form directly
-                    document.getElementById('checkout-form').submit();
-                } else {
-                    // Show customer info modal
-                    customerInfoModal.classList.remove('hidden');
-                }
-            });
             
             // Functions
             function updateCartCount() {

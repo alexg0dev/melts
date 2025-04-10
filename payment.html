@@ -876,7 +876,7 @@
                 console.log('Creating payment intent for amount:', amount);
                 
                 // CRITICAL FIX: Use absolute URL and improved error handling
-                const apiUrl = window.location.origin + '/api/create-payment-intent';
+                const apiUrl = '/api/create-payment-intent';
                 console.log('Using API URL:', apiUrl);
                 
                 try {
@@ -1023,6 +1023,15 @@
                 }
                 
                 console.log('Confirming payment...');
+                console.log('Payment details:', {
+                    name,
+                    email,
+                    phone,
+                    address,
+                    city,
+                    postcode,
+                    amount
+                });
                 
                 // Confirm payment with Stripe
                 const { error, paymentIntent } = await stripe.confirmPayment({
