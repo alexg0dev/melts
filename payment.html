@@ -85,6 +85,8 @@
             box-shadow: 0 15px 30px rgba(255, 109, 147, 0.15);
         }
         
+        
+        
         /* Product Card Effects */
         .product-card {
             transition: all 0.4s ease;
@@ -856,10 +858,12 @@
                 console.log('Creating payment intent for amount:', amount);
                 
                 try {
-                    // CRITICAL: Use the simplified endpoint path
+                    // CRITICAL: Use the full URL with protocol and hostname
+                    const baseUrl = window.location.protocol + '//' + window.location.host;
+                    console.log('Base URL:', baseUrl);
                     console.log('Sending payment intent request with payload:', JSON.stringify({ amount }));
                     
-                    const response = await fetch('/create-payment-intent', {
+                    const response = await fetch(`${baseUrl}/create-payment-intent`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1057,7 +1061,8 @@
                     localStorage.setItem('paymentId', paymentIntent.id);
                     
                     // Send order to server
-                    await fetch('/orders', {
+                    const baseUrl = window.location.protocol + '//' + window.location.host;
+                    await fetch(`${baseUrl}/orders`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

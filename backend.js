@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 })
 
 // ------------------------------
-//  CORS Configuration
+//  CORS Configuration - ENHANCED
 // ------------------------------
 app.use(
   cors({
@@ -44,6 +44,9 @@ app.use(
 // Explicit handler for all OPTIONS requests
 app.options("*", (req, res) => {
   console.log("CORS preflight (OPTIONS) request on:", req.path)
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
+  res.header("Access-Control-Allow-Origin", "*")
   return res.status(204).end()
 })
 
@@ -89,9 +92,9 @@ app.get("/test", (req, res) => {
 })
 
 // ------------------------------
-//  Payment Intent Endpoint - BOTH VERSIONS
+//  Payment Intent Endpoint - CRITICAL FIX
 // ------------------------------
-// Version with /api/ prefix
+// Version with /api/ prefix - KEEP FOR COMPATIBILITY
 app.post("/api/create-payment-intent", async (req, res) => {
   try {
     console.log("POST /api/create-payment-intent =>", req.body)
@@ -127,7 +130,7 @@ app.post("/api/create-payment-intent", async (req, res) => {
   }
 })
 
-// Version without /api/ prefix - ADDED FOR COMPATIBILITY WITH FRONTEND
+// Version without /api/ prefix - CRITICAL FIX
 app.post("/create-payment-intent", async (req, res) => {
   try {
     console.log("POST /create-payment-intent =>", req.body)
