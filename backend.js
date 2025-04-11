@@ -14,13 +14,16 @@ const nodemailer = require("nodemailer")
 //  Initialize Express
 // ------------------------------
 const app = express()
-const PORT = process.env.PORT || 3000
+// Hardcoded port - no environment variables
+const PORT = 8080
 
 // ------------------------------
 //  Basic logging middleware
 // ------------------------------
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Content-Type: ${req.headers["content-type"]}`)
+  console.log(
+    `[${new Date().toISOString()}] ${req.method} ${req.url} - Content-Type: ${req.headers["content-type"] || "none"}`,
+  )
   next()
 })
 
@@ -51,23 +54,20 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // ------------------------------
-//  Stripe Initialization
+//  Stripe Initialization - FULLY HARDCODED
 // ------------------------------
-// WARNING: Hardcoding your secret key is insecure for production use.
 const stripe = require("stripe")(
   "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",
 )
 
 // ------------------------------
-//  Nodemailer Setup
+//  Nodemailer Setup - FULLY HARDCODED
 // ------------------------------
-// Replace these with your Gmail credentials if you wish to hardcode them too.
-// (Again: hardcoding credentials is not secure)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "your-email@example.com",
-    pass: "your-email-password",
+    user: "melissasmelts@gmail.com", // HARDCODED EMAIL
+    pass: "your-actual-password-here", // HARDCODED PASSWORD - REPLACE THIS
   },
 })
 
@@ -83,7 +83,7 @@ const store = {
 // ------------------------------
 //  Test Endpoint
 // ------------------------------
-app.get("/api/test", (req, res) => {
+app.get("/test", (req, res) => {
   console.log("Test endpoint called successfully")
   return res.json({ status: "ok", timestamp: new Date().toISOString() })
 })
@@ -175,7 +175,7 @@ async function sendOrderConfirmationEmail(order) {
 
     // Customer email
     const customerMailOptions = {
-      from: "your-email@example.com",
+      from: "melissasmelts@gmail.com", // HARDCODED EMAIL
       to: order.customerEmail,
       subject: `Order Confirmation #${order.orderId} - Melissa's Melts`,
       text: `
@@ -202,8 +202,8 @@ Thank you for shopping with Melissa's Melts!
 
     // Owner email
     const ownerMailOptions = {
-      from: "your-email@example.com",
-      to: "your-email@example.com", // Send to yourself
+      from: "melissasmelts@gmail.com", // HARDCODED EMAIL
+      to: "melissasmelts@gmail.com", // HARDCODED EMAIL
       subject: `New Order #${order.orderId} - Melissa's Melts`,
       text: `
 A new order has been placed!
@@ -326,7 +326,7 @@ function authenticate(req, res, next) {
 // ------------------------------
 
 // Register
-app.post("/api/auth/register", (req, res) => {
+app.post("/auth/register", (req, res) => {
   try {
     const { email, password, name } = req.body
     if (!email || !password || !name) {
@@ -377,7 +377,7 @@ app.post("/api/auth/register", (req, res) => {
 })
 
 // Login
-app.post("/api/auth/login", (req, res) => {
+app.post("/auth/login", (req, res) => {
   try {
     const { email, password } = req.body
     if (!email || !password) {
@@ -417,7 +417,7 @@ app.post("/api/auth/login", (req, res) => {
 })
 
 // Google sign-in (mock)
-app.post("/api/auth/google", (req, res) => {
+app.post("/auth/google", (req, res) => {
   try {
     const { token, email, name, picture } = req.body
     if (!token || !email || !name) {
@@ -467,7 +467,7 @@ app.post("/api/auth/google", (req, res) => {
 })
 
 // Logout
-app.post("/api/auth/logout", (req, res) => {
+app.post("/auth/logout", (req, res) => {
   const header = req.headers.authorization || ""
   const token = header.startsWith("Bearer ") ? header.split(" ")[1] : null
   if (token && store.sessions[token]) {
@@ -477,12 +477,12 @@ app.post("/api/auth/logout", (req, res) => {
 })
 
 // Get user
-app.get("/api/user", authenticate, (req, res) => {
+app.get("/user", authenticate, (req, res) => {
   return res.json(req.user)
 })
 
 // Update user
-app.put("/api/user", authenticate, (req, res) => {
+app.put("/user", authenticate, (req, res) => {
   try {
     const { name, address, city, postcode, phone } = req.body
     const userIndex = store.users.findIndex((u) => u.userId === req.user.userId)
@@ -516,61 +516,7 @@ app.put("/api/user", authenticate, (req, res) => {
 // ------------------------------
 //  Orders & Payment
 // ------------------------------
-// Version with /api/ prefix
-app.post("/api/orders", (req, res) => {
-  try {
-    console.log("POST /api/orders =>", req.body)
-    const {
-      items,
-      total,
-      shipping,
-      discount,
-      customerEmail,
-      customerName,
-      customerPhone,
-      customerAddress,
-      customerCity,
-      customerPostcode,
-      paymentId,
-    } = req.body
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: "Items are required" })
-    }
-    const orderId = `ORD-${Date.now().toString().slice(-6)}`
-    const order = {
-      orderId,
-      items,
-      total: Number.parseFloat(total) || 0,
-      subtotal: items.reduce((sum, i) => sum + i.price * i.quantity, 0),
-      shipping: Number.parseFloat(shipping) || 0,
-      discount: Number.parseFloat(discount) || 0,
-      status: paymentId ? "paid" : "pending",
-      createdAt: new Date().toISOString(),
-      customerEmail,
-      customerName,
-      customerPhone,
-      customerAddress,
-      customerCity,
-      customerPostcode,
-      paymentId,
-    }
-    store.orders.push(order)
-    saveData("orders", store.orders)
-    sendOrderConfirmationEmail(order)
-    return res.json({
-      success: true,
-      order: {
-        orderId,
-        status: order.status,
-      },
-    })
-  } catch (error) {
-    console.error("Error creating order:", error)
-    return res.status(500).json({ error: "Failed to create order" })
-  }
-})
-
-// Version without /api/ prefix - ADDED FOR COMPATIBILITY WITH FRONTEND
+// Version without /api/ prefix
 app.post("/orders", (req, res) => {
   try {
     console.log("POST /orders =>", req.body)
@@ -624,7 +570,7 @@ app.post("/orders", (req, res) => {
   }
 })
 
-app.get("/api/orders/:orderId", (req, res) => {
+app.get("/orders/:orderId", (req, res) => {
   try {
     const { orderId } = req.params
     const order = store.orders.find((o) => o.orderId === orderId)
@@ -638,7 +584,7 @@ app.get("/api/orders/:orderId", (req, res) => {
   }
 })
 
-app.get("/api/orders", authenticate, (req, res) => {
+app.get("/orders", authenticate, (req, res) => {
   try {
     const userOrders = store.orders.filter((o) => o.userId === req.user.userId)
     return res.json(userOrders)
@@ -648,7 +594,7 @@ app.get("/api/orders", authenticate, (req, res) => {
   }
 })
 
-app.post("/api/apply-coupon", (req, res) => {
+app.post("/apply-coupon", (req, res) => {
   try {
     const { code } = req.body
     const validCoupons = {
@@ -675,7 +621,7 @@ app.post("/api/apply-coupon", (req, res) => {
   }
 })
 
-app.post("/api/use-points", authenticate, (req, res) => {
+app.post("/use-points", authenticate, (req, res) => {
   try {
     const { points } = req.body
     const pointsToUse = Number.parseInt(points, 10)
@@ -711,7 +657,7 @@ app.post("/api/use-points", authenticate, (req, res) => {
 // ------------------------------
 //  Newsletter & Contact
 // ------------------------------
-app.post("/api/subscribe", (req, res) => {
+app.post("/subscribe", (req, res) => {
   try {
     const { email, name } = req.body
     if (!email) {
@@ -725,7 +671,7 @@ app.post("/api/subscribe", (req, res) => {
   }
 })
 
-app.post("/api/contact", (req, res) => {
+app.post("/contact", (req, res) => {
   try {
     const { name, email, message } = req.body
     if (!email || !message) {
@@ -739,7 +685,7 @@ app.post("/api/contact", (req, res) => {
   }
 })
 
-app.post("/api/workshop-request", (req, res) => {
+app.post("/workshop-request", (req, res) => {
   try {
     const { name, email, date, participants } = req.body
     if (!email || !date) {
@@ -772,7 +718,7 @@ app.get("*", (req, res) => {
 // ------------------------------
 //  Start server
 // ------------------------------
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`)
 })
 
